@@ -10,7 +10,6 @@ import plotly.graph_objs as go
 from dash.dependencies import Input, Output, State
 from datetime import datetime, date
 import pickle
-import datetime
 
 app = dash.Dash(
     __name__,
@@ -69,7 +68,10 @@ def logo(app):
 
 
 #  get data from csv
-df = pd.read_csv('assets/data.csv')
+df = pd.read_csv('/media/leonardo/SharedVolume/Code/VSC/assets/data.csv')
+format = "%Y-%m-%d %I:%M %p"
+df['Interval'] = df['Interval'].apply(lambda x: datetime.strptime(x, format))
+df['Interval (UTC)'] = df['Interval (UTC)'].apply(lambda x: datetime.strptime(x, format))
 # print(df)
 # df, df_button, x_test, y_test = data_preprocessing()
 
@@ -186,9 +188,10 @@ graphs = dbc.Card(
                     [
                         dcc.DatePickerRange(
                             id="date-picker",
-                            # need to change this
-                            min_date_allowed=date(2000, 5, 1),
-                            max_date_allowed=date.today(),
+                            min_date_allowed= pd.Series.min(df['Interval']),
+                            max_date_allowed= pd.Series.max(df['Interval']),
+                            # min_date_allowed=date(2000, 5, 1),
+                            # max_date_allowed=date.today(),
                             initial_visible_month=date.today(),
                             start_date_placeholder_text="Start Period",
                             end_date_placeholder_text="End Period",
@@ -643,7 +646,7 @@ app.layout = dbc.Container(
         ),
         dcc.Interval(
             id='interval-component',
-            interval=1*50, # in milliseconds
+            interval=1*100, # in milliseconds
             n_intervals=1
         )
     ],
@@ -693,7 +696,8 @@ def fig_update_layout(fig):
 #     [
 #         Output("Main-Graph", "figure"),
 #         Output("Info-Textbox", "value"),
-#         Output("charge port 2", "value"),
+#         # Output("charge port 2", "value"),
+#         # Output("date-picker", "initial_visible_month"),
 #     ],
 #     [
 #         Input("date-picker", "start_date"),
@@ -701,28 +705,31 @@ def fig_update_layout(fig):
 #     ],
 # )
 # def update_graph(start_date, end_date):
-#     df.style
-#     # print(index)
-#     index = index % 1000
-#     # if index == 0: 
-#         # index += 1
-#     tmp_data = df.iloc[0:index, 3]
+#     if start_date is None or end_date is None:
+#         start_date = "2021-11-03"
+#         end_date = "2021-11-06"
+#     # print(start_date)
+#     # print(end_date)
+#     start_date_object = datetime.strptime(start_date, "%Y-%m-%d")
+#     end_date_object = datetime.strptime(end_date, "%Y-%m-%d")
+#     mask = (df['Interval'] > start_date_object) & (df['Interval'] <= end_date_object)
+#     # print(mask)
+#     df_within_dates = df.loc[mask]
+#     # print(df_within_dates)
 #     information_update = (
-#         "test for when it is updated, index = " + str(index)
+#         "test for when it is updated, start date is " + str(start_date) + ", end date is : " + str(end_date)
 #     )
 #     fig = go.Figure(
 #         data=[
 #             go.Scatter(
-#                 x=df.iloc[0:index,1],
-#                 y=tmp_data*100
+#                 x=df_within_dates['Interval'],
+#                 y=df_within_dates['ams-a-control-in-stateOfCharge/AvgValue.avg'],
 #             )
 #         ]
 #     )
-#     bat = int(tmp_data.iloc[index-1]*100)
-#     # print(bat)
-#     index = (index +1)%1000
+#     # bat = int(df_within_dates.iloc[-1]*100)
 #     fig = fig_update_layout(fig)
-#     return fig, information_update, bat
+#     return fig, information_update
 
 @app.callback(
     [
@@ -760,238 +767,6 @@ def update_graph_timer(start_date, end_date, index):
     fig = fig_update_layout(fig)
     return fig, information_update, bat
 
-    # if start_date and end_date:
-    #     start_date_object = datetime.strptime(
-    #         start_date, "%Y-%m-%d")
-    #     end_date_object = datetime.strptime(end_date, "%Y-%m-%d")
-    #                 mask = (df.index > start_date_object) & (
-    #                     df.index <= end_date_object
-    #                 )
-    #                 df_within_dates = df.loc[mask]
-    #                 fig = go.Figure(
-    #                     data=[
-    #                         go.Scatter(
-    #                             x=df_within_dates.index,
-    #                             y=df_within_dates[selected_column],
-    #                         )
-    #                     ]
-    #                 )
-    #                 fig = fig_update_layout(fig)
-    #                 return fig, value_rul, information_update
-    #             elif start_date:
-    #                 start_date_object = datetime.strptime(
-    #                     start_date, "%Y-%m-%d")
-    #                 mask = df.index > start_date_object
-    #                 df_within_dates = df.loc[mask]
-    #                 fig = go.Figure(
-    #                     data=[
-    #                         go.Scatter(
-    #                             x=df_within_dates.index,
-    #                             y=df_within_dates[selected_column],
-    #                         )
-    #                     ]
-    #                 )
-    #                 fig = fig_update_layout(fig)
-    #                 return fig, value_rul, information_update
-    #             else:
-    #                 fig = go.Figure(
-    #                     data=[go.Scatter(x=df.index, y=df[selected_column])]
-    #                 )
-    #                 fig = fig_update_layout(fig)
-    #                 return fig, value_rul, information_update
-    #         else:
-    #             fig = go.Figure()
-    #             fig = fig_update_layout(fig)
-    #             return fig, value_rul, information_update
-    #     else:
-    #         if selected_column in list(df_button):
-    #             if start_date and end_date:
-    #                 start_date_object = datetime.strptime(
-    #                     start_date, "%Y-%m-%d")
-    #                 end_date_object = datetime.strptime(end_date, "%Y-%m-%d")
-    #                 mask = (df_button.index > start_date_object) & (
-    #                     df_button.index <= end_date_object
-    #                 )
-    #                 df_within_dates = df_button.loc[mask]
-    #                 fig = go.Figure(
-    #                     data=[
-    #                         go.Scatter(
-    #                             x=df_within_dates.index,
-    #                             y=df_within_dates[selected_column],
-    #                         )
-    #                     ]
-    #                 )
-    #                 fig = fig_update_layout(fig)
-    #                 _information_update = (
-    #                     "New information is received for the last week and covers periods from "
-    #                     + str(df_button.index[0])
-    #                     + " to "
-    #                     + str(df_button.index[-1])
-    #                     + ". To predict"
-    #                     " RUL, use 'Predict' button. To view data for the aforementioned period, choose"
-    #                     " appropriate dates on the calendar."
-    #                 )
-    #                 return fig, value_rul, _information_update
-    #             elif start_date:
-    #                 start_date_object = datetime.strptime(
-    #                     start_date, "%Y-%m-%d")
-    #                 mask = df_button.index > start_date_object
-    #                 df_within_dates = df_button.loc[mask]
-    #                 fig = go.Figure(
-    #                     data=[
-    #                         go.Scatter(
-    #                             x=df_within_dates.index,
-    #                             y=df_within_dates[selected_column],
-    #                         )
-    #                     ]
-    #                 )
-    #                 fig = fig_update_layout(fig)
-    #                 _information_update = (
-    #                     "New information is received for the last week and covers periods from "
-    #                     + str(df_button.index[0])
-    #                     + " to "
-    #                     + str(df_button.index[-1])
-    #                     + ". To predict"
-    #                     " RUL, use 'Predict' button. To view data for the aforementioned period, choose"
-    #                     " appropriate dates on the calendar."
-    #                 )
-    #                 return fig, value_rul, _information_update
-    #             else:
-    #                 fig = go.Figure(
-    #                     data=[
-    #                         go.Scatter(x=df_button.index,
-    #                                    y=df_button[selected_column])
-    #                     ]
-    #                 )
-    #                 fig = fig_update_layout(fig)
-    #                 _information_update = (
-    #                     "New information is received for the last week and covers periods from "
-    #                     + str(df_button.index[0])
-    #                     + " to "
-    #                     + str(df_button.index[-1])
-    #                     + ". To predict"
-    #                     " RUL, use 'Predict' button. To view data for the aforementioned period, choose"
-    #                     " appropriate dates on the calendar."
-    #                 )
-    #                 return fig, value_rul, _information_update
-    #         else:
-    #             fig = go.Figure()
-    #             fig = fig_update_layout(fig)
-    #             _information_update = (
-    #                 "New information is received for the last week and covers periods from "
-    #                 + str(df_button.index[0])
-    #                 + " to "
-    #                 + str(df_button.index[-1])
-    #                 + ". To predict"
-    #                 " RUL, use 'Predict' button. To view data for the aforementioned period, choose"
-    #                 " appropriate dates on the calendar."
-    #             )
-    #             return fig, value_rul, _information_update
-    # else:
-    #     if n_get_new_info is None:
-    #         value_rul = 0.0
-    #         information_update = "To predict RUL, please use 'Get New Data' button."
-    #         if selected_column in list(df):
-    #             if start_date and end_date:
-    #                 start_date_object = datetime.strptime(
-    #                     start_date, "%Y-%m-%d")
-    #                 end_date_object = datetime.strptime(end_date, "%Y-%m-%d")
-    #                 mask = (df.index > start_date_object) & (
-    #                     df.index <= end_date_object
-    #                 )
-    #                 df_within_dates = df.loc[mask]
-    #                 fig = go.Figure(
-    #                     data=[
-    #                         go.Scatter(
-    #                             x=df_within_dates.index,
-    #                             y=df_within_dates[selected_column],
-    #                         )
-    #                     ]
-    #                 )
-    #                 fig = fig_update_layout(fig)
-    #                 return fig, value_rul, information_update
-    #             elif start_date:
-    #                 start_date_object = datetime.strptime(
-    #                     start_date, "%Y-%m-%d")
-    #                 mask = df.index > start_date_object
-    #                 df_within_dates = df.loc[mask]
-    #                 fig = go.Figure(
-    #                     data=[
-    #                         go.Scatter(
-    #                             x=df_within_dates.index,
-    #                             y=df_within_dates[selected_column],
-    #                         )
-    #                     ]
-    #                 )
-    #                 fig = fig_update_layout(fig)
-    #                 return fig, value_rul, information_update
-    #             else:
-    #                 fig = go.Figure(
-    #                     data=[go.Scatter(x=df.index, y=df[selected_column])]
-    #                 )
-    #                 return fig, value_rul, information_update
-    #         else:
-    #             fig = go.Figure()
-    #             fig = fig_update_layout(fig)
-    #             return fig, value_rul, information_update
-    #     else:
-    #         model = pickle.load(open("assets/xgb_reg.pkl", "rb"))
-    #         y_pred = model.predict(x_test)
-    #         df_out = pd.DataFrame()
-    #         df_out["pred"] = y_pred
-    #         value_rul = round(max(df_out["pred"]))
-    #         information_update = "RUL is estimated based on the readings from the last week: " "from " + str(
-    #             x_test.index[0]
-    #         ) + " to " + str(
-    #             x_test.index[-1]
-    #         )
-    #         if selected_column in list(df_button):
-    #             if start_date and end_date:
-    #                 start_date_object = datetime.strptime(
-    #                     start_date, "%Y-%m-%d")
-    #                 end_date_object = datetime.strptime(end_date, "%Y-%m-%d")
-    #                 mask = (df_button.index > start_date_object) & (
-    #                     df_button.index <= end_date_object
-    #                 )
-    #                 df_within_dates = df_button.loc[mask]
-    #                 fig = go.Figure(
-    #                     data=[
-    #                         go.Scatter(
-    #                             x=df_within_dates.index,
-    #                             y=df_within_dates[selected_column],
-    #                         )
-    #                     ]
-    #                 )
-    #                 fig = fig_update_layout(fig)
-    #                 return fig, value_rul, information_update
-    #             elif start_date:
-    #                 start_date_object = datetime.strptime(
-    #                     start_date, "%Y-%m-%d")
-    #                 mask = df_button.index > start_date_object
-    #                 df_within_dates = df_button.loc[mask]
-    #                 fig = go.Figure(
-    #                     data=[
-    #                         go.Scatter(
-    #                             x=df_within_dates.index,
-    #                             y=df_within_dates[selected_column],
-    #                         )
-    #                     ]
-    #                 )
-    #                 fig = fig_update_layout(fig)
-    #                 return fig, value_rul, information_update
-    #             else:
-    #                 fig = go.Figure(
-    #                     data=[
-    #                         go.Scatter(x=df_button.index,
-    #                                    y=df_button[selected_column])
-    #                     ]
-    #                 )
-    #                 fig = fig_update_layout(fig)
-    #                 return fig, value_rul, information_update
-    #         else:
-    #             fig = go.Figure()
-    #             fig = fig_update_layout(fig)
-    #             return fig, value_rul, information_update
 
 
 @app.callback(
