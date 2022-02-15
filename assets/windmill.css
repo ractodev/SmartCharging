@@ -1,437 +1,429 @@
-$wheel: #41155a;
-$roof: #df615c;
-$roofLight: #edadac;
-$mill: #fff;
-$speed: 4s;
-
 body {
-  background-color: #eee;
+	 background-color: #a3c0ec;
 }
-
-.windmill {
+ .windmill {
+	 position: absolute;
+	 left: 5%;
+	 top: 75%;
+}
+ .hills {
+	 width: 280px;
+	 height: 180px;
+	 background-color: #82a7df;
+	 position: absolute;
+	 top: 64px;
+	 left: -75px;
+	 opacity: 0.5;
+	 border-radius: 300px 300px 0 0;
+}
+ .hills:before, .hills:after {
+	 content: '';
+	 position: absolute;
+	 background-color: #82a7df;
+	 border-radius: 300px 300px 0 0;
+}
+ .hills:before {
+	 width: 250px;
+	 height: 110px;
+	 bottom: 0;
+	 right: -120px;
+}
+ .wheel {
+	 z-index: 10;
+	 width: 192px;
+	 height: 192px;
+	 position: absolute;
+	 left: -45px;
+	 top: 10px;
+	 animation: spin 4s linear infinite;
+	 animation-direction: reverse;
+}
+ .windwheel {
+	 position: absolute;
+	 width: 8px;
+	 height: 100px;
+	 background-color: #414c68;
+	 margin-right: 10px;
+	 left: 92px;
+}
+ .windwheel:before {
+	 positioN: absolute;
+	 content: "";
+	 background-color: #414c68;
+	 opacity: 0.7;
+	 width: 15px;
+	 height: 75px;
+	 left: 8px;
+}
+ .windwheel2 {
+	 transform: rotate(90deg);
+	 top: 46px;
+	 left: 138px;
+	 z-index: 40;
+}
+ .windwheel3 {
+	 transform: rotate(180deg);
+	 top: 92px;
+}
+ .windwheel4 {
+	 transform: rotate(-90deg);
+	 top: 46px;
+	 left: 46px;
+}
+ .windwheel4:after {
+	 position: absolute;
+	 content: "";
+	 background-color: #414c68;
+	 opacity: 0.7;
+	 width: 22px;
+	 height: 22px;
+	 bottom: -7px;
+	 left: -7px;
+	 transform: rotate(45deg);
+}
+ .roof {
+	 position: absolute;
+	 z-index: 9;
+	 top: 75px;
+	 width: 0;
+	 height: 0;
+	 border-left: 50px solid transparent;
+	 border-right: 50px solid transparent;
+	 border-bottom: 50px solid #df615c;
+}
+ .mill {
+	 position: absolute;
+	 left: 0px;
+	 top: 124px;
+	 width: 100px;
+	 height: 120px;
+	 background-color: #fff;
+}
+ .house {
+	 position: absolute;
+	 width: 120px;
+	 height: 60px;
+	 background-color: #fff;
+	 top: 184px;
+	 left: 70px;
+	 border-top: 20px solid #df615c;
+}
+ .house:after {
+	 content: "";
+	 position: absolute;
+	 background-color: #414c68;
+	 width: 20px;
+	 height: 30px;
+	 bottom: 0;
+	 left: 70px;
+	 border-left: 5px solid #82a7df;
+}
+ .bush {
+	 position: relative;
+	 top: 203px;
+	 left: -60px;
+}
+ .bush li {
+	 float: left;
+	 list-style: none;
+	 background-color: #df615c;
+	 width: 40px;
+	 height: 25px;
+	 border-radius: 100px 100px 0 0;
+}
+ .bush2 {
+	 top: 178px;
+	 left: 160px;
+}
+ .tree {
+	 position: absolute;
+	 left: -50px;
+	 top: 120px;
+}
+ .tree li {
+	 list-style: none;
+	 background-color: #414c68;
+	 width: 45px;
+	 height: 45px;
+	 border-radius: 100%;
+	 margin-bottom: -15px;
+}
+ .tree:after {
+	 content: "";
+	 position: absolute;
+	 background-color: #82a7df;
+	 width: 3px;
+	 height: 80px;
+	 top: 25px;
+	 right: 21px;
+}
+ .cloud {
+	 position: absolute;
+	 top: 40px;
+	 left: -100px;
+	 background-color: #fff;
+	 height: 20px;
+	 width: 40px;
+	 z-index: 1000;
+	 border-radius: 40px 40px 0 0;
+	 opacity: 0.7;
+	 animation: clouds 14s linear alternate infinite;
+}
+ .cloud:before {
+	 content: "";
+	 position: absolute;
+	 background-color: #fff;
+	 height: 30px;
+	 width: 60px;
+	 border-radius: 60px 60px 0 0;
+	 bottom: 0;
+	 right: 20px;
+}
+ .cloud2 {
+	 height: 40px;
+	 width: 80px;
+	 top: -20px;
+	 z-index: 1;
+	 animation: clouds 24s linear alternate-reverse infinite;
+}
+ .cloud2:before {
+	 content: "";
+	 position: absolute;
+	 background-color: #fff;
+	 height: 30px;
+	 width: 60px;
+	 border-radius: 60px 60px 0 0;
+	 bottom: 0;
+	 right: 40px;
+}
+ @keyframes spin {
+	 100% {
+		 transform: rotate(360deg);
+	}
+}
+ @keyframes clouds {
+	 100% {
+		 transform: translateX(540px);
+	}
+}
+ .verticalPipe {
+	 position: absolute;
+	 left: 85px;
+	 top: 243px;
+	 width: 44px;
+	 height: 370px;
+	 border-right: 5px solid gray;
+	 border-left: 5px solid gray;
+	 background-color: none;
+}
+ .horizontalPipe {
+	 position: absolute;
+	 left: 210px;
+	 top: 699px;
+	 width: 370px;
+	 height: 44px;
+	 border-top: 5px solid gray;
+	 border-bottom: 5px solid gray;
+	 background-color: none;
+}
+ #verticalArrowAnim {
+	 margin-top: 210px;
+	 margin-left: 98px;
+	 width: 100vw;
+	 height: 100vh;
+	 display: absolute;
+	 justify-content: center;
+	 align-items: center;
+}
+ #horizontalArrowAnim1 {
+	 margin-top: 1045px;
+	 margin-left: 280px;
+	 width: 100vw;
+	 height: 100vh;
+	 display: absolute;
+	 justify-content: center;
+	 align-items: center;
+}
+ #horizontalArrowAnim2 {
+	 margin-top: -1280px;
+	 margin-left: 950px;
+	 width: 100vw;
+	 height: 100vh;
+	 display: absolute;
+	 justify-content: center;
+	 align-items: center;
+}
+ .arrow {
+	 width: 10px;
+	 height: 10px;
+	 border: 8px solid;
+	 border-color: #ccffac transparent transparent #ccffac;
+	 transform: rotate(-135deg);
+}
+ .arrow1 {
+	 width: 30px;
+	 height: 30px;
+	 border: 8px solid;
+	 border-color: #ccffac transparent transparent #ccffac;
+	 transform: rotate(135deg);
+}
+ .verticalArrowSliding {
+	 position: absolute;
+	 -webkit-animation: verticalSlide 4s linear infinite;
+	 animation: verticalSlide 4s linear infinite;
+}
+ .horizontalArrowSliding {
+	 position: absolute;
+	 -webkit-animation: horizontalSlide 4s linear infinite;
+	 animation: horizontalSlide 4s linear infinite;
+}
+ .delay1 {
+	 -webkit-animation-delay: 0.5s;
+	 animation-delay: 0.5s;
+}
+ .delay2 {
+	 -webkit-animation-delay: 1s;
+	 animation-delay: 1s;
+}
+ .delay3 {
+	 -webkit-animation-delay: 1.5s;
+	 animation-delay: 1.5s;
+}
+ .delay4 {
+	 -webkit-animation-delay: 2s;
+	 animation-delay: 2s;
+}
+ .delay5 {
+	 -webkit-animation-delay: 2.5s;
+	 animation-delay: 2.5s;
+}
+ .delay6 {
+	 -webkit-animation-delay: 3s;
+	 animation-delay: 3s;
+}
+ .delay7 {
+	 -webkit-animation-delay: 3.5s;
+	 animation-delay: 3.5s;
+}
+ @-webkit-keyframes verticalSlide {
+	 80% {
+		 opacity: 1;
+		 transform: translateY(300px);
+	}
+	 100% {
+		 opacity: 0;
+		 transform: translateY(900px);
+	}
+}
+ @keyframes verticalSlide {
+	 80% {
+		 opacity: 1;
+		 transform: translateY(300px);
+	}
+	 100% {
+		 opacity: 0;
+		 transform: translateY(400px);
+	}
+}
+ @-webkit-keyframes horizontalSlide {
+	 80% {
+		 opacity: 1;
+		 transform: translateX(300px);
+	}
+	 100% {
+		 opacity: 0;
+		 transform: translateX(900px);
+	}
+}
+ @keyframes horizontalSlide {
+	 80% {
+		 opacity: 1;
+		 transform: translateX(300px);
+	}
+	 100% {
+		 opacity: 0;
+		 transform: translateX(400px);
+	}
+}
+ .battery {
+	 position: absolute;
+	 top: -14rem;
+	 left: 35rem;
+	 width: 19rem;
+	 height: 30rem;
+	 border: 2rem solid #fff;
+}
+ .battery:before {
+	 content: '';
+	 display: block;
+	 height: 2.1rem;
+	 width: 7rem;
+	 margin: -5rem auto;
+	 background: #fff;
+}
+ .battery:after {
+	 position: absolute;
+	 bottom: 1rem;
+	 content: '';
+	 display: block;
+	 border: 6.5rem solid #ccffac;
+	 width: 0;
+	 margin: 0 1rem;
+	 animation: 6s ease-in-out 50 infinite;
+	 animation-direction: alternate;
+}
+ .numbers {
+	 border-bottom: 0.2rem solid #fff;
+	 color: #fff;
+	 font-size: 2rem;
+	 font-family: 'Arial';
+	 width: 6rem;
+	 margin-left: 20rem;
+	 margin-top: 15rem;
+}
+ .numbers:before {
+	 content: '';
+	 margin: 0 auto;
+	 animation: 6s ease-in-out 20 infinite;
+	 animation-direction: alternate;
+	 color: #fff;
+	 font-size: 3rem;
+	 font-family: 'Arial';
+}
+ .part1 {
+	 position: absolute;
+	 top: 370px;
+	 left: -105px;
+	 height: 150px;
+	 width: 230px;
+	 overflow: hidden;
+}
+ .part2 {
+	 height: 150px;
+	 width: 150px;
+	 border: 55px solid gray;
+	 border-radius: 50%;
+	 margin-top: -120px;
+	 margin-left: 100px;
+}
+ 
+.hills1{
+  top: 900px;
+  left:1000px;
   position: absolute;
-  left: 40%;
-  top: 30%;
+  width: 1136.25px;
+  height: 301.16px;
+
+  background: #82A7DF;
+  border-radius: 50% 60% 40% 50% / 100% 0% 0% 0%;
 }
 
-.hills {
-  width: 280px;
-  height: 180px;
-  background-color: $roofLight;
+.hills2{
   position: absolute;
-  top: 64px;
-  left: -75px;
-  opacity: 0.5;
-  border-radius: 300px 300px 0 0;
-  &:before, &:after {
-    content: '';
-    position: absolute;
-    background-color: $roofLight;
-    border-radius: 300px 300px 0 0;
-  }
-  &:before {
-    width: 250px;
-    height: 110px;
-    bottom: 0;
-    right: -120px;
-  }
-}
+  top: 1050px;
+  width: 558.86px;
+  height: 134.56px;
 
-.wheel {
-  z-index: 10;
-  width: 192px;
-  height: 192px;
-  position: absolute;
-  left: 8px;
-  top: 10px;
-  animation: spin $speed linear infinite;
-  animation-direction: reverse;
-}
-
-.windwheel {
-  position: absolute;
-  width: 8px;
-  height: 100px;
-  background-color: $wheel;
-  margin-right: 10px;
-  left: 92px;
-  &:before {
-    positioN: absolute;
-    content: "";
-    background-color: $wheel;
-    opacity: 0.7;
-    width: 15px;
-    height: 75px;
-    left: 8px;
-  }
-}
-
-.windwheel2 {
-  transform: rotate(90deg);
-  top: 46px;
-  left: 138px;
-  z-index: 40;
-}
-
-.windwheel3 {
-  transform: rotate(180deg);
-  top: 92px;
-}
-
-.windwheel4 {
-  transform: rotate(-90deg);
-  top: 46px;
-  left: 46px;
-  &:after {
-    position: absolute;
-    content: "";
-    background-color: $wheel;
-    opacity: 0.7;
-    width: 22px;
-    height: 22px;
-    bottom: -7px;
-    left: -7px;
-    transform: rotate(45deg);
-  }
-}
-
-.roof {
-  position: absolute;
-  z-index: 9;
-  left: 52px;
-  top: 75px;
-  width: 0; 
-  height: 0; 
-  border-left: 50px solid transparent;
-  border-right: 50px solid transparent;
-  border-bottom: 50px solid $roof;
-}
-
-.mill {
-  position: absolute;
-  left: 52px;
-  top: 124px;
-  width: 100px;
-  height: 120px;
-  background-color: $mill;
-}
-
-.house {
-  position: absolute; // place .house in middle
-  width: 120px; // shape is this width
-  height: 60px; // amd hight, we now have a box
-  background-color: $mill; // color is defined before
-  top: 164px; // place it 164px from the top of the screen 
-  left: 152px; // and this from the left
-  border-top: 20px solid $roof; // put a boarder on the top of the box that it solid with color roof
-  &:after {
-    content: "";
-    position: absolute;
-    background-color: $wheel;
-    width: 20px;
-    height: 30px;
-    bottom: 0;
-    left: 70px;
-    border-left: 5px solid $roofLight;
-  }
-}
-.bush {
-  position: relative;
-  top: 203px;
-  left: -60px;
-}
-.bush li {
-  float: left;
-  list-style: none;
-  background-color: $roof;
-  width: 40px;
-  height: 25px;
-  border-radius: 100px 100px 0 0
-}
-
-.bush2 {
-  top: 178px;
-  left: 160px;
-}
-
-.tree {
-  position: absolute;
-  left: -50px;
-  top: 120px;
-  li {
-    list-style: none;
-    background-color: $wheel;
-    width: 45px;
-    height: 45px;
-    border-radius: 100%;
-    margin-bottom: -15px;
-  }
-  &:after {
-    content: "";
-    position: absolute;
-    background-color: $roofLight;
-    width: 3px;
-    height: 80px;
-    top: 25px;
-    right: 21px;
-  }
-}
-
-.cloud {
-  position: absolute;
-  top: 40px;
-  left: -100px;
-  background-color: #fff;
-  height: 20px;
-  width: 40px;
-  z-index: 1000;
-  border-radius: 40px 40px 0 0;
-  opacity: 0.7;
-  animation: clouds 14s linear alternate infinite;
-  &:before {
-    content: "";
-    position: absolute;
-    background-color: #fff;
-    height: 30px;
-    width: 60px;
-    border-radius: 60px 60px 0 0;
-    bottom: 0;
-    right: 20px;
-  }
-}
-
-.cloud2{
-  height: 40px;
-  width: 80px;
-  top: -20px;
-  z-index: 1;
-  animation: clouds 24s linear alternate-reverse infinite;
-  &:before{
-    content: "";
-    position: absolute;
-    background-color: #fff;
-    height: 30px;
-    width: 60px;
-    border-radius: 60px 60px 0 0;
-    bottom: 0;
-    right: 40px;
-  }
-}
-
-// animations
-@keyframes spin {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes clouds {
-  100% {
-    transform: translateX(540px);
-  }
-}
-
-.verticalPipe{
-  position: absolute;
-  left: 85px;
-  top: 243px;
-  width: 44px;
-  height: 370px;
-  border-right: 5px solid gray;
-  border-left: 5px solid gray;
-  background-color: none;
-}
-
-.horizontalPipe{
-  position: absolute;
-  left: 210px;
-  top: 699px;
-  width: 370px;
-  height: 44px;
-  border-top: 5px solid gray;
-  border-bottom: 5px solid gray;
-  background-color: none;
-}
-
-#verticalArrowAnim {
-  margin-top: 210px;
-  margin-left: 98px;
-  width: 100vw;
-  height: 100vh;
-  display: absolute;
-  justify-content: center;
-  align-items: center;
-}
-
-#horizontalArrowAnim {
-  margin-top: 210px;
-  margin-left: 150px;
-  width: 100vw;
-  height: 100vh;
-  display: absolute;
-  justify-content: center;
-  align-items: center;
-}
-
-.arrow {
-  width: 10px;
-  height: 10px;
-  border: 8px solid;
-  border-color: #F3968A transparent transparent #F3968A;
-  transform: rotate(-135deg);
-}
-
-.arrow1 {
-  width: 10px;
-  height: 10px;
-  border: 8px solid;
-  border-color: #F3968A transparent transparent #F3968A;
-  transform: rotate(-45deg);
-}
-
-
-.verticalArrowSliding {
-  position: absolute;
-  -webkit-animation: verticalSlide $speed linear infinite; 
-          animation: verticalSlide $speed linear infinite;
-}
-
-.horizontalArrowSliding {
-  position: absolute;
-  -webkit-animation: horizontalSlide $speed linear infinite; 
-          animation: horizontalSlide $speed linear infinite;
-}
-
-.delay1 {
-  -webkit-animation-delay: $speed / 8 ; 
-    animation-delay: $speed / 8 ;
-}
-.delay2 {
-  -webkit-animation-delay: $speed / 4 ; 
-    animation-delay: $speed / 4 ;
-}
-.delay3 {
-  -webkit-animation-delay: ($speed * 3) / 8 ; 
-    animation-delay: ($speed * 3) / 8 ;
-}
-.delay4 {
-  -webkit-animation-delay: $speed / 2 ; 
-    animation-delay: $speed  / 2 ;
-}
-.delay5 {
-  -webkit-animation-delay: ($speed * 5) / 8 ; 
-    animation-delay: ($speed * 5) / 8 ;
-}
-.delay6 {
-  -webkit-animation-delay: ($speed * 6) / 8 ; 
-    animation-delay: ($speed * 6) / 8 ;
-}
-.delay7 {
-  -webkit-animation-delay: ($speed * 7) / 8 ; 
-    animation-delay: ($speed * 7) / 8 ;
-}
-
-@-webkit-keyframes verticalSlide {
-
-   80% { opacity:1; transform: translateY(300px); }	
-  100% { opacity:0; transform: translateY(900px); }	
-}
-@keyframes verticalSlide {
-
-   80% { opacity:1; transform: translateY(300px); }	
-  100% { opacity:0; transform: translateY(400px); }	
-}
-
-@-webkit-keyframes horizontalSlide {
-
-   80% { opacity:1; transform: translateX(300px); }	
-  100% { opacity:0; transform: translateX(900px); }	
-}
-@keyframes horizontalSlide {
-
-   80% { opacity:1; transform: translateX(300px); }	
-  100% { opacity:0; transform: translateX(400px); }	
-}
-
-
-.battery {
-  position: absolute;
-  top: 40rem;
-  width: 10rem;
-  height: 40rem;
-  border: 2rem solid #fff;
-  
-  &:before {
-    content: '';
-    display: block;
-    height: 2.1rem;
-    width: 7rem;
-    margin: -5rem auto;
-    background: #fff;
-  }
-  
-  &:after {
-    position: absolute;
-    bottom: 1rem;
-    content: '';
-    display: block;
-    border: 4rem solid #F3968A;
-    width: 0;
-    margin: 0 1rem;
-    animation: 6s ease-in-out charging infinite;
-    animation-direction: alternate;
-  }
-}
-
-.numbers {
-  border-bottom: .2rem solid #fff;
-  color: #fff;
-  font-size: 2rem;
-  font-family: 'Arial';
-  width: 6rem;
-  margin-left: 17rem;
-  margin-top: 20rem;
-  
-  &:before {
-    content: '';
-    margin: 0 auto;
-    animation: 6s ease-in-out chargingNumbers infinite;
-    animation-direction: alternate;
-    color: #fff;
-    font-size: 3rem;
-    font-family: 'Arial';
-  }
-}
-
-@keyframes chargingNumbers {
-  @for $i from 1 to 101 {
-    #{$i}% {
-      content: "#{$i}";
-    }
-  }
-}
-
-@keyframes charging {
-  @for $i from 1 to 101 {
-    #{$i}% {
-      height: #{$i / 100 * 30}rem;
-    }
-  }
-}
-
-.c {
-  position: absolute;
-  top: 370px;
-  left: -105px;
-  height: 150px;
-  width: 230px;
-  overflow: hidden;
-}
-.b {
-  height: 150px;
-  width: 150px;
-  border: 55px solid gray;
-  border-radius: 50%;
-  margin-top: -120px;
-  margin-left: 100px;
+  background: #82A7DF;
+  border-radius: 50% 60% 40% 50% / 0% 100% 0% 0%;
 }

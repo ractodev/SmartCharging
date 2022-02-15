@@ -560,6 +560,146 @@ reactive_power_display = dbc.Card(
     style={"height": "95%"},
 )
 
+flowView = html.Div(
+    children=[
+        html.Div(
+            id="horizontalArrowAnim1",
+            children=[
+                html.Div(
+                    className="horizontalArrowSliding",
+                    children=[
+                        html.Div(className="arrow1")
+                    ],
+                ),
+                html.Div(
+                    className="horizontalArrowSliding delay1",
+                    children=[
+                        html.Div(className="arrow1")
+                    ],
+                ),
+                html.Div(
+                    className="horizontalArrowSliding delay2",
+                    children=[
+                        html.Div(className="arrow1")
+                    ],
+                ),
+                html.Div(
+                    className="horizontalArrowSliding delay3",
+                    children=[
+                        html.Div(className="arrow1")
+                    ],
+                ),
+                html.Div(
+                    className="horizontalArrowSliding delay4",
+                    children=[
+                        html.Div(className="arrow1")
+                    ],
+                ),
+                html.Div(
+                    className="horizontalArrowSliding delay5",
+                    children=[
+                        html.Div(className="arrow1")
+                    ],
+                ),
+                html.Div(
+                    className="horizontalArrowSliding delay6",
+                    children=[
+                        html.Div(className="arrow1")
+                    ],
+                ),
+                html.Div(
+                    className="horizontalArrowSliding delay7",
+                    children=[
+                        html.Div(className="arrow1")
+                    ],
+                )
+            ],
+        ),
+        html.Div(
+            id="horizontalArrowAnim2",
+            children=[
+                html.Div(
+                    className="horizontalArrowSliding",
+                    children=[
+                        html.Div(className="arrow1")
+                    ],
+                ),
+                html.Div(
+                    className="horizontalArrowSliding delay1",
+                    children=[
+                        html.Div(className="arrow1")
+                    ],
+                ),
+                html.Div(
+                    className="horizontalArrowSliding delay2",
+                    children=[
+                        html.Div(className="arrow1")
+                    ],
+                ),
+                html.Div(
+                    className="horizontalArrowSliding delay3",
+                    children=[
+                        html.Div(className="arrow1")
+                    ],
+                ),
+                html.Div(
+                    className="horizontalArrowSliding delay4",
+                    children=[
+                        html.Div(className="arrow1")
+                    ],
+                ),
+                html.Div(
+                    className="horizontalArrowSliding delay5",
+                    children=[
+                        html.Div(className="arrow1")
+                    ],
+                ),
+                html.Div(
+                    className="horizontalArrowSliding delay6",
+                    children=[
+                        html.Div(className="arrow1")
+                    ],
+                ),
+                html.Div(
+                    className="horizontalArrowSliding delay7",
+                    children=[
+                        html.Div(className="arrow1")
+                    ],
+                )
+            ],
+        )
+    ]
+)
+
+hills = html.Div(
+    children=[
+        html.Div(className="hills1"),
+        html.Div(className="hills2"),
+    ]
+)
+
+windmillView = html.Div(
+    className="windmill",
+    children=[
+        html.Div(
+            className="battery"
+        ),
+        html.Div(className="house"),
+        html.Div(className="mill"),
+        html.Div(className="roof"),
+        html.Div(
+            className="wheel",
+            children=[
+                html.Div(className="windwheel"),
+                html.Div(className="windwheel windwheel2"),
+                html.Div(className="windwheel windwheel3"),
+                html.Div(className="windwheel windwheel4"),
+            ]
+        ),
+
+    ],
+)
+
 # windmill = html.Iframe(src="https://codepen.io/wolf019/embed/OJOpeGV",
 #                        style={"height":"1000", "width": "100%", "scrolling":"no", "frameborder":"no", "loading":"lazy", "allowtransparency":"true", "allowfullscreen":"true"})
 # <iframe height="300" style="width: 100%;" scrolling="no" title="Codevember: pure CSS windmill" src="https://codepen.io/wolf019/embed/OJOpeGV?default-tab=html%2Cresult" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
@@ -574,82 +714,9 @@ app.layout = dbc.Container(
     fluid=True,
     children=[
         logo(app),
-        # windmill,
-        dbc.Row(
-            [
-                dbc.Col(graphs, xs=10, md=10, lg=10, width=10),
-                dbc.Col(
-                    [
-                        dbc.Row(
-                            dbc.Col(
-                                xs=12, md=12, lg=12, width=12
-                                # rul_estimation_indicator, xs=12, md=12, lg=12, width=12
-                            )
-                        ),
-                        dbc.Row(dbc.Col(info_box, xs=12,
-                                        md=12, lg=12, width=12)),
-                        dbc.Row(
-                            dbc.Col(
-                                # get_new_information_button,
-                                xs=12,
-                                md=12,
-                                lg=12,
-                                width=12,
-                            )
-                        ),
-                        dbc.Row(dbc.Col(xs=12, md=12, lg=12, width=12)),
-                        # dbc.Row(dbc.Col(predict_button, xs=12, md=12, lg=12, width=12)),
-                    ]
-                ),
-            ],
-            justify="start",
-            style={"display": "flex", "marginBottom": "-3%"},
-        ),
-        dbc.Row(
-            [
-                dbc.Col(
-                    active_power_display,
-                    xs=gauge_size,
-                    md=gauge_size,
-                    lg=gauge_size,
-                    width=gauge_size,
-                ),
-                dbc.Col(
-                    active_power_from_wind_display,
-                    xs=gauge_size,
-                    md=gauge_size,
-                    lg=gauge_size,
-                    width=gauge_size,
-                ),
-                dbc.Col(
-                    reactive_power_display,
-                    xs=gauge_size,
-                    md=gauge_size,
-                    lg=gauge_size,
-                    width=gauge_size,
-                ),
-                dbc.Col(
-                    wind_speed_information,
-                    xs=gauge_size,
-                    md=gauge_size,
-                    lg=gauge_size,
-                    width=gauge_size,
-                ),
-                dbc.Col(
-                    blade_angle_display,
-                    xs=gauge_size,
-                    md=gauge_size,
-                    lg=gauge_size,
-                    width=gauge_size,
-                ),
-            ],
-            style={"marginTop": "3%"},
-        ),
-        dcc.Interval(
-            id='interval-component',
-            interval=1*100,  # in milliseconds
-            n_intervals=1
-        )
+        hills,
+        windmillView,
+        flowView,
     ],
 )
 
