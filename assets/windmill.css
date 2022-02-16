@@ -1,5 +1,14 @@
 body {
-	 background-color: #a3c0ec;
+	 background-color: #F2F7FF;
+}
+
+.bottom-view{
+	position: relative;
+  bottom: 35rem; 
+  left: 0px;
+	width: 1000px;
+	height: 450px;
+  background-color: #a3c0ec;
 }
  .windmill {
 	 position: absolute;
@@ -408,22 +417,44 @@ body {
 }
  
 .hills1{
-  top: 900px;
-  left:1000px;
+  top: 124px;
+  left: 490px;
   position: absolute;
-  width: 1136.25px;
-  height: 301.16px;
+  width: 1636.25px;
+  height: 501.16px;
 
   background: #82A7DF;
-  border-radius: 50% 60% 40% 50% / 100% 0% 0% 0%;
+  border-radius: 80% 20% 20% 10% / 100% 0% 0% 0%;
 }
 
 .hills2{
   position: absolute;
-  top: 1050px;
-  width: 558.86px;
-  height: 134.56px;
+  top: 440px;
+  width: 758.86px;
+  height: 184.56px;
 
   background: #82A7DF;
   border-radius: 50% 60% 40% 50% / 0% 100% 0% 0%;
+}
+
+.chargeArea{
+  top: 250px;
+  left: 1350px;
+  position: absolute;
+  width: 700px;
+  height: 320px;
+  background: linear-gradient(90deg, #ccffac 50%, transparent 50%), linear-gradient(90deg, #ccffac 50%, transparent 50%), linear-gradient(0deg, #ccffac 50%, transparent 50%), linear-gradient(0deg, #ccffac 50%, transparent 50%);
+  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  background-size: 15px 4px, 15px 4px, 4px 15px, 4px 15px;
+  background-position: left top, right bottom, left bottom, right   top;
+  animation: border-dance 0.5s infinite linear;
+}
+
+@keyframes border-dance {
+    0% {
+      background-position: left top, right bottom, left bottom, right   top;
+    }
+    100% {
+      background-position: left 15px top, right 15px bottom , left bottom 15px , right   top 15px;
+    }
 }

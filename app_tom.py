@@ -1,4 +1,5 @@
 from cmath import isnan
+from pydoc import classname
 import pandas as pd
 import dash
 import dash_bootstrap_components as dbc
@@ -560,6 +561,8 @@ reactive_power_display = dbc.Card(
     style={"height": "95%"},
 )
 
+# TODO
+# Remove width and height overflow
 flowView = html.Div(
     children=[
         html.Div(
@@ -671,6 +674,10 @@ flowView = html.Div(
     ]
 )
 
+chargeView = html.Div(
+    className="chargeArea"
+)
+
 hills = html.Div(
     children=[
         html.Div(className="hills1"),
@@ -700,13 +707,15 @@ windmillView = html.Div(
     ],
 )
 
-# windmill = html.Iframe(src="https://codepen.io/wolf019/embed/OJOpeGV",
-#                        style={"height":"1000", "width": "100%", "scrolling":"no", "frameborder":"no", "loading":"lazy", "allowtransparency":"true", "allowfullscreen":"true"})
-# <iframe height="300" style="width: 100%;" scrolling="no" title="Codevember: pure CSS windmill" src="https://codepen.io/wolf019/embed/OJOpeGV?default-tab=html%2Cresult" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
-#   See the Pen <a href="https://codepen.io/wolf019/pen/OJOpeGV">
-#   Codevember: pure CSS windmill</a> by Tom Axberg (<a href="https://codepen.io/wolf019">@wolf019</a>)
-#   on <a href="https://codepen.io">CodePen</a>.
-# </iframe>
+bottomView = html.Div(
+    className="bottom-view",
+    children=[
+        hills,
+        windmillView,
+        flowView,
+        chargeView
+    ]
+)
 
 gauge_size = "auto"
 # where everything gets put into the page
@@ -714,90 +723,9 @@ app.layout = dbc.Container(
     fluid=True,
     children=[
         logo(app),
-        hills,
-        windmillView,
-        flowView,
+        bottomView,
     ],
 )
-
-
-def fig_update_layout(fig):
-    fig.update_layout(
-        xaxis=dict(
-            showline=False,
-            showgrid=False,
-            showticklabels=True,
-            zeroline=False,
-            gridcolor="#636363",
-            linecolor="rgb(204, 204, 204)",
-            linewidth=2,
-            tickfont=dict(family="Arial", size=12, color="white",),
-            title=dict(font=dict(family="Arial", size=24, color="#fec036"),),
-        ),
-        yaxis=dict(
-            showline=False,
-            showgrid=False,
-            showticklabels=True,
-            zeroline=False,
-            gridcolor="#636363",
-            linecolor="rgb(204, 204, 204)",
-            linewidth=2,
-            tickfont=dict(family="Arial", size=12, color="white",),
-            title=dict(font=dict(family="Arial", size=24, color="#fec036"),),
-        ),
-        autosize=True,
-        margin=dict(autoexpand=True, l=50, b=40, r=35, t=30),
-        showlegend=False,
-        paper_bgcolor="black",
-        plot_bgcolor="black",
-        title=dict(
-            font=dict(family="Arial", size=32, color="darkgray"),
-            xanchor="center",
-            yanchor="top",
-            y=1,
-            x=0.5,
-        ),
-    )
-    return fig
-
-# @app.callback(
-#     [
-#         Output("Main-Graph", "figure"),
-#         Output("Info-Textbox", "value"),
-#         # Output("charge port 2", "value"),
-#         # Output("date-picker", "initial_visible_month"),
-#     ],
-#     [
-#         Input("date-picker", "start_date"),
-#         Input("date-picker", "end_date"),
-#     ],
-# )
-# def update_graph(start_date, end_date):
-#     if start_date is None or end_date is None:
-#         start_date = "2021-11-03"
-#         end_date = "2021-11-06"
-#     # print(start_date)
-#     # print(end_date)
-#     start_date_object = datetime.strptime(start_date, "%Y-%m-%d")
-#     end_date_object = datetime.strptime(end_date, "%Y-%m-%d")
-#     mask = (df['Interval'] > start_date_object) & (df['Interval'] <= end_date_object)
-#     # print(mask)
-#     df_within_dates = df.loc[mask]
-#     # print(df_within_dates)
-#     information_update = (
-#         "test for when it is updated, start date is " + str(start_date) + ", end date is : " + str(end_date)
-#     )
-#     fig = go.Figure(
-#         data=[
-#             go.Scatter(
-#                 x=df_within_dates['Interval'],
-#                 y=df_within_dates['ams-a-control-in-stateOfCharge/AvgValue.avg'],
-#             )
-#         ]
-#     )
-#     # bat = int(df_within_dates.iloc[-1]*100)
-#     fig = fig_update_layout(fig)
-#     return fig, information_update
 
 
 @app.callback(
