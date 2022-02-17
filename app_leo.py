@@ -1,12 +1,11 @@
 from cmath import isnan
-from pydoc import classname
+from turtle import width
 import pandas as pd
 import dash
 import dash_bootstrap_components as dbc
 from dash import dcc
 from dash import html
 import dash_daq as daq
-from dash.exceptions import PreventUpdate
 
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output, State
@@ -17,7 +16,7 @@ app = dash.Dash(
     __name__,
     meta_tags=[{"name": "viewport",
                 "content": "width=device-width, initial-scale=1"}],
-    external_stylesheets=[dbc.themes.SUPERHERO],
+    external_stylesheets=[dbc.themes.SUPERHERO],update_title=None
 )
 server = app.server
 app.title = "Vattenfall Smart Charging"
@@ -78,6 +77,184 @@ df['Interval (UTC)'] = df['Interval (UTC)'].apply(
 # print(df)
 # df, df_button, x_test, y_test = data_preprocessing()
 
+# predict_button = dbc.Card(
+#     className="mt-auto",
+#     children=[
+#         dbc.CardBody(
+#             [
+#                 html.Div(
+#                     [
+#                         dbc.Button(
+#                             "Predict",
+#                             id="predict-button",
+#                             color="#fec036",
+#                             size="lg",
+#                             style={"color": "#fec036"},
+#                         ),
+#                     ]
+#                 )
+#             ],
+#             style={
+#                 "text-align": "center",
+#                 "backgroundColor": "black",
+#                 "border-radius": "1px",
+#                 "border-width": "5px",
+#                 "border-top": "1px solid rgb(216, 216, 216)",
+#                 "border-left": "1px solid rgb(216, 216, 216)",
+#                 "border-right": "1px solid rgb(216, 216, 216)",
+#                 "border-bottom": "1px solid rgb(216, 216, 216)",
+#             },
+#         )
+#     ],
+# )
+
+# get_new_information_button = dbc.Card(
+#     className="mt-auto",
+#     children=[
+#         dbc.CardBody(
+#             [
+#                 html.Div(
+#                     [
+#                         dbc.Button(
+#                             "Get New Data",
+#                             id="get-new-info-button",
+#                             color="#fec036",
+#                             size="lg",
+#                             style={"color": "#fec036"},
+#                         ),
+#                     ]
+#                 )
+#             ],
+#             style={
+#                 "text-align": "center",
+#                 "backgroundColor": "black",
+#                 "border-radius": "1px",
+#                 "border-width": "5px",
+#                 "border-top": "1px solid rgb(216, 216, 216)",
+#                 "border-left": "1px solid rgb(216, 216, 216)",
+#                 "border-right": "1px solid rgb(216, 216, 216)",
+#                 "border-bottom": "1px solid rgb(216, 216, 216)",
+#             },
+#         )
+#     ],
+# )
+
+
+graphs = dbc.Card(
+    children=[
+        dbc.CardBody(
+            [
+                html.Div(
+                    [
+                        dcc.Graph(
+                            id="Main-Graph",
+                            figure={
+                                "layout": {
+                                    "margin": {"t": 30, "r": 35, "b": 40, "l": 50},
+                                    "xaxis": {
+                                        "dtick": 5,
+                                        "gridcolor": "#636363",
+                                        "showline": False,
+                                    },
+                                    "yaxis": {"showgrid": False, "showline": False},
+                                    "plot_bgcolor": "black",
+                                    "paper_bgcolor": "black",
+                                    "font": {"color": "gray"},
+                                },
+                            },
+                            config={"displayModeBar": False},
+                        ),
+                        html.Pre(id="update-on-click-data"),
+                    ],
+                    style={"width": "98%", "display": "inline-block"},
+                ),
+                # html.Div(
+                #     [
+                #         dcc.Dropdown(
+                #             id="feature-dropdown",
+                #             options=[
+                #                 {"label": label, "value": label} for label in df.columns
+                #             ],
+                #             value="",
+                #             multi=False,
+                #             searchable=False,
+                #         )
+                #     ],
+                #     style={
+                #         "width": "33%",
+                #         "display": "inline-block",
+                #         "color": "black",
+                #     },
+                # ),
+                html.Div(
+                    [
+                        dcc.DatePickerRange(
+                            id="date-picker",
+                            min_date_allowed=pd.Series.min(df['Interval']),
+                            max_date_allowed=pd.Series.max(df['Interval']),
+                            # min_date_allowed=date(2000, 5, 1),
+                            # max_date_allowed=date.today(),
+                            initial_visible_month=date.today(),
+                            start_date_placeholder_text="Start Period",
+                            end_date_placeholder_text="End Period",
+                            calendar_orientation="vertical",
+                        ),
+                        html.Div(id="output-container-date-picker-range"),
+                    ],
+                    style={
+                        "vertical-align": "top",
+                        "position": "absolute",
+                        "right": "3%",
+                        "float": "right",
+                        "display": "inline-block",
+                        "color": "black",
+                    },
+                ),
+            ],
+            style={
+                "backgroundColor": "black",
+                "border-radius": "1px",
+                "border-width": "5px",
+                "border-top": "1px solid rgb(216, 216, 216)",
+            },
+        )
+    ]  # , outline=False
+)
+
+# rul_estimation_indicator = dbc.Card(
+#     children=[
+#         dbc.CardHeader(
+#             "System RUL Estimation (days)",
+#             style={
+#                 "text-align": "center",
+#                 "color": "white",
+#                 "backgroundColor": "black",
+#                 "border-radius": "1px",
+#                 "border-width": "5px",
+#                 "border-top": "1px solid rgb(216, 216, 216)",
+#             },
+#         ),
+#         dbc.CardBody(
+#             [
+#                 daq.LEDDisplay(
+#                     id="rul-estimation-indicator-led",
+#                     size=24,
+#                     color="#fec036",
+#                     style={"color": "#black"},
+#                     backgroundColor="#2b2b2b",
+#                     value="0.0",
+#                 )
+#             ],
+#             style={
+#                 "text-align": "center",
+#                 "backgroundColor": "black",
+#                 "border-radius": "1px",
+#                 "border-width": "5px",
+#                 "border-top": "1px solid rgb(216, 216, 216)",
+#             },
+#         ),
+#     ]
+# )
 
 info_box = dbc.Card(
     children=[
@@ -384,8 +561,6 @@ reactive_power_display = dbc.Card(
     style={"height": "95%"},
 )
 
-# TODO
-# Remove width and height overflow
 flowView = html.Div(
     children=[
         html.Div(
@@ -497,10 +672,6 @@ flowView = html.Div(
     ]
 )
 
-chargeView = html.Div(
-    className="chargeArea"
-)
-
 hills = html.Div(
     children=[
         html.Div(className="hills1"),
@@ -512,8 +683,14 @@ windmillView = html.Div(
     className="windmill",
     children=[
         html.Div(
-            id="battery",
-            children=[html.Div(id="battery-fill")],
+            html.Div(id="battery", style={'position': 'absolute', 'top': '-14rem', 'left': '35rem', 'width': '20rem', 'height': '30rem',	'border': '2rem solid #fff'},
+                     children=[
+                html.Div(id="battery_before", style={"content": '', "display": "block", "height": "2.1rem", "width": "7rem", "margin": "-5rem auto", "background": "#fff"},
+                         children=[
+                    html.Div(id="battery_after", style={"position": "absolute", "bottom": "1rem", "content": '', "display": "block", "border": "6.5rem solid #ccffac",
+                                                        "width": "1rem", "height": "1rem", "margin": "0 1rem", "animation": "6s ease-in-out 50 infinite"}),
+                ]),
+            ]),
         ),
         html.Div(className="house"),
         html.Div(className="mill"),
@@ -527,18 +704,7 @@ windmillView = html.Div(
                 html.Div(className="windwheel windwheel4"),
             ]
         ),
-
     ],
-)
-
-bottomView = html.Div(
-    className="bottom-view",
-    children=[
-        hills,
-        windmillView,
-        flowView,
-        chargeView
-    ]
 )
 
 gauge_size = "auto"
@@ -547,12 +713,18 @@ app.layout = dbc.Container(
     fluid=True,
     children=[
         logo(app),
-        html.Button('Click here to fill', id='filling', n_clicks=0),
-        html.Button('Click here to empty', id='empty', n_clicks=0),
-        html.Div(id="clicks"),
-        bottomView,
+        hills,
+        graphs,
+        windmillView,
+        flowView,
+        dcc.Interval(
+            id='interval-component',
+            interval=1*100,  # in milliseconds
+            n_intervals=1
+        )
     ],
 )
+
 
 def fig_update_layout(fig):
     fig.update_layout(
@@ -593,17 +765,85 @@ def fig_update_layout(fig):
     )
     return fig
 
-def update_graph_timer(index):
+# @app.callback(
+#     [
+#         Output("Main-Graph", "figure"),
+#         Output("Info-Textbox", "value"),
+#         # Output("charge port 2", "value"),
+#         # Output("date-picker", "initial_visible_month"),
+#     ],
+#     [
+#         Input("date-picker", "start_date"),
+#         Input("date-picker", "end_date"),
+#     ],
+# )
+# def update_graph(start_date, end_date):
+#     if start_date is None or end_date is None:
+#         start_date = "2021-11-03"
+#         end_date = "2021-11-06"
+#     # print(start_date)
+#     # print(end_date)
+#     start_date_object = datetime.strptime(start_date, "%Y-%m-%d")
+#     end_date_object = datetime.strptime(end_date, "%Y-%m-%d")
+#     mask = (df['Interval'] > start_date_object) & (df['Interval'] <= end_date_object)
+#     # print(mask)
+#     df_within_dates = df.loc[mask]
+#     # print(df_within_dates)
+#     information_update = (
+#         "test for when it is updated, start date is " + str(start_date) + ", end date is : " + str(end_date)
+#     )
+#     fig = go.Figure(
+#         data=[
+#             go.Scatter(
+#                 x=df_within_dates['Interval'],
+#                 y=df_within_dates['ams-a-control-in-stateOfCharge/AvgValue.avg'],
+#             )
+#         ]
+#     )
+#     # bat = int(df_within_dates.iloc[-1]*100)
+#     fig = fig_update_layout(fig)
+#     return fig, information_update
+
+
+@app.callback(
+
+    Output("battery_after", "style"),
+
+    [
+        Input('interval-component', 'n_intervals'),
+    ],
+)
+def update_battery_level(index):
+    index = (index*10) % 1000
+    # index = index + 10
+    # print(index)
+    level = df.iloc[index,3] 
+
+    # print(level)
+    # x = app.css.get_all_css
+    # print(x)
+
+    # battery.style = {'position': 'absolute','top': '-14rem', 'left': '35rem','width': str(index)+'rem','height': '30rem', 'border': '2rem solid #fff'}
+    return {'position': 'absolute', 'bottom': '1rem','left':'1rem', 'background-color': '#ccffac', 'width': '12rem', 'height': str(level*25)+'rem', 'margin': '0rem 1rem', 'animation': '6s ease-in-out 50 infinite'}
+
+@app.callback(
+        Output("Main-Graph", "figure"),
+    [
+        Input("date-picker", "start_date"),
+        Input("date-picker", "end_date"),
+        Input('interval-component', 'n_intervals'),
+    ],
+)
+def update_graph_timer(start_date, end_date, index):
     df.style
     # print(index)
-    index = index % 1000
+    index = (index*10) % 1000
     if index == 0:
         index = 1
     tmp_data = df.iloc[0:index, 3]
     information_update = (
         "test for when it is updated, index = " + str(index)
     )
-
     fig = go.Figure(
         data=[
             go.Scatter(
@@ -612,34 +852,20 @@ def update_graph_timer(index):
             )
         ]
     )
-    bat = int(tmp_data.iloc[index-1]*100)
-    # print(bat)
-    index = (index + 1) % 1000
     fig = fig_update_layout(fig)
-    return fig, information_update, bat
+    return fig
 
 
 @app.callback(
-    Output('battery-fill', 'style'),
-    Input(component_id='filling', component_property='n_clicks'),
-    Input(component_id='empty', component_property='boom')
+    [
+        Output("active-power-information-gauge", "value"),
+        Output("active-power-from-wind-information-gauge", "value"),
+        Output("wind-power-information-gauge", "value"),
+        Output("reactive-power-information-gauge", "value"),
+        Output("blade-angle-information-gauge", "value"),
+    ],
+    Input("Main-Graph", "clickData"),
 )
-def update_output(n_clicks, boom):
-
-    ctx = dash.callback_context
-
-    if not ctx.triggered:
-        raise PreventUpdate
-    else:
-
-        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-
-        if button_id == 'filling':
-            return {'height': str(5*n_clicks) + 'px'}
-        elif button_id == 'empty':
-            return {'height': '0px'}
-
-
 def display_click_data(clickData):
     if clickData:
         data_time = clickData["points"][0]["x"]
