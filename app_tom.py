@@ -65,7 +65,7 @@ def logo(app):
             dbc.Row([title]),
             dbc.Row([info_about_app])],
             width={'size': 3}),
-        dbc.Col([logo_image], width={'size': 2})], justify='between'
+        dbc.Col([logo_image], width={'size': 4})], justify='between'
     )
 
 
@@ -535,8 +535,8 @@ bottomView = html.Div(
     className="bottom-view",
     children=[
         hills,
-        windmillView,
         flowView,
+        windmillView,
         chargeView
     ]
 )
@@ -549,7 +549,6 @@ app.layout = dbc.Container(
         logo(app),
         html.Button('Click here to fill', id='filling', n_clicks=0),
         html.Button('Click here to empty', id='empty', n_clicks=0),
-        html.Div(id="clicks"),
         bottomView,
     ],
 )
@@ -583,10 +582,10 @@ def update_graph_timer(index):
 
 @app.callback(
     Output('battery-fill', 'style'),
-    Input(component_id='filling', component_property='n_clicks'),
-    Input(component_id='empty', component_property='boom')
+    [Input(component_id='filling', component_property='n_clicks'),
+     Input(component_id='empty', component_property='value')]
 )
-def update_output(n_clicks, boom):
+def update_output(n_clicks, value):
 
     ctx = dash.callback_context
 
@@ -598,8 +597,9 @@ def update_output(n_clicks, boom):
 
         if button_id == 'filling':
             return {'height': str(5*n_clicks) + 'px'}
-        elif button_id == 'empty':
-            return {'height': '0px'}
+        else:
+            n_clicks = 0
+            return {'height': str(5*n_clicks) + 'px'}
 
 
 def display_click_data(clickData):
