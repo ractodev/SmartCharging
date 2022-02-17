@@ -619,25 +619,25 @@ def update_graph_timer(index):
     return fig, information_update, bat
 
 
-@app.callback(
-    Output('battery-fill', 'style'),
-    Input(component_id='filling', component_property='n_clicks'),
-    Input(component_id='empty', component_property='boom')
-)
-def update_output(n_clicks, boom):
+# @app.callback(
+#     Output('battery-fill', 'style'),
+#     Input(component_id='filling', component_property='n_clicks'),
+#     Input(component_id='empty', component_property='boom')
+# )
+# def update_output(n_clicks, boom):
 
-    ctx = dash.callback_context
+#     ctx = dash.callback_context
 
-    if not ctx.triggered:
-        raise PreventUpdate
-    else:
+#     if not ctx.triggered:
+#         raise PreventUpdate
+#     else:
 
-        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+#         button_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
-        if button_id == 'filling':
-            return {'height': str(5*n_clicks) + 'px'}
-        elif button_id == 'empty':
-            return {'height': '0px'}
+#         if button_id == 'filling':
+#             return {'height': str(5*n_clicks) + 'px'}
+#         elif button_id == 'empty':
+#             return {'height': '0px'}
 
 
 def display_click_data(clickData):
