@@ -348,7 +348,7 @@ def fig_update_layout(fig):
 
 @app.callback(
 
-    Output("battery_fill", "style"),
+    Output("battery-fill", "style"),
 
     [
         Input('interval-component', 'n_intervals'),

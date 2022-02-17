@@ -16,11 +16,11 @@ app = dash.Dash(
     __name__,
     meta_tags=[{"name": "viewport",
                 "content": "width=device-width, initial-scale=1"}],
-    external_stylesheets=[dbc.themes.SUPERHERO],update_title=None
+    external_stylesheets=[dbc.themes.SUPERHERO], update_title=None
 )
 server = app.server
 app.title = "Vattenfall Smart Charging"
-index = 0
+width_data_points = 10
 
 
 def logo(app):
@@ -704,6 +704,26 @@ windmillView = html.Div(
                 html.Div(className="windwheel windwheel4"),
             ]
         ),
+        html.Div(
+          children=[
+              html.Div(id='car_0_0'),
+              html.Div(id='car_0_1'),
+              html.Div(id='car_1_0'),
+              html.Div(id='car_1_1'),
+              html.Div(id='car_2_0'),
+              html.Div(id='car_2_1'),
+              html.Div(id='car_3_0'),
+              html.Div(id='car_3_1'),
+              html.Div(id='car_4_0'),
+              html.Div(id='car_4_1'),
+              html.Div(id='car_5_0'),
+              html.Div(id='car_5_1'),
+              html.Div(id='car_6_0'),
+              html.Div(id='car_6_1'),
+              html.Div(id='car_7_0'),
+              html.Div(id='car_7_1'),
+          ]  
+        )
     ],
 )
 
@@ -719,7 +739,7 @@ app.layout = dbc.Container(
         flowView,
         dcc.Interval(
             id='interval-component',
-            interval=1*100,  # in milliseconds
+            interval=1*500,  # in milliseconds
             n_intervals=1
         )
     ],
@@ -806,6 +826,42 @@ def fig_update_layout(fig):
 
 
 @app.callback(
+    [
+        Output('car_0_0', 'style'),
+        Output('car_0_1', 'style'),
+        Output('car_1_0', 'style'),
+        Output('car_1_1', 'style'),
+        Output('car_2_0', 'style'),
+        Output('car_2_1', 'style'),
+        Output('car_3_0', 'style'),
+        Output('car_3_1', 'style'),
+        Output('car_4_0', 'style'),
+        Output('car_4_1', 'style'),
+        Output('car_5_0', 'style'),
+        Output('car_5_1', 'style'),
+        Output('car_6_0', 'style'),
+        Output('car_6_1', 'style'),
+        Output('car_7_0', 'style'),
+        Output('car_7_1', 'style'),
+    ],
+    [
+        Input('interval-component', 'n_intervals'),
+    ]
+)
+def update_cars(index):
+    index = (index*width_data_points) %1000
+    cars_connected_avg = df.iloc[:, -48::3]
+    output = list()
+    for i in range(0,16):
+        car_i = cars_connected_avg.iloc[index,i]
+        # print(str(car_i)+"index :"+str(index))
+        if car_i != 0.0:
+            output.append({'background-color': '#ccffac'})
+        else:  
+            output.append({'background-color': '#595656'})
+    return output
+
+@app.callback(
 
     Output("battery_after", "style"),
 
@@ -814,20 +870,21 @@ def fig_update_layout(fig):
     ],
 )
 def update_battery_level(index):
-    index = (index*10) % 1000
+    index = (index*width_data_points) % 1000
     # index = index + 10
     # print(index)
-    level = df.iloc[index,3] 
+    level = df.iloc[index, 3]
 
     # print(level)
     # x = app.css.get_all_css
     # print(x)
 
     # battery.style = {'position': 'absolute','top': '-14rem', 'left': '35rem','width': str(index)+'rem','height': '30rem', 'border': '2rem solid #fff'}
-    return {'position': 'absolute', 'bottom': '1rem','left':'1rem', 'background-color': '#ccffac', 'width': '12rem', 'height': str(level*25)+'rem', 'margin': '0rem 1rem', 'animation': '6s ease-in-out 50 infinite'}
+    return {'position': 'absolute', 'bottom': '1rem', 'left': '1rem', 'background-color': '#ccffac', 'width': '12rem', 'height': str(level*25)+'rem', 'margin': '0rem 1rem', 'animation': '6s ease-in-out 50 infinite'}
+
 
 @app.callback(
-        Output("Main-Graph", "figure"),
+    Output("Main-Graph", "figure"),
     [
         Input("date-picker", "start_date"),
         Input("date-picker", "end_date"),
@@ -837,7 +894,7 @@ def update_battery_level(index):
 def update_graph_timer(start_date, end_date, index):
     df.style
     # print(index)
-    index = (index*10) % 1000
+    index = (index*width_data_points) % 1000
     if index == 0:
         index = 1
     tmp_data = df.iloc[0:index, 3]

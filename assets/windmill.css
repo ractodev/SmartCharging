@@ -431,6 +431,158 @@ body {
     margin: 0 1rem;
 }
 
+#car_0_0 {
+    position: absolute;
+    background-color: #414c68;
+    left: 70rem;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_0_1 {
+    position: absolute;
+    background-color: #4e5057;
+    left: 74.1rem;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_1_0 {
+    position: absolute;
+    background-color: #414c68;
+    left: 70rem;
+    bottom: 4rem;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_1_1 {
+    position: absolute;
+    background-color: #414c68;
+    left: 74.1rem;
+    bottom: 4rem;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_2_0 {
+    position: absolute;
+    background-color: #414c68;
+    left: 80rem;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_2_1 {
+    position: absolute;
+    background-color: #414c68;
+    left: 84.1rem;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_3_0 {
+    position: absolute;
+    background-color: #414c68;
+    left: 80rem;
+    bottom: 4rem;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_3_1 {
+    position: absolute;
+    background-color: #414c68;
+    left: 84.1rem;
+    bottom: 4rem;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_4_0 {
+    position: absolute;
+    background-color: #414c68;
+    left: 90rem;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_4_1 {
+    position: absolute;
+    background-color: #414c68;
+    left: 94.1rem;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_5_0 {
+    position: absolute;
+    background-color: #414c68;
+    left: 90rem;
+    bottom: 4rem;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_5_1 {
+    position: absolute;
+    background-color: #414c68;
+    left: 94.1rem;
+    bottom: 4rem;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_6_0 {
+    position: absolute;
+    background-color: #414c68;
+    left: 100rem;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_6_1 {
+    position: absolute;
+    background-color: #414c68;
+    left: 104.1rem;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_7_0 {
+    position: absolute;
+    background-color: #414c68;
+    left: 100rem;
+    bottom: 4rem;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_7_1 {
+    position: absolute;
+    background-color: #414c68;
+    left: 104.1rem;
+    bottom: 4rem;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
 .numbers {
     border-bottom: 0.2rem solid #fff;
     color: #fff;
