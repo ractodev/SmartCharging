@@ -21,6 +21,7 @@ app = dash.Dash(
 server = app.server
 app.title = "Vattenfall Smart Charging"
 width_data_points = 10
+speed = 50000
 
 
 def logo(app):
@@ -110,7 +111,7 @@ graphs = dbc.Card(
                             max_date_allowed=pd.Series.max(df['Interval']),
                             # min_date_allowed=date(2000, 5, 1),
                             # max_date_allowed=date.today(),
-                            initial_visible_month=date.today(),
+                            initial_visible_month=pd.Series.max(df['Interval']),
                             start_date_placeholder_text="Start Period",
                             end_date_placeholder_text="End Period",
                             calendar_orientation="vertical",
@@ -149,7 +150,40 @@ info_box = dbc.Card(
                         rows=8,
                         style={
                             "width": "100%",
-                            "height": "100%",
+                            "height": "30rem",
+                            "background-color": "black",
+                            "color": "#fec036",
+                            "placeholder": "#fec036",
+                            "fontFamily": "Arial",
+                            "fontSize": "16",
+                            "display": "inline-block",
+                        },
+                    )
+                )
+            ],
+            style={
+                "backgroundColor": "black",
+                "border-radius": "1px",
+                "border-width": "5px",
+                "border-top": "1px solid rgb(216, 216, 216)",
+            },
+        ),
+    ],
+)
+
+info_box2 = dbc.Card(
+    children=[
+        dbc.CardBody(
+            [
+                html.Div(
+                    dcc.Textarea(
+                        id="Info-Textbox2",
+                        placeholder="This field is used to display information about a feature displayed "
+                        "on the graph.",
+                        rows=8,
+                        style={
+                            "width": "100%",
+                            "height": "30rem",
                             "background-color": "black",
                             "color": "#fec036",
                             "placeholder": "#fec036",
@@ -369,11 +403,15 @@ app.layout = dbc.Container(
     fluid=True,
     children=[
         logo(app),
-        graphs,
+        dbc.Row([
+                dbc.Col([info_box], width=2), 
+                dbc.Col([info_box2], width=2), 
+                dbc.Col([graphs])       
+        ]),
         bottomView,
         dcc.Interval(
             id='interval-component',
-            interval=1*500,  # in milliseconds
+            interval=1*speed,  # in milliseconds
             n_intervals=1
         )
     ]
@@ -423,8 +461,7 @@ def fig_update_layout(fig):
 #     [
 #         Output("Main-Graph", "figure"),
 #         Output("Info-Textbox", "value"),
-#         # Output("charge port 2", "value"),
-#         # Output("date-picker", "initial_visible_month"),
+
 #     ],
 #     [
 #         Input("date-picker", "start_date"),
@@ -518,7 +555,12 @@ def update_battery_level(index):
 
 
 @app.callback(
-    Output("Main-Graph", "figure"),
+    [
+        Output("Main-Graph", "figure"),
+        Output("Info-Textbox", "placeholder"),
+        Output("Info-Textbox2", "placeholder"),
+    ],
+
     [
         Input("date-picker", "start_date"),
         Input("date-picker", "end_date"),
@@ -527,73 +569,66 @@ def update_battery_level(index):
 )
 def update_graph_timer(start_date, end_date, index):
     df.style
-    # print(index)
-    index = (index*width_data_points) % 1000
-    if index == 0:
-        index = 1
-    tmp_data = df.iloc[0:index, 3]
-    information_update = (
-        "test for when it is updated, index = " + str(index)
-    )
-    fig = go.Figure(
-        data=[
-            go.Scatter(
-                x=df.iloc[0:index, 1],
-                y=tmp_data*100
-            )
-        ]
-    )
+    ctx = dash.callback_context
+    # print(ctx.triggered)
+    trigger = ctx.triggered[0]['prop_id'].split('.')[0]
+    # print(trigger)
+    if trigger=='interval-component':
+        index = (index*width_data_points) % 1000
+        if index == 0:
+            index = 1
+        tmp_data = df.iloc[0:index, 3]
+        information_update = (
+            "test for when it is updated, index = " + str(index)
+        )
+        fig = go.Figure(
+            data=[
+                go.Scatter(
+                    x=df.iloc[0:index, 1],
+                    y=tmp_data*100
+                )
+            ]
+        )
+    elif trigger=='date-picker':
+        if start_date is None:
+            start_date = pd.Series.min(df['Interval'])
+        if end_date is None:
+            end_date = pd.Series.max(df['Interval'])
+        if start_date == end_date:
+            start_date_object = datetime.strptime(start_date+" 12:00 AM", "%Y-%m-%d %I:%M %p")
+            end_date_object = datetime.strptime(end_date+" 11:59 PM", "%Y-%m-%d %I:%M %p")
+        else:
+            start_date_object = datetime.strptime(start_date, "%Y-%m-%d")
+            end_date_object = datetime.strptime(end_date, "%Y-%m-%d")
+        mask = (df['Interval'] > start_date_object) & (df['Interval'] <= end_date_object)
+        df_within_dates = df.loc[mask]
+        information_update = (
+        "test for when it is updated, start date is " + str(start_date) + ", end date is : " + str(end_date)
+        )
+        fig = go.Figure(
+            data=[
+                go.Scatter(
+                    x=df_within_dates['Interval'],
+                    y=df_within_dates['ams-a-control-in-stateOfCharge/AvgValue.avg'],
+                )
+            ]
+        )
+    else:
+        tmp_data = df.iloc[:, 3]
+        information_update = (
+            "test for when it is updated, index = " + str(index)
+        )
+        fig = go.Figure(
+            data=[
+                go.Scatter(
+                    x=df.iloc[:, 1],
+                    y=tmp_data*100
+                )
+            ]
+        )
+    # print(df_within_dates)    
     fig = fig_update_layout(fig)
-    return fig
-
-
-# @app.callback(
-#     [
-#         Output("active-power-information-gauge", "value"),
-#         Output("active-power-from-wind-information-gauge", "value"),
-#         Output("wind-power-information-gauge", "value"),
-#         Output("reactive-power-information-gauge", "value"),
-#         Output("blade-angle-information-gauge", "value"),
-#     ],
-#     Input("Main-Graph", "clickData"),
-# )
-# def display_click_data(clickData):
-#     if clickData:
-#         data_time = clickData["points"][0]["x"]
-#         value_active_power = df["WEC: ava. Power"].loc[df.index ==
-#                                                        data_time].values[0]
-#         value_active_power_wind = (
-#             df["WEC: ava. available P from wind"].loc[df.index == data_time].values[0]
-#         )
-#         value_reactive_power = (
-#             df["WEC: ava. reactive Power"].loc[df.index == data_time].values[0]
-#         )
-#         value_wind_speed = (
-#             df["WEC: ava. windspeed"].loc[df.index == data_time].values[0]
-#         )
-#         value_blade_angle = (
-#             df["WEC: ava. blade angle A"].loc[df.index == data_time].values[0]
-#         )
-#         return (
-#             value_active_power,
-#             value_active_power_wind,
-#             value_wind_speed,
-#             value_reactive_power,
-#             value_blade_angle,
-#         )
-#     else:
-#         value_active_power = 0
-#         value_active_power_wind = 0
-#         value_reactive_power = 0
-#         value_wind_speed = 0
-#         value_blade_angle = 0
-#         return (
-#             value_active_power,
-#             value_active_power_wind,
-#             value_wind_speed,
-#             value_reactive_power,
-#             value_blade_angle,
-#         )
+    return fig, information_update, information_update
 
 
 if __name__ == "__main__":
