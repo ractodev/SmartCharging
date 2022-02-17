@@ -354,7 +354,7 @@ body {
 		 transform: translateX(400px);
 	}
 }
- .battery {
+#battery {
 	 position: absolute;
 	 top: -14rem;
 	 left: 35rem;
@@ -362,7 +362,7 @@ body {
 	 height: 30rem;
 	 border: 2rem solid #fff;
 }
- .battery:before {
+#battery:before {
 	 content: '';
 	 display: block;
 	 height: 2.1rem;
@@ -370,17 +370,17 @@ body {
 	 margin: -5rem auto;
 	 background: #fff;
 }
- .battery:after {
+
+#battery-fill {
 	 position: absolute;
 	 bottom: 1rem;
-	 content: '';
 	 display: block;
-	 border: 6.5rem solid #ccffac;
-	 width: 0;
+	 background-color: #ccffac;
+	 width: 13rem;
+	 height: 0px;
 	 margin: 0 1rem;
-	 animation: 6s ease-in-out 50 infinite;
-	 animation-direction: alternate;
 }
+
  .numbers {
 	 border-bottom: 0.2rem solid #fff;
 	 color: #fff;
