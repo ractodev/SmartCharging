@@ -21,7 +21,7 @@ app = dash.Dash(
 server = app.server
 app.title = "Vattenfall Smart Charging"
 width_data_points = 10
-speed = 50000
+speed = 500
 
 
 def logo(app):
@@ -53,6 +53,17 @@ format = "%Y-%m-%d %I:%M %p"
 df['Interval'] = df['Interval'].apply(lambda x: datetime.strptime(x, format))
 df['Interval (UTC)'] = df['Interval (UTC)'].apply(
     lambda x: datetime.strptime(x, format))
+df['Total_W'] = (df['ams-a-chrg-0-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
+                 df['ams-a-chrg-1-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-1-1-3PhaseActivePowW/AvgValue.avg'] +
+                 df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-2-0-3PhaseActivePowW/AvgValue.avg'] +
+                 df['ams-a-chrg-2-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
+                 df['ams-a-chrg-3-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-3-1-3PhaseActivePowW/AvgValue.avg'] +
+                 df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-4-0-3PhaseActivePowW/AvgValue.avg'] +
+                 df['ams-a-chrg-4-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
+                 df['ams-a-chrg-5-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-5-1-3PhaseActivePowW/AvgValue.avg'] +
+                 df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-6-0-3PhaseActivePowW/AvgValue.avg'] +
+                 df['ams-a-chrg-6-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
+                 df['ams-a-chrg-7-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-7-1-3PhaseActivePowW/AvgValue.avg'])
 # print(df)
 # df, df_button, x_test, y_test = data_preprocessing()
 
@@ -553,6 +564,20 @@ def update_battery_level(index):
     # battery.style = {'position': 'absolute','top': '-14rem', 'left': '35rem','width': str(index)+'rem','height': '30rem', 'border': '2rem solid #fff'}
     return {'height': str(level*20)+'rem'}
 
+def get_info(index=0, mask=[]):
+    msg = ""
+    if index != 0:
+        1
+        msg += "Number of cars connected: " + str(int(df.iloc[index]['numberOfConnectedVehicles/numConnVehicles.numConnVehicles'])) + "\n"
+        msg += "Total delivered active power: " + str(int(df.iloc[index]['Total_W']/1000)) + 'kW\n'
+    elif mask!=[]:
+        2
+    else:
+        3
+
+    return msg
+
+
 
 @app.callback(
     [
@@ -578,9 +603,7 @@ def update_graph_timer(start_date, end_date, index):
         if index == 0:
             index = 1
         tmp_data = df.iloc[0:index, 3]
-        information_update = (
-            "test for when it is updated, index = " + str(index)
-        )
+        information_update = get_info(index)
         fig = go.Figure(
             data=[
                 go.Scatter(
@@ -602,9 +625,7 @@ def update_graph_timer(start_date, end_date, index):
             end_date_object = datetime.strptime(end_date, "%Y-%m-%d")
         mask = (df['Interval'] > start_date_object) & (df['Interval'] <= end_date_object)
         df_within_dates = df.loc[mask]
-        information_update = (
-        "test for when it is updated, start date is " + str(start_date) + ", end date is : " + str(end_date)
-        )
+        information_update = get_info(mask=mask)
         fig = go.Figure(
             data=[
                 go.Scatter(
@@ -615,9 +636,7 @@ def update_graph_timer(start_date, end_date, index):
         )
     else:
         tmp_data = df.iloc[:, 3]
-        information_update = (
-            "test for when it is updated, index = " + str(index)
-        )
+        information_update = get_info()
         fig = go.Figure(
             data=[
                 go.Scatter(
