@@ -1,4 +1,5 @@
 from turtle import width
+from xml.dom.minidom import Document
 import pandas as pd
 import numpy as np
 import dash
@@ -24,6 +25,8 @@ width_data_points = 10
 speed = 500
 
 ################ Functions definition ######################
+
+
 def fig_update_layout(fig):
     fig.update_layout(
         xaxis=dict(
@@ -63,6 +66,7 @@ def fig_update_layout(fig):
     )
     return fig
 
+
 @app.callback(
     [
         Output('car_0_0', 'style'),
@@ -83,48 +87,98 @@ def fig_update_layout(fig):
         Output('car_7_1', 'style'),
     ],
     [
+        Input("date-picker", "start_date"),
+        Input("date-picker", "end_date"),
         Input('interval-component', 'n_intervals'),
     ]
 )
-def update_cars(index):
-    index = (index*width_data_points) %1000
+def update_cars(start_date, end_date, index):
+    ctx = dash.callback_context
+    # print(ctx.triggered)
+    trigger = ctx.triggered[0]['prop_id'].split('.')[0]
+    # print(trigger)
+    end_point = 0
+    if trigger == 'interval-component':
+        end_point = (index*width_data_points) % 1000
+    elif trigger == 'date-picker':
+        end_point = df.loc[(df['Interval'] <= end_date)].index[-1]
+    else:
+        end_point = df.index[-1]
     cars_connected_avg = df.iloc[:, -48::3]
     output = list()
-    for i in range(0,16):
-        car_i = cars_connected_avg.iloc[index,i]
+    for i in range(0, 16):
+        car_i = cars_connected_avg.iloc[end_point, i]
         # print(str(car_i)+"index :"+str(index))
         if car_i != 0.0:
             output.append({'background-color': '#ccffac'})
-        else:  
+        else:
             output.append({'background-color': '#595656'})
     return output
+
 
 @app.callback(
 
     Output("battery-fill", "style"),
 
     [
+        Input("date-picker", "start_date"),
+        Input("date-picker", "end_date"),
         Input('interval-component', 'n_intervals'),
     ],
 )
-def update_battery_level(index):
-    index = (index*width_data_points) % 1000
-    level = df.iloc[index, 3]
+def update_battery_level(start_date, end_date, index):
+    ctx = dash.callback_context
+    # print(ctx.triggered)
+    trigger = ctx.triggered[0]['prop_id'].split('.')[0]
+    # print(trigger)
+    end_point = 0
+    if trigger == 'interval-component':
+        end_point = (index*width_data_points) % 1000
+    elif trigger == 'date-picker':
+        end_point = df.loc[(df['Interval'] <= end_date)].index[-1]
+    else:
+        end_point = df.index[-1]
+    
+    level = df.iloc[end_point, 3]
     return {'height': str(level*20)+'rem'}
 
-def get_info(index=0, mask=[]):
+
+def get_info(index, mask):
     msg = ""
-    if index != 0:
+    charging = 0
+    discharging = 0
+    idle = 0
+    if index > 0:
+        mask = (df.index < index)
+    elif len(mask) != 0:
         1
-        msg += "Number of cars connected: " + str(int(df.iloc[index]['numberOfConnectedVehicles/numConnVehicles.numConnVehicles'])) + "\n"
-        msg += "Total delivered active power: " + str(int(df.iloc[index]['Total_W']/1000)) + 'kW\n'
-    elif mask!=[]:
-        2
     else:
-        3
-
+        mask = df.index
+    df_within_mask = df.loc[mask]
+    tot = len(df_within_mask)
+    msg += "Battery level: " + str(int(df.iloc[tot-1, 3]*100)) + "\n"
+    msg += "Number of cars connected: " + \
+        str(int(
+            df_within_mask['numberOfConnectedVehicles/numConnVehicles.numConnVehicles'].iloc[-1])) + "\n"
+    msg += "Total delivered active power: " + \
+        str(int(df_within_mask['Total_W'].iloc[-1]/1000)) + 'kW\n'
+    for i in range(0, tot):
+        current_val = df_within_mask['ams-a-bat-ew/AvgValue.avg'].iloc[i]
+        if current_val == 0:
+            idle += 1
+        elif current_val > 0:
+            charging += 1
+        else:
+            discharging += 1
+    charging_rate = int((charging/tot)*100)
+    discharging_rate = int((discharging/tot)*100)
+    idle_rate = int((idle/tot)*100)
+    in_use_rate = int(((charging+discharging)/tot)*100)
+    msg += "Charging rate in selected period: " + str(charging_rate) + "%\n"
+    msg += "Discharging rate in selected period: " + str(discharging_rate) + "%\n"
+    msg += "Idle rate in selected period: " + str(idle_rate) + "%\n"
+    msg += "Usage of battery compared to idle time in selected period: " + str(in_use_rate) + "%\n"
     return msg
-
 
 
 @app.callback(
@@ -141,17 +195,16 @@ def get_info(index=0, mask=[]):
     ],
 )
 def update_graph_timer(start_date, end_date, index):
-    df.style
     ctx = dash.callback_context
     # print(ctx.triggered)
     trigger = ctx.triggered[0]['prop_id'].split('.')[0]
     # print(trigger)
-    if trigger=='interval-component':
+    if trigger == 'interval-component':
         index = (index*width_data_points) % 1000
         if index == 0:
             index = 1
         tmp_data = df.iloc[0:index, 3]
-        information_update = get_info(index)
+        information_update = get_info(index, [])
         fig = go.Figure(
             data=[
                 go.Scatter(
@@ -160,20 +213,23 @@ def update_graph_timer(start_date, end_date, index):
                 )
             ]
         )
-    elif trigger=='date-picker':
+    elif trigger == 'date-picker':
         if start_date is None:
             start_date = pd.Series.min(df['Interval'])
         if end_date is None:
             end_date = pd.Series.max(df['Interval'])
         if start_date == end_date:
-            start_date_object = datetime.strptime(start_date+" 12:00 AM", "%Y-%m-%d %I:%M %p")
-            end_date_object = datetime.strptime(end_date+" 11:59 PM", "%Y-%m-%d %I:%M %p")
+            start_date_object = datetime.strptime(
+                start_date+" 12:00 AM", "%Y-%m-%d %I:%M %p")
+            end_date_object = datetime.strptime(
+                end_date+" 11:59 PM", "%Y-%m-%d %I:%M %p")
         else:
             start_date_object = datetime.strptime(start_date, "%Y-%m-%d")
             end_date_object = datetime.strptime(end_date, "%Y-%m-%d")
-        mask = (df['Interval'] > start_date_object) & (df['Interval'] <= end_date_object)
+        mask = (df['Interval'] > start_date_object) & (
+            df['Interval'] <= end_date_object)
         df_within_dates = df.loc[mask]
-        information_update = get_info(mask=mask)
+        information_update = get_info(-1,mask)
         fig = go.Figure(
             data=[
                 go.Scatter(
@@ -184,7 +240,7 @@ def update_graph_timer(start_date, end_date, index):
         )
     else:
         tmp_data = df.iloc[:, 3]
-        information_update = get_info()
+        information_update = get_info(-1,[])
         fig = go.Figure(
             data=[
                 go.Scatter(
@@ -193,9 +249,10 @@ def update_graph_timer(start_date, end_date, index):
                 )
             ]
         )
-    # print(df_within_dates)    
+    # print(df_within_dates)
     fig = fig_update_layout(fig)
     return fig, information_update, information_update
+
 
 def fix_datapoints():
     l = len(df)
@@ -210,26 +267,29 @@ def fix_datapoints():
         if j != 0:
             # print("col "+ str(i) + " row " + str(j) + " val" +str(df.iloc[:, i][0:j]))
             df.iloc[:, i][0:j] = df.iloc[:, i][j]
-    return 
+    return
+
 
 def process_df():
     format = "%Y-%m-%d %I:%M %p"
     fix_datapoints()
-    df['Interval'] = df['Interval'].apply(lambda x: datetime.strptime(x, format))
+    df['Interval'] = df['Interval'].apply(
+        lambda x: datetime.strptime(x, format))
     df['Interval (UTC)'] = df['Interval (UTC)'].apply(
         lambda x: datetime.strptime(x, format))
     df['Total_W'] = (df['ams-a-chrg-0-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
-                    df['ams-a-chrg-1-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-1-1-3PhaseActivePowW/AvgValue.avg'] +
-                    df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-2-0-3PhaseActivePowW/AvgValue.avg'] +
-                    df['ams-a-chrg-2-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
-                    df['ams-a-chrg-3-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-3-1-3PhaseActivePowW/AvgValue.avg'] +
-                    df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-4-0-3PhaseActivePowW/AvgValue.avg'] +
-                    df['ams-a-chrg-4-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
-                    df['ams-a-chrg-5-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-5-1-3PhaseActivePowW/AvgValue.avg'] +
-                    df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-6-0-3PhaseActivePowW/AvgValue.avg'] +
-                    df['ams-a-chrg-6-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
-                    df['ams-a-chrg-7-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-7-1-3PhaseActivePowW/AvgValue.avg'])
+                     df['ams-a-chrg-1-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-1-1-3PhaseActivePowW/AvgValue.avg'] +
+                     df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-2-0-3PhaseActivePowW/AvgValue.avg'] +
+                     df['ams-a-chrg-2-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
+                     df['ams-a-chrg-3-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-3-1-3PhaseActivePowW/AvgValue.avg'] +
+                     df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-4-0-3PhaseActivePowW/AvgValue.avg'] +
+                     df['ams-a-chrg-4-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
+                     df['ams-a-chrg-5-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-5-1-3PhaseActivePowW/AvgValue.avg'] +
+                     df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-6-0-3PhaseActivePowW/AvgValue.avg'] +
+                     df['ams-a-chrg-6-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
+                     df['ams-a-chrg-7-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-7-1-3PhaseActivePowW/AvgValue.avg'])
     return
+
 
 def logo(app):
     title = html.H5(
@@ -297,7 +357,8 @@ graphs = dbc.Card(
                             max_date_allowed=pd.Series.max(df['Interval']),
                             # min_date_allowed=date(2000, 5, 1),
                             # max_date_allowed=date.today(),
-                            initial_visible_month=pd.Series.max(df['Interval']),
+                            initial_visible_month=pd.Series.max(
+                                df['Interval']),
                             start_date_placeholder_text="Start Period",
                             end_date_placeholder_text="End Period",
                             calendar_orientation="vertical",
@@ -321,7 +382,7 @@ graphs = dbc.Card(
                 "border-top": "1px solid rgb(216, 216, 216)",
             },
         )
-    ] 
+    ]
 )
 
 info_box = dbc.Card(
@@ -504,38 +565,42 @@ flowView = html.Div(
 chargeView = html.Div(
     className="chargeArea",
     children=[
-            dbc.Row([
-                dbc.Col([html.Div(id='car_0_0')]), dbc.Col([html.Div(id='car_0_1')]), dbc.Col([html.Div(id='car_1_0')]), dbc.Col([html.Div(id='car_1_1')])
-            ]), 
-            dbc.Row([
-                dbc.Col([html.Div(id='car_2_0')]), dbc.Col([html.Div(id='car_2_1')]), dbc.Col([html.Div(id='car_3_0')]), dbc.Col([html.Div(id='car_3_1')])
-            ]), 
-            dbc.Row([
-                dbc.Col([html.Div(id='car_4_0')]), dbc.Col([html.Div(id='car_4_1')]), dbc.Col([html.Div(id='car_5_0')]), dbc.Col([html.Div(id='car_5_1')])
-            ]), 
-            dbc.Row([   
-                dbc.Col([html.Div(id='car_6_0')]), dbc.Col([html.Div(id='car_6_1')]), dbc.Col([html.Div(id='car_7_0')]), dbc.Col([html.Div(id='car_7_1')])
-            ])
+        dbc.Row([
+                dbc.Col([html.Div(id='car_0_0', children=[html.H6('0_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_0_1', children=[html.H6('0_1', style={'color': '#000000'})])]), dbc.Col(
+                    [html.Div(id='car_1_0', children=[html.H6('1_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_1_1', children=[html.H6('1_1', style={'color': '#000000'})])])
+                ]),
+        dbc.Row([
+                dbc.Col([html.Div(id='car_2_0', children=[html.H6('2_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_2_1', children=[html.H6('2_1', style={'color': '#000000'})])]), dbc.Col(
+                    [html.Div(id='car_3_0', children=[html.H6('3_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_3_1', children=[html.H6('3_1', style={'color': '#000000'})])])
+                ]),
+        dbc.Row([
+                dbc.Col([html.Div(id='car_4_0', children=[html.H6('4_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_4_1', children=[html.H6('4_1', style={'color': '#000000'})])]), dbc.Col(
+                    [html.Div(id='car_5_0', children=[html.H6('5_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_5_1', children=[html.H6('5_1', style={'color': '#000000'})])])
+                ]),
+        dbc.Row([
+                dbc.Col([html.Div(id='car_6_0', children=[html.H6('6_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_6_1', children=[html.H6('6_1', style={'color': '#000000'})])]), dbc.Col(
+                    [html.Div(id='car_7_0', children=[html.H6('7_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_7_1', children=[html.H6('7_1', style={'color': '#000000'})])])
+                ])
 
-            # gives more flexibility of where to place "cars"
-            # children=[
-            #     html.Div(id='car_0_0'),
-            #     html.Div(id='car_0_1'),
-            #     html.Div(id='car_1_0'),
-            #     html.Div(id='car_1_1'),
-            #     html.Div(id='car_2_0'),
-            #     html.Div(id='car_2_1'),
-            #     html.Div(id='car_3_0'),
-            #     html.Div(id='car_3_1'),
-            #     html.Div(id='car_4_0'),
-            #     html.Div(id='car_4_1'),
-            #     html.Div(id='car_5_0'),
-            #     html.Div(id='car_5_1'),
-            #     html.Div(id='car_6_0'),
-            #     html.Div(id='car_6_1'),
-            #     html.Div(id='car_7_0'),
-            #     html.Div(id='car_7_1'),
-            # ]
+        # gives more flexibility of where to place "cars"
+        # children=[
+        #     html.Div(id='car_0_0'),
+        #     html.Div(id='car_0_1'),
+        #     html.Div(id='car_1_0'),
+        #     html.Div(id='car_1_1'),
+        #     html.Div(id='car_2_0'),
+        #     html.Div(id='car_2_1'),
+        #     html.Div(id='car_3_0'),
+        #     html.Div(id='car_3_1'),
+        #     html.Div(id='car_4_0'),
+        #     html.Div(id='car_4_1'),
+        #     html.Div(id='car_5_0'),
+        #     html.Div(id='car_5_1'),
+        #     html.Div(id='car_6_0'),
+        #     html.Div(id='car_6_1'),
+        #     html.Div(id='car_7_0'),
+        #     html.Div(id='car_7_1'),
+        # ]
     ]
 )
 
@@ -565,7 +630,7 @@ windmillView = html.Div(
                 html.Div(className="windwheel windwheel4"),
             ]
         ),
-        html.Div(  
+        html.Div(
         )
     ],
 )
@@ -586,10 +651,10 @@ app.layout = dbc.Container(
     children=[
         logo(app),
         dbc.Row([
-                dbc.Col([info_box], width=2), 
-                dbc.Col([info_box2], width=2), 
-                dbc.Col([graphs])       
-        ]),
+                dbc.Col([info_box], width=2),
+                dbc.Col([info_box2], width=2),
+                dbc.Col([graphs])
+                ]),
         bottomView,
         dcc.Interval(
             id='interval-component',
