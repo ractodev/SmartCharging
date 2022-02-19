@@ -1,6 +1,6 @@
-from cmath import isnan
 from turtle import width
 import pandas as pd
+import numpy as np
 import dash
 import dash_bootstrap_components as dbc
 from dash import dcc
@@ -23,6 +23,213 @@ app.title = "Vattenfall Smart Charging"
 width_data_points = 10
 speed = 500
 
+################ Functions definition ######################
+def fig_update_layout(fig):
+    fig.update_layout(
+        xaxis=dict(
+            showline=False,
+            showgrid=False,
+            showticklabels=True,
+            zeroline=False,
+            gridcolor="#636363",
+            linecolor="rgb(204, 204, 204)",
+            linewidth=2,
+            tickfont=dict(family="Arial", size=12, color="white",),
+            title=dict(font=dict(family="Arial", size=24, color="#fec036"),),
+        ),
+        yaxis=dict(
+            showline=False,
+            showgrid=False,
+            showticklabels=True,
+            zeroline=False,
+            gridcolor="#636363",
+            linecolor="rgb(204, 204, 204)",
+            linewidth=2,
+            tickfont=dict(family="Arial", size=12, color="white",),
+            title=dict(font=dict(family="Arial", size=24, color="#fec036"),),
+        ),
+        autosize=True,
+        margin=dict(autoexpand=True, l=50, b=40, r=35, t=30),
+        showlegend=False,
+        paper_bgcolor="black",
+        plot_bgcolor="black",
+        title=dict(
+            font=dict(family="Arial", size=32, color="darkgray"),
+            xanchor="center",
+            yanchor="top",
+            y=1,
+            x=0.5,
+        ),
+    )
+    return fig
+
+@app.callback(
+    [
+        Output('car_0_0', 'style'),
+        Output('car_0_1', 'style'),
+        Output('car_1_0', 'style'),
+        Output('car_1_1', 'style'),
+        Output('car_2_0', 'style'),
+        Output('car_2_1', 'style'),
+        Output('car_3_0', 'style'),
+        Output('car_3_1', 'style'),
+        Output('car_4_0', 'style'),
+        Output('car_4_1', 'style'),
+        Output('car_5_0', 'style'),
+        Output('car_5_1', 'style'),
+        Output('car_6_0', 'style'),
+        Output('car_6_1', 'style'),
+        Output('car_7_0', 'style'),
+        Output('car_7_1', 'style'),
+    ],
+    [
+        Input('interval-component', 'n_intervals'),
+    ]
+)
+def update_cars(index):
+    index = (index*width_data_points) %1000
+    cars_connected_avg = df.iloc[:, -48::3]
+    output = list()
+    for i in range(0,16):
+        car_i = cars_connected_avg.iloc[index,i]
+        # print(str(car_i)+"index :"+str(index))
+        if car_i != 0.0:
+            output.append({'background-color': '#ccffac'})
+        else:  
+            output.append({'background-color': '#595656'})
+    return output
+
+@app.callback(
+
+    Output("battery-fill", "style"),
+
+    [
+        Input('interval-component', 'n_intervals'),
+    ],
+)
+def update_battery_level(index):
+    index = (index*width_data_points) % 1000
+    level = df.iloc[index, 3]
+    return {'height': str(level*20)+'rem'}
+
+def get_info(index=0, mask=[]):
+    msg = ""
+    if index != 0:
+        1
+        msg += "Number of cars connected: " + str(int(df.iloc[index]['numberOfConnectedVehicles/numConnVehicles.numConnVehicles'])) + "\n"
+        msg += "Total delivered active power: " + str(int(df.iloc[index]['Total_W']/1000)) + 'kW\n'
+    elif mask!=[]:
+        2
+    else:
+        3
+
+    return msg
+
+
+
+@app.callback(
+    [
+        Output("Main-Graph", "figure"),
+        Output("Info-Textbox", "placeholder"),
+        Output("Info-Textbox2", "placeholder"),
+    ],
+
+    [
+        Input("date-picker", "start_date"),
+        Input("date-picker", "end_date"),
+        Input('interval-component', 'n_intervals'),
+    ],
+)
+def update_graph_timer(start_date, end_date, index):
+    df.style
+    ctx = dash.callback_context
+    # print(ctx.triggered)
+    trigger = ctx.triggered[0]['prop_id'].split('.')[0]
+    # print(trigger)
+    if trigger=='interval-component':
+        index = (index*width_data_points) % 1000
+        if index == 0:
+            index = 1
+        tmp_data = df.iloc[0:index, 3]
+        information_update = get_info(index)
+        fig = go.Figure(
+            data=[
+                go.Scatter(
+                    x=df.iloc[0:index, 1],
+                    y=tmp_data*100
+                )
+            ]
+        )
+    elif trigger=='date-picker':
+        if start_date is None:
+            start_date = pd.Series.min(df['Interval'])
+        if end_date is None:
+            end_date = pd.Series.max(df['Interval'])
+        if start_date == end_date:
+            start_date_object = datetime.strptime(start_date+" 12:00 AM", "%Y-%m-%d %I:%M %p")
+            end_date_object = datetime.strptime(end_date+" 11:59 PM", "%Y-%m-%d %I:%M %p")
+        else:
+            start_date_object = datetime.strptime(start_date, "%Y-%m-%d")
+            end_date_object = datetime.strptime(end_date, "%Y-%m-%d")
+        mask = (df['Interval'] > start_date_object) & (df['Interval'] <= end_date_object)
+        df_within_dates = df.loc[mask]
+        information_update = get_info(mask=mask)
+        fig = go.Figure(
+            data=[
+                go.Scatter(
+                    x=df_within_dates['Interval'],
+                    y=df_within_dates['ams-a-control-in-stateOfCharge/AvgValue.avg'],
+                )
+            ]
+        )
+    else:
+        tmp_data = df.iloc[:, 3]
+        information_update = get_info()
+        fig = go.Figure(
+            data=[
+                go.Scatter(
+                    x=df.iloc[:, 1],
+                    y=tmp_data*100
+                )
+            ]
+        )
+    # print(df_within_dates)    
+    fig = fig_update_layout(fig)
+    return fig, information_update, information_update
+
+def fix_datapoints():
+    l = len(df)
+    w = len(df.iloc[0])
+    df.iloc[:, 3:] = df.iloc[:, 3:].interpolate(
+        method='polynomial', order=1, axis=0)
+    for i in range(3, w):
+        j = 0
+        # print(df.iloc[:, i][j])
+        while np.isnan(df.iloc[:, i][j]):
+            j += 1
+        if j != 0:
+            # print("col "+ str(i) + " row " + str(j) + " val" +str(df.iloc[:, i][0:j]))
+            df.iloc[:, i][0:j] = df.iloc[:, i][j]
+    return 
+
+def process_df():
+    format = "%Y-%m-%d %I:%M %p"
+    fix_datapoints()
+    df['Interval'] = df['Interval'].apply(lambda x: datetime.strptime(x, format))
+    df['Interval (UTC)'] = df['Interval (UTC)'].apply(
+        lambda x: datetime.strptime(x, format))
+    df['Total_W'] = (df['ams-a-chrg-0-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
+                    df['ams-a-chrg-1-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-1-1-3PhaseActivePowW/AvgValue.avg'] +
+                    df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-2-0-3PhaseActivePowW/AvgValue.avg'] +
+                    df['ams-a-chrg-2-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
+                    df['ams-a-chrg-3-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-3-1-3PhaseActivePowW/AvgValue.avg'] +
+                    df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-4-0-3PhaseActivePowW/AvgValue.avg'] +
+                    df['ams-a-chrg-4-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
+                    df['ams-a-chrg-5-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-5-1-3PhaseActivePowW/AvgValue.avg'] +
+                    df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-6-0-3PhaseActivePowW/AvgValue.avg'] +
+                    df['ams-a-chrg-6-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
+                    df['ams-a-chrg-7-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-7-1-3PhaseActivePowW/AvgValue.avg'])
+    return
 
 def logo(app):
     title = html.H5(
@@ -49,21 +256,7 @@ def logo(app):
 
 #  get data from csv
 df = pd.read_csv('./assets/data.csv')
-format = "%Y-%m-%d %I:%M %p"
-df['Interval'] = df['Interval'].apply(lambda x: datetime.strptime(x, format))
-df['Interval (UTC)'] = df['Interval (UTC)'].apply(
-    lambda x: datetime.strptime(x, format))
-df['Total_W'] = (df['ams-a-chrg-0-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
-                 df['ams-a-chrg-1-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-1-1-3PhaseActivePowW/AvgValue.avg'] +
-                 df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-2-0-3PhaseActivePowW/AvgValue.avg'] +
-                 df['ams-a-chrg-2-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
-                 df['ams-a-chrg-3-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-3-1-3PhaseActivePowW/AvgValue.avg'] +
-                 df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-4-0-3PhaseActivePowW/AvgValue.avg'] +
-                 df['ams-a-chrg-4-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
-                 df['ams-a-chrg-5-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-5-1-3PhaseActivePowW/AvgValue.avg'] +
-                 df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-6-0-3PhaseActivePowW/AvgValue.avg'] +
-                 df['ams-a-chrg-6-1-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-0-1-3PhaseActivePowW/AvgValue.avg'] +
-                 df['ams-a-chrg-7-0-3PhaseActivePowW/AvgValue.avg'] + df['ams-a-chrg-7-1-3PhaseActivePowW/AvgValue.avg'])
+process_df()
 # print(df)
 # df, df_button, x_test, y_test = data_preprocessing()
 
@@ -96,24 +289,6 @@ graphs = dbc.Card(
                     ],
                     style={"width": "98%", "display": "inline-block"},
                 ),
-                # html.Div(
-                #     [
-                #         dcc.Dropdown(
-                #             id="feature-dropdown",
-                #             options=[
-                #                 {"label": label, "value": label} for label in df.columns
-                #             ],
-                #             value="",
-                #             multi=False,
-                #             searchable=False,
-                #         )
-                #     ],
-                #     style={
-                #         "width": "33%",
-                #         "display": "inline-block",
-                #         "color": "black",
-                #     },
-                # ),
                 html.Div(
                     [
                         dcc.DatePickerRange(
@@ -146,7 +321,7 @@ graphs = dbc.Card(
                 "border-top": "1px solid rgb(216, 216, 216)",
             },
         )
-    ]  # , outline=False
+    ] 
 )
 
 info_box = dbc.Card(
@@ -342,10 +517,7 @@ chargeView = html.Div(
                 dbc.Col([html.Div(id='car_6_0')]), dbc.Col([html.Div(id='car_6_1')]), dbc.Col([html.Div(id='car_7_0')]), dbc.Col([html.Div(id='car_7_1')])
             ])
 
-
-
-
-
+            # gives more flexibility of where to place "cars"
             # children=[
             #     html.Div(id='car_0_0'),
             #     html.Div(id='car_0_1'),
@@ -408,8 +580,7 @@ bottomView = html.Div(
     ]
 )
 
-gauge_size = "auto"
-# where everything gets put into the page
+###################### Style app layout ########################################
 app.layout = dbc.Container(
     fluid=True,
     children=[
@@ -427,228 +598,6 @@ app.layout = dbc.Container(
         )
     ]
 )
-
-
-def fig_update_layout(fig):
-    fig.update_layout(
-        xaxis=dict(
-            showline=False,
-            showgrid=False,
-            showticklabels=True,
-            zeroline=False,
-            gridcolor="#636363",
-            linecolor="rgb(204, 204, 204)",
-            linewidth=2,
-            tickfont=dict(family="Arial", size=12, color="white",),
-            title=dict(font=dict(family="Arial", size=24, color="#fec036"),),
-        ),
-        yaxis=dict(
-            showline=False,
-            showgrid=False,
-            showticklabels=True,
-            zeroline=False,
-            gridcolor="#636363",
-            linecolor="rgb(204, 204, 204)",
-            linewidth=2,
-            tickfont=dict(family="Arial", size=12, color="white",),
-            title=dict(font=dict(family="Arial", size=24, color="#fec036"),),
-        ),
-        autosize=True,
-        margin=dict(autoexpand=True, l=50, b=40, r=35, t=30),
-        showlegend=False,
-        paper_bgcolor="black",
-        plot_bgcolor="black",
-        title=dict(
-            font=dict(family="Arial", size=32, color="darkgray"),
-            xanchor="center",
-            yanchor="top",
-            y=1,
-            x=0.5,
-        ),
-    )
-    return fig
-
-# @app.callback(
-#     [
-#         Output("Main-Graph", "figure"),
-#         Output("Info-Textbox", "value"),
-
-#     ],
-#     [
-#         Input("date-picker", "start_date"),
-#         Input("date-picker", "end_date"),
-#     ],
-# )
-# def update_graph(start_date, end_date):
-#     if start_date is None or end_date is None:
-#         start_date = "2021-11-03"
-#         end_date = "2021-11-06"
-#     # print(start_date)
-#     # print(end_date)
-#     start_date_object = datetime.strptime(start_date, "%Y-%m-%d")
-#     end_date_object = datetime.strptime(end_date, "%Y-%m-%d")
-#     mask = (df['Interval'] > start_date_object) & (df['Interval'] <= end_date_object)
-#     # print(mask)
-#     df_within_dates = df.loc[mask]
-#     # print(df_within_dates)
-#     information_update = (
-#         "test for when it is updated, start date is " + str(start_date) + ", end date is : " + str(end_date)
-#     )
-#     fig = go.Figure(
-#         data=[
-#             go.Scatter(
-#                 x=df_within_dates['Interval'],
-#                 y=df_within_dates['ams-a-control-in-stateOfCharge/AvgValue.avg'],
-#             )
-#         ]
-#     )
-#     # bat = int(df_within_dates.iloc[-1]*100)
-#     fig = fig_update_layout(fig)
-#     return fig, information_update
-
-
-@app.callback(
-    [
-        Output('car_0_0', 'style'),
-        Output('car_0_1', 'style'),
-        Output('car_1_0', 'style'),
-        Output('car_1_1', 'style'),
-        Output('car_2_0', 'style'),
-        Output('car_2_1', 'style'),
-        Output('car_3_0', 'style'),
-        Output('car_3_1', 'style'),
-        Output('car_4_0', 'style'),
-        Output('car_4_1', 'style'),
-        Output('car_5_0', 'style'),
-        Output('car_5_1', 'style'),
-        Output('car_6_0', 'style'),
-        Output('car_6_1', 'style'),
-        Output('car_7_0', 'style'),
-        Output('car_7_1', 'style'),
-    ],
-    [
-        Input('interval-component', 'n_intervals'),
-    ]
-)
-def update_cars(index):
-    index = (index*width_data_points) %1000
-    cars_connected_avg = df.iloc[:, -48::3]
-    output = list()
-    for i in range(0,16):
-        car_i = cars_connected_avg.iloc[index,i]
-        # print(str(car_i)+"index :"+str(index))
-        if car_i != 0.0:
-            output.append({'background-color': '#ccffac'})
-        else:  
-            output.append({'background-color': '#595656'})
-    return output
-
-@app.callback(
-
-    Output("battery-fill", "style"),
-
-    [
-        Input('interval-component', 'n_intervals'),
-    ],
-)
-def update_battery_level(index):
-    index = (index*width_data_points) % 1000
-    # index = index + 10
-    # print(index)
-    level = df.iloc[index, 3]
-
-    # print(level)
-    # x = app.css.get_all_css
-    # print(x)
-
-    # battery.style = {'position': 'absolute','top': '-14rem', 'left': '35rem','width': str(index)+'rem','height': '30rem', 'border': '2rem solid #fff'}
-    return {'height': str(level*20)+'rem'}
-
-def get_info(index=0, mask=[]):
-    msg = ""
-    if index != 0:
-        1
-        msg += "Number of cars connected: " + str(int(df.iloc[index]['numberOfConnectedVehicles/numConnVehicles.numConnVehicles'])) + "\n"
-        msg += "Total delivered active power: " + str(int(df.iloc[index]['Total_W']/1000)) + 'kW\n'
-    elif mask!=[]:
-        2
-    else:
-        3
-
-    return msg
-
-
-
-@app.callback(
-    [
-        Output("Main-Graph", "figure"),
-        Output("Info-Textbox", "placeholder"),
-        Output("Info-Textbox2", "placeholder"),
-    ],
-
-    [
-        Input("date-picker", "start_date"),
-        Input("date-picker", "end_date"),
-        Input('interval-component', 'n_intervals'),
-    ],
-)
-def update_graph_timer(start_date, end_date, index):
-    df.style
-    ctx = dash.callback_context
-    # print(ctx.triggered)
-    trigger = ctx.triggered[0]['prop_id'].split('.')[0]
-    # print(trigger)
-    if trigger=='interval-component':
-        index = (index*width_data_points) % 1000
-        if index == 0:
-            index = 1
-        tmp_data = df.iloc[0:index, 3]
-        information_update = get_info(index)
-        fig = go.Figure(
-            data=[
-                go.Scatter(
-                    x=df.iloc[0:index, 1],
-                    y=tmp_data*100
-                )
-            ]
-        )
-    elif trigger=='date-picker':
-        if start_date is None:
-            start_date = pd.Series.min(df['Interval'])
-        if end_date is None:
-            end_date = pd.Series.max(df['Interval'])
-        if start_date == end_date:
-            start_date_object = datetime.strptime(start_date+" 12:00 AM", "%Y-%m-%d %I:%M %p")
-            end_date_object = datetime.strptime(end_date+" 11:59 PM", "%Y-%m-%d %I:%M %p")
-        else:
-            start_date_object = datetime.strptime(start_date, "%Y-%m-%d")
-            end_date_object = datetime.strptime(end_date, "%Y-%m-%d")
-        mask = (df['Interval'] > start_date_object) & (df['Interval'] <= end_date_object)
-        df_within_dates = df.loc[mask]
-        information_update = get_info(mask=mask)
-        fig = go.Figure(
-            data=[
-                go.Scatter(
-                    x=df_within_dates['Interval'],
-                    y=df_within_dates['ams-a-control-in-stateOfCharge/AvgValue.avg'],
-                )
-            ]
-        )
-    else:
-        tmp_data = df.iloc[:, 3]
-        information_update = get_info()
-        fig = go.Figure(
-            data=[
-                go.Scatter(
-                    x=df.iloc[:, 1],
-                    y=tmp_data*100
-                )
-            ]
-        )
-    # print(df_within_dates)    
-    fig = fig_update_layout(fig)
-    return fig, information_update, information_update
-
 
 if __name__ == "__main__":
     app.run_server(debug=True, use_reloader=True)
