@@ -22,7 +22,7 @@ app = dash.Dash(
 server = app.server
 app.title = "Vattenfall Smart Charging"
 width_data_points = 10
-speed = 500
+speed = 50000
 
 ################ Functions definition ######################
 
@@ -180,7 +180,6 @@ def get_info(index, mask):
     msg += "Usage of battery compared to idle time in selected period: " + str(in_use_rate) + "%\n"
     return msg
 
-
 @app.callback(
     [
         Output("Main-Graph", "figure"),
@@ -189,12 +188,13 @@ def get_info(index, mask):
     ],
 
     [
+        Input("Main-Graph", "relayoutData"),
         Input("date-picker", "start_date"),
         Input("date-picker", "end_date"),
         Input('interval-component', 'n_intervals'),
     ],
 )
-def update_graph_timer(start_date, end_date, index):
+def update_graph_timer(selection, start_date, end_date, index):
     ctx = dash.callback_context
     # print(ctx.triggered)
     trigger = ctx.triggered[0]['prop_id'].split('.')[0]
@@ -226,6 +226,28 @@ def update_graph_timer(start_date, end_date, index):
         else:
             start_date_object = datetime.strptime(start_date, "%Y-%m-%d")
             end_date_object = datetime.strptime(end_date, "%Y-%m-%d")
+        mask = (df['Interval'] > start_date_object) & (
+            df['Interval'] <= end_date_object)
+        df_within_dates = df.loc[mask]
+        information_update = get_info(-1,mask)
+        fig = go.Figure(
+            data=[
+                go.Scatter(
+                    x=df_within_dates['Interval'],
+                    y=df_within_dates['ams-a-control-in-stateOfCharge/AvgValue.avg'],
+                )
+            ]
+        )
+    elif trigger == 'Main-Graph':
+        print("you touched the graph!")
+        print(selection)
+        print(selection["xaxis.range[0]"])
+        start_date = selection["xaxis.range[0]"]
+        end_date = selection["xaxis.range[1]"]
+        start_date_object = datetime.strptime(start_date, "%Y-%m-%d %H:%M:$S.%f")
+        end_date_object = datetime.strptime(end_date, "%Y-%m-%d %H:%M:$S.%f")
+        print(start_date_object)
+        print(end_date_object)
         mask = (df['Interval'] > start_date_object) & (
             df['Interval'] <= end_date_object)
         df_within_dates = df.loc[mask]
