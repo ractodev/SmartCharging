@@ -87,34 +87,126 @@ def fig_update_layout(fig):
         Output('car_7_1', 'style'),
     ],
     [
+        Input("Main-Graph", "relayoutData"),
         Input("date-picker", "start_date"),
         Input("date-picker", "end_date"),
         Input('interval-component', 'n_intervals'),
     ]
 )
-def update_cars(start_date, end_date, index):
+def update_cars(selection, start_date, end_date, index):
     ctx = dash.callback_context
-    # print(ctx.triggered)
     trigger = ctx.triggered[0]['prop_id'].split('.')[0]
-    # print(trigger)
     end_point = 0
     if trigger == 'interval-component':
         end_point = (index*width_data_points) % 1000
     elif trigger == 'date-picker':
         end_point = df.loc[(df['Interval'] <= end_date)].index[-1]
+    elif trigger == 'Main-Graph':
+        if "xaxis.range[0]" in selection:
+            start_date = str(selection["xaxis.range[0]"])
+            end_date = str(selection["xaxis.range[1]"])
+            start_date_object = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S.%f")
+            end_date_object = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S.%f")
+            mask = (df['Interval'] > start_date_object) & (
+                df['Interval'] <= end_date_object)
+            df_within_dates = df.loc[mask]
+            end_point = df_within_dates.index[-1]
+        else:
+            end_point = df.index[-1]
     else:
         end_point = df.index[-1]
     cars_connected_avg = df.iloc[:, -48::3]
     output = list()
     for i in range(0, 16):
         car_i = cars_connected_avg.iloc[end_point, i]
-        # print(str(car_i)+"index :"+str(index))
         if car_i != 0.0:
             output.append({'background-color': '#ccffac'})
         else:
             output.append({'background-color': '#595656'})
     return output
 
+# to be fixed
+# @app.callback(
+#     [
+#     Output("wheel", "style"),
+#     Output("arrow_in_1", "style"),
+#     Output("arrow_in_2", "style"),
+#     Output("arrow_in_3", "style"),
+#     Output("arrow_in_4", "style"),
+#     Output("arrow_in_5", "style"),
+#     Output("arrow_in_6", "style"),
+#     Output("arrow_in_7", "style"),
+#     Output("arrow_in_8", "style"),
+#     Output("arrow_out_1", "style"),
+#     Output("arrow_out_2", "style"),
+#     Output("arrow_out_3", "style"),
+#     Output("arrow_out_4", "style"),
+#     Output("arrow_out_5", "style"),
+#     Output("arrow_out_6", "style"),
+#     Output("arrow_out_7", "style"),
+#     Output("arrow_out_8", "style"),
+#     ],
+#     [
+#         Input("Main-Graph", "relayoutData"),
+#         Input("date-picker", "start_date"),
+#         Input("date-picker", "end_date"),
+#         Input('interval-component', 'n_intervals'),
+#     ],
+# )
+# def update_flow_speed(selection, start_date, end_date, index):
+#     ctx = dash.callback_context
+#     trigger = ctx.triggered[0]['prop_id'].split('.')[0]
+#     end_point = 0
+#     if trigger == 'interval-component':
+#         end_point = (index*width_data_points) % 1000
+#     elif trigger == 'date-picker':
+#         end_point = df.loc[(df['Interval'] <= end_date)].index[-1]
+#     elif trigger == 'Main-Graph':
+#         if "xaxis.range[0]" in selection:
+#             start_date = str(selection["xaxis.range[0]"])
+#             end_date = str(selection["xaxis.range[1]"])
+#             start_date_object = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S.%f")
+#             end_date_object = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S.%f")
+#             mask = (df['Interval'] > start_date_object) & (
+#                 df['Interval'] <= end_date_object)
+#             df_within_dates = df.loc[mask]
+#             end_point = df_within_dates.index[-1]
+#         else:
+#             end_point = df.index[-1]
+#     else:
+#         end_point = df.index[-1]
+    
+#     level = df.iloc[end_point, 6]
+#     # level = -40
+#     # print(level)
+#     ret = list()
+#     if level <= 0: # charging battery
+#         level = int(abs(1-normalize_data(level, -42.795, 0))*3)
+#         # print(level)
+#         windmill = {'animation': 'spin '+str(level)+'s linear infinite'}
+#         ret.append(windmill)
+#         for i in range(1,9):
+#             flow_in = {'animation': 'horizontalSlide '+str(level)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
+#             ret.append(flow_in)
+#         for i in range(1,9):
+#             flow_out = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
+#             ret.append(flow_out)
+#     else: # discharging battery
+#         level = int(abs(1-normalize_data(level, 0, 17.159))+1*3)
+#         # print(level)
+#         windmill = {'animation': 'spin '+str(0)+'s linear infinite'}
+#         ret.append(windmill)
+#         for i in range(1,9):
+#             flow_in = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
+#             ret.append(flow_in)
+#         for i in range(1,9):
+#             flow_out = {'animation': 'horizontalSlide '+str(level)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
+#             # print(flow_out)
+#             ret.append(flow_out)
+#     return ret
+
+# def normalize_data(data, min, max):
+#     return (data - min) / (max - min)
 
 @app.callback(
 
@@ -129,14 +221,24 @@ def update_cars(start_date, end_date, index):
 )
 def update_battery_level(selection, start_date, end_date, index):
     ctx = dash.callback_context
-    # print(ctx.triggered)
     trigger = ctx.triggered[0]['prop_id'].split('.')[0]
-    # print(trigger)
     end_point = 0
     if trigger == 'interval-component':
         end_point = (index*width_data_points) % 1000
     elif trigger == 'date-picker':
         end_point = df.loc[(df['Interval'] <= end_date)].index[-1]
+    elif trigger == 'Main-Graph':
+        if "xaxis.range[0]" in selection:
+            start_date = str(selection["xaxis.range[0]"])
+            end_date = str(selection["xaxis.range[1]"])
+            start_date_object = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S.%f")
+            end_date_object = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S.%f")
+            mask = (df['Interval'] > start_date_object) & (
+                df['Interval'] <= end_date_object)
+            df_within_dates = df.loc[mask]
+            end_point = df_within_dates.index[-1]
+        else:
+            end_point = df.index[-1]
     else:
         end_point = df.index[-1]
     
@@ -197,9 +299,7 @@ def get_info(index, mask):
 )
 def update_graph_timer(selection, start_date, end_date, index):
     ctx = dash.callback_context
-    # print(ctx.triggered)
     trigger = ctx.triggered[0]['prop_id'].split('.')[0]
-    # print(trigger)
     if trigger == 'interval-component':
         index = (index*width_data_points) % 1000
         if index == 0:
@@ -240,15 +340,11 @@ def update_graph_timer(selection, start_date, end_date, index):
             ]
         )
     elif trigger == 'Main-Graph':
-        print("you touched the graph!")
-        print(selection)
         if "xaxis.range[0]" in selection:
             start_date = str(selection["xaxis.range[0]"])
             end_date = str(selection["xaxis.range[1]"])
             start_date_object = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S.%f")
             end_date_object = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S.%f")
-            # print(start_date_object)
-            # print(end_date_object)
             mask = (df['Interval'] > start_date_object) & (
                 df['Interval'] <= end_date_object)
             df_within_dates = df.loc[mask]
@@ -283,7 +379,6 @@ def update_graph_timer(selection, start_date, end_date, index):
                 )
             ]
         )
-    # print(df_within_dates)
     fig = fig_update_layout(fig)
     return fig, information_update, information_update
 
@@ -295,11 +390,9 @@ def fix_datapoints():
         method='polynomial', order=1, axis=0)
     for i in range(3, w):
         j = 0
-        # print(df.iloc[:, i][j])
         while np.isnan(df.iloc[:, i][j]):
             j += 1
         if j != 0:
-            # print("col "+ str(i) + " row " + str(j) + " val" +str(df.iloc[:, i][0:j]))
             df.iloc[:, i][0:j] = df.iloc[:, i][j]
     return
 
@@ -351,7 +444,6 @@ def logo(app):
 #  get data from csv
 df = pd.read_csv('./assets/data.csv')
 process_df()
-# print(df)
 # df, df_button, x_test, y_test = data_preprocessing()
 
 
@@ -491,48 +583,56 @@ flowView = html.Div(
             id="horizontalArrowAnim1",
             children=[
                 html.Div(
+                    id='arrow_out_1',
                     className="horizontalArrowSliding",
                     children=[
                         html.Div(className="arrow1")
                     ],
                 ),
                 html.Div(
+                    id='arrow_out_2',
                     className="horizontalArrowSliding delay1",
                     children=[
                         html.Div(className="arrow1")
                     ],
                 ),
                 html.Div(
+                    id='arrow_out_3',
                     className="horizontalArrowSliding delay2",
                     children=[
                         html.Div(className="arrow1")
                     ],
                 ),
                 html.Div(
+                    id='arrow_out_4',
                     className="horizontalArrowSliding delay3",
                     children=[
                         html.Div(className="arrow1")
                     ],
                 ),
                 html.Div(
+                    id='arrow_out_5',
                     className="horizontalArrowSliding delay4",
                     children=[
                         html.Div(className="arrow1")
                     ],
                 ),
                 html.Div(
+                    id='arrow_out_6',
                     className="horizontalArrowSliding delay5",
                     children=[
                         html.Div(className="arrow1")
                     ],
                 ),
                 html.Div(
+                    id='arrow_out_7',
                     className="horizontalArrowSliding delay6",
                     children=[
                         html.Div(className="arrow1")
                     ],
                 ),
                 html.Div(
+                    id='arrow_out_8',
                     className="horizontalArrowSliding delay7",
                     children=[
                         html.Div(className="arrow1")
@@ -544,48 +644,56 @@ flowView = html.Div(
             id="horizontalArrowAnim2",
             children=[
                 html.Div(
+                    id='arrow_in_1',
                     className="horizontalArrowSliding",
                     children=[
                         html.Div(className="arrow1")
                     ],
                 ),
                 html.Div(
+                    id='arrow_in_2',
                     className="horizontalArrowSliding delay1",
                     children=[
                         html.Div(className="arrow1")
                     ],
                 ),
                 html.Div(
+                    id='arrow_in_3',
                     className="horizontalArrowSliding delay2",
                     children=[
                         html.Div(className="arrow1")
                     ],
                 ),
                 html.Div(
+                    id='arrow_in_4',
                     className="horizontalArrowSliding delay3",
                     children=[
                         html.Div(className="arrow1")
                     ],
                 ),
                 html.Div(
+                    id='arrow_in_5',
                     className="horizontalArrowSliding delay4",
                     children=[
                         html.Div(className="arrow1")
                     ],
                 ),
                 html.Div(
+                    id='arrow_in_6',
                     className="horizontalArrowSliding delay5",
                     children=[
                         html.Div(className="arrow1")
                     ],
                 ),
                 html.Div(
+                    id='arrow_in_7',
                     className="horizontalArrowSliding delay6",
                     children=[
                         html.Div(className="arrow1")
                     ],
                 ),
                 html.Div(
+                    id='arrow_in_8',
                     className="horizontalArrowSliding delay7",
                     children=[
                         html.Div(className="arrow1")
@@ -656,7 +764,7 @@ windmillView = html.Div(
         html.Div(className="mill"),
         html.Div(className="roof"),
         html.Div(
-            className="wheel",
+            id="wheel",
             children=[
                 html.Div(className="windwheel"),
                 html.Div(className="windwheel windwheel2"),
