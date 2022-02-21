@@ -1,1 +1,1 @@
-document.documentElement.style.setProperty('--speed', '2s')
+// document.documentElement.style.setProperty('--speed', '2s')
