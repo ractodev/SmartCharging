@@ -78,7 +78,7 @@
   .offset-by-one-half.columns     { margin-left: 52%; }
 }
 body {
-	 background-color: #F2F7FF;
+	 background-color: #a3c0ec;
 }
 .bottom-view{
 	top: 1rem;
@@ -824,12 +824,12 @@ body {
 }
 
 #battery:before {
-	 content: '';
-	 display: block;
-	 height: 2.1rem;
-	 width: 7rem;
-	 margin: -5rem auto;
-	 background: #fff;
+	content: '';
+	display: block;
+    height: 2.1rem;
+    width: 7rem;
+    margin: -5rem auto;
+    background: #fff;
     content: '';
     display: block;
     height: 2.1rem;
@@ -871,7 +871,7 @@ body {
   top: 7rem;
   left: 20rem;
   position: absolute;
-  width: 70rem;
+  width: 120rem;
   height: 25rem;
   background: #82A7DF;
   border-radius: 80% 20% 20% 10% / 100% 0% 0% 0%;

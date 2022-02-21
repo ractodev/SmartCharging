@@ -121,12 +121,13 @@ def update_cars(start_date, end_date, index):
     Output("battery-fill", "style"),
 
     [
+        Input("Main-Graph", "relayoutData"),
         Input("date-picker", "start_date"),
         Input("date-picker", "end_date"),
         Input('interval-component', 'n_intervals'),
     ],
 )
-def update_battery_level(start_date, end_date, index):
+def update_battery_level(selection, start_date, end_date, index):
     ctx = dash.callback_context
     # print(ctx.triggered)
     trigger = ctx.triggered[0]['prop_id'].split('.')[0]
@@ -241,25 +242,36 @@ def update_graph_timer(selection, start_date, end_date, index):
     elif trigger == 'Main-Graph':
         print("you touched the graph!")
         print(selection)
-        print(selection["xaxis.range[0]"])
-        start_date = selection["xaxis.range[0]"]
-        end_date = selection["xaxis.range[1]"]
-        start_date_object = datetime.strptime(start_date, "%Y-%m-%d %H:%M:$S.%f")
-        end_date_object = datetime.strptime(end_date, "%Y-%m-%d %H:%M:$S.%f")
-        print(start_date_object)
-        print(end_date_object)
-        mask = (df['Interval'] > start_date_object) & (
-            df['Interval'] <= end_date_object)
-        df_within_dates = df.loc[mask]
-        information_update = get_info(-1,mask)
-        fig = go.Figure(
-            data=[
-                go.Scatter(
-                    x=df_within_dates['Interval'],
-                    y=df_within_dates['ams-a-control-in-stateOfCharge/AvgValue.avg'],
-                )
-            ]
-        )
+        if "xaxis.range[0]" in selection:
+            start_date = str(selection["xaxis.range[0]"])
+            end_date = str(selection["xaxis.range[1]"])
+            start_date_object = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S.%f")
+            end_date_object = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S.%f")
+            # print(start_date_object)
+            # print(end_date_object)
+            mask = (df['Interval'] > start_date_object) & (
+                df['Interval'] <= end_date_object)
+            df_within_dates = df.loc[mask]
+            information_update = get_info(-1,mask)
+            fig = go.Figure(
+                data=[
+                    go.Scatter(
+                        x=df_within_dates['Interval'],
+                        y=df_within_dates['ams-a-control-in-stateOfCharge/AvgValue.avg'],
+                    )
+                ]
+            )
+        else:
+            tmp_data = df.iloc[:, 3]
+            information_update = get_info(-1,[])
+            fig = go.Figure(
+                data=[
+                    go.Scatter(
+                        x=df.iloc[:, 1],
+                        y=tmp_data*100
+                    )
+                ]
+            )
     else:
         tmp_data = df.iloc[:, 3]
         information_update = get_info(-1,[])
@@ -671,6 +683,11 @@ bottomView = html.Div(
 app.layout = dbc.Container(
     fluid=True,
     children=[
+        dcc.Interval(
+            id='interval-component',
+            interval=1*speed,  # in milliseconds
+            n_intervals=1
+        ),
         logo(app),
         dbc.Row([
                 dbc.Col([info_box], width=2),
@@ -678,11 +695,6 @@ app.layout = dbc.Container(
                 dbc.Col([graphs])
                 ]),
         bottomView,
-        dcc.Interval(
-            id='interval-component',
-            interval=1*speed,  # in milliseconds
-            n_intervals=1
-        )
     ]
 )
 
