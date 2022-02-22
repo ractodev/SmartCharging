@@ -126,87 +126,93 @@ def update_cars(selection, start_date, end_date, index):
     return output
 
 # to be fixed
-# @app.callback(
-#     [
-#     Output("wheel", "style"),
-#     Output("arrow_in_1", "style"),
-#     Output("arrow_in_2", "style"),
-#     Output("arrow_in_3", "style"),
-#     Output("arrow_in_4", "style"),
-#     Output("arrow_in_5", "style"),
-#     Output("arrow_in_6", "style"),
-#     Output("arrow_in_7", "style"),
-#     Output("arrow_in_8", "style"),
-#     Output("arrow_out_1", "style"),
-#     Output("arrow_out_2", "style"),
-#     Output("arrow_out_3", "style"),
-#     Output("arrow_out_4", "style"),
-#     Output("arrow_out_5", "style"),
-#     Output("arrow_out_6", "style"),
-#     Output("arrow_out_7", "style"),
-#     Output("arrow_out_8", "style"),
-#     ],
-#     [
-#         Input("Main-Graph", "relayoutData"),
-#         Input("date-picker", "start_date"),
-#         Input("date-picker", "end_date"),
-#         Input('interval-component', 'n_intervals'),
-#     ],
-# )
-# def update_flow_speed(selection, start_date, end_date, index):
-#     ctx = dash.callback_context
-#     trigger = ctx.triggered[0]['prop_id'].split('.')[0]
-#     end_point = 0
-#     if trigger == 'interval-component':
-#         end_point = (index*width_data_points) % 1000
-#     elif trigger == 'date-picker':
-#         end_point = df.loc[(df['Interval'] <= end_date)].index[-1]
-#     elif trigger == 'Main-Graph':
-#         if "xaxis.range[0]" in selection:
-#             start_date = str(selection["xaxis.range[0]"])
-#             end_date = str(selection["xaxis.range[1]"])
-#             start_date_object = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S.%f")
-#             end_date_object = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S.%f")
-#             mask = (df['Interval'] > start_date_object) & (
-#                 df['Interval'] <= end_date_object)
-#             df_within_dates = df.loc[mask]
-#             end_point = df_within_dates.index[-1]
-#         else:
-#             end_point = df.index[-1]
-#     else:
-#         end_point = df.index[-1]
+@app.callback(
+    [
+    Output("wheel", "style"),
+    Output("arrow_in_1", "style"),
+    Output("arrow_in_2", "style"),
+    Output("arrow_in_3", "style"),
+    Output("arrow_in_4", "style"),
+    Output("arrow_in_5", "style"),
+    Output("arrow_in_6", "style"),
+    Output("arrow_in_7", "style"),
+    Output("arrow_in_8", "style"),
+    Output("arrow_out_1", "style"),
+    Output("arrow_out_2", "style"),
+    Output("arrow_out_3", "style"),
+    Output("arrow_out_4", "style"),
+    Output("arrow_out_5", "style"),
+    Output("arrow_out_6", "style"),
+    Output("arrow_out_7", "style"),
+    Output("arrow_out_8", "style"),
+    ],
+    [
+        Input("Main-Graph", "relayoutData"),
+        Input("date-picker", "start_date"),
+        Input("date-picker", "end_date"),
+        Input('interval-component', 'n_intervals'),
+    ],
+)
+def update_flow_speed(selection, start_date, end_date, index):
+    ctx = dash.callback_context
+    trigger = ctx.triggered[0]['prop_id'].split('.')[0]
+    end_point = 0
+    if trigger == 'interval-component':
+        end_point = (index*width_data_points) % 1000
+    elif trigger == 'date-picker':
+        end_point = df.loc[(df['Interval'] <= end_date)].index[-1]
+    elif trigger == 'Main-Graph':
+        if "xaxis.range[0]" in selection:
+            start_date = str(selection["xaxis.range[0]"])
+            end_date = str(selection["xaxis.range[1]"])
+            start_date_object = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S.%f")
+            end_date_object = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S.%f")
+            mask = (df['Interval'] > start_date_object) & (
+                df['Interval'] <= end_date_object)
+            df_within_dates = df.loc[mask]
+            end_point = df_within_dates.index[-1]
+        else:
+            end_point = df.index[-1]
+    else:
+        end_point = df.index[-1]
     
-#     level = df.iloc[end_point, 6]
-#     # level = -40
-#     # print(level)
-#     ret = list()
-#     if level <= 0: # charging battery
-#         level = int(abs(1-normalize_data(level, -42.795, 0))*3)
-#         # print(level)
-#         windmill = {'animation': 'spin '+str(level)+'s linear infinite'}
-#         ret.append(windmill)
-#         for i in range(1,9):
-#             flow_in = {'animation': 'horizontalSlide '+str(level)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
-#             ret.append(flow_in)
-#         for i in range(1,9):
-#             flow_out = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
-#             ret.append(flow_out)
-#     else: # discharging battery
-#         level = int(abs(1-normalize_data(level, 0, 17.159))+1*3)
-#         # print(level)
-#         windmill = {'animation': 'spin '+str(0)+'s linear infinite'}
-#         ret.append(windmill)
-#         for i in range(1,9):
-#             flow_in = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
-#             ret.append(flow_in)
-#         for i in range(1,9):
-#             flow_out = {'animation': 'horizontalSlide '+str(level)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
-#             # print(flow_out)
-#             ret.append(flow_out)
-#     return ret
+    level = round(df.iloc[end_point, 6])
+    ret = list()
+    if level < 0: # discharging battery
+        level = round(((1-normalize_data(abs(level), 0, 17.159))+0.5)*5)
+        windmill = {'animation': 'spin '+str(0)+'s linear infinite'}
+        ret.append(windmill)
+        for i in range(1,9):
+            flow_in = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(0) +'s'}
+            ret.append(flow_in)
+        for i in range(1,9):
+            delay = str(level+(i*0.5))
+            flow_out = {'animation': 'horizontalSlide '+str(level)+'s linear infinite', 'animation-delay': delay+'s'}
+            ret.append(flow_out)
+    elif level>0: # charging battery
+        level = round(((1-normalize_data(abs(level), 0, 42.795))+0.5)*5)
+        windmill = {'animation': 'spin '+str(level)+'s linear infinite'}
+        ret.append(windmill)
+        for i in range(1,9):
+            delay = str(level+(i*0.5)/1)
+            flow_in = {'animation': 'horizontalSlide '+str(level)+'s linear infinite', 'animation-delay': delay+'s'}
+            ret.append(flow_in)
+        for i in range(1,9):
+            flow_out = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
+            ret.append(flow_out)
+    else:
+        windmill = {'animation': 'spin '+str(0)+'s linear infinite'}
+        ret.append(windmill)
+        for i in range(1,9):
+            flow_in = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(0)+'s'}
+            ret.append(flow_in)
+        for i in range(1,9):
+            flow_out = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
+            ret.append(flow_out)
+    return ret
 
-# def normalize_data(data, min, max):
-#     return (data - min) / (max - min)
+def normalize_data(data, min, max):
+    return (data - min) / (max - min)
 
 @app.callback(
 
