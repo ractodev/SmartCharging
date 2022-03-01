@@ -1,5 +1,5 @@
-from turtle import width
 from xml.dom.minidom import Document
+from matplotlib.pyplot import margins
 import pandas as pd
 import numpy as np
 import dash
@@ -23,11 +23,12 @@ server = app.server
 app.title = "Vattenfall Smart Charging"
 width_data_points = 10
 speed = 50000
+# yellow ="rgb(255, 218, 0)"
+yellow ="rgb(32, 113, 181)"
 
 ################ Functions definition ######################
 
-
-def fig_update_layout(fig):
+def fig_update_layout(fig, myTitle):
     fig.update_layout(
         xaxis=dict(
             showline=False,
@@ -35,10 +36,10 @@ def fig_update_layout(fig):
             showticklabels=True,
             zeroline=False,
             gridcolor="#636363",
-            linecolor="rgb(204, 204, 204)",
+            linecolor="rgb(255, 218, 0)",
             linewidth=2,
-            tickfont=dict(family="Arial", size=12, color="white",),
-            title=dict(font=dict(family="Arial", size=24, color="#fec036"),),
+            tickfont=dict(family="Vattenfall", size=12, color="white",),
+            title=dict(font=dict(family="Vattenfall", size=24, color="#fec036"),),
         ),
         yaxis=dict(
             showline=False,
@@ -46,10 +47,10 @@ def fig_update_layout(fig):
             showticklabels=True,
             zeroline=False,
             gridcolor="#636363",
-            linecolor="rgb(204, 204, 204)",
+            linecolor="rgb(255, 218, 0)",
             linewidth=2,
-            tickfont=dict(family="Arial", size=12, color="white",),
-            title=dict(font=dict(family="Arial", size=24, color="#fec036"),),
+            tickfont=dict(family="Vattenfall", size=12, color="white",),
+            title=dict(font=dict(family="Vattenfall", size=24, color="#fec036"),),
         ),
         autosize=True,
         margin=dict(autoexpand=True, l=50, b=40, r=35, t=30),
@@ -57,7 +58,8 @@ def fig_update_layout(fig):
         paper_bgcolor="black",
         plot_bgcolor="black",
         title=dict(
-            font=dict(family="Arial", size=32, color="darkgray"),
+            text=myTitle,
+            font=dict(family="Vattenfall", size=32, color="darkgray"),
             xanchor="center",
             yanchor="top",
             y=1,
@@ -186,7 +188,7 @@ def update_flow_speed(selection, start_date, end_date, index):
             flow_in = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(0) +'s'}
             ret.append(flow_in)
         for i in range(1,9):
-            delay = str(level+(i*0.5))
+            delay = str((level*i)/8)
             flow_out = {'animation': 'horizontalSlide '+str(level)+'s linear infinite', 'animation-delay': delay+'s'}
             ret.append(flow_out)
     elif level>0: # charging battery
@@ -194,7 +196,7 @@ def update_flow_speed(selection, start_date, end_date, index):
         windmill = {'animation': 'spin '+str(level)+'s linear infinite'}
         ret.append(windmill)
         for i in range(1,9):
-            delay = str(level+(i*0.5)/1)
+            delay = str((level*i)/8)
             flow_in = {'animation': 'horizontalSlide '+str(level)+'s linear infinite', 'animation-delay': delay+'s'}
             ret.append(flow_in)
         for i in range(1,9):
@@ -292,6 +294,7 @@ def get_info(index, mask):
 @app.callback(
     [
         Output("Main-Graph", "figure"),
+        Output("Pow-Graph", "figure"),
         Output("Info-Textbox", "placeholder"),
         Output("Info-Textbox2", "placeholder"),
     ],
@@ -316,7 +319,17 @@ def update_graph_timer(selection, start_date, end_date, index):
             data=[
                 go.Scatter(
                     x=df.iloc[0:index, 1],
-                    y=tmp_data*100
+                    y=tmp_data*100,
+                    line_color=yellow,
+                )
+            ]
+        )
+        fig1 = go.Figure(
+            data=[
+                go.Scatter(
+                    x=df.iloc[0:index, 1],
+                    y=df['Total_W'].iloc[0:index],
+                    line_color=yellow,
                 )
             ]
         )
@@ -342,6 +355,16 @@ def update_graph_timer(selection, start_date, end_date, index):
                 go.Scatter(
                     x=df_within_dates['Interval'],
                     y=df_within_dates['ams-a-control-in-stateOfCharge/AvgValue.avg'],
+                    line_color=yellow,
+                )
+            ]
+        )
+        fig1 = go.Figure(
+            data=[
+                go.Scatter(
+                    x=df_within_dates['Interval'],
+                    y=df_within_dates['Total_W'],
+                    line_color=yellow,
                 )
             ]
         )
@@ -360,6 +383,16 @@ def update_graph_timer(selection, start_date, end_date, index):
                     go.Scatter(
                         x=df_within_dates['Interval'],
                         y=df_within_dates['ams-a-control-in-stateOfCharge/AvgValue.avg'],
+                        line_color=yellow,
+                    )
+                ]
+            )
+            fig1 = go.Figure(
+                data=[
+                    go.Scatter(
+                        x=df_within_dates['Interval'],
+                        y=df_within_dates['Total_W'],
+                        line_color=yellow,
                     )
                 ]
             )
@@ -370,7 +403,17 @@ def update_graph_timer(selection, start_date, end_date, index):
                 data=[
                     go.Scatter(
                         x=df.iloc[:, 1],
-                        y=tmp_data*100
+                        y=tmp_data*100,
+                        line_color=yellow,
+                    )
+                ]
+            )
+            fig1 = go.Figure(
+                data=[
+                    go.Scatter(
+                        x=df.iloc[:, 1],
+                        y=df['Total_W'],
+                        line_color=yellow,
                     )
                 ]
             )
@@ -381,12 +424,23 @@ def update_graph_timer(selection, start_date, end_date, index):
             data=[
                 go.Scatter(
                     x=df.iloc[:, 1],
-                    y=tmp_data*100
+                    y=tmp_data*100,
+                    line_color=yellow,
                 )
             ]
         )
-    fig = fig_update_layout(fig)
-    return fig, information_update, information_update
+        fig1 = go.Figure(
+            data=[
+                go.Scatter(
+                    x=df.iloc[:, 1],
+                    y=df['Total_W'],
+                    line_color=yellow,
+                )
+            ]
+        )
+    fig = fig_update_layout(fig, "Battery Level")
+    fig1 = fig_update_layout(fig1, "Power kW/h")
+    return fig, fig1, information_update, information_update
 
 
 def fix_datapoints():
@@ -426,29 +480,33 @@ def process_df():
 
 def logo(app):
     title = html.H5(
-        "Vattenfall Smart Charging",
-        style={"marginTop": 5, "marginLeft": "10px"},
+        "BPCH AMSTERDAM",
+        style={"marginTop": 5, "marginLeft": "10px", "fontSize": "35", "color": "rgb(78,75,72)"},
     )
 
     info_about_app = html.H6(
-        "Very important message about sustainability. GO green!",
-        style={"marginLeft": "10px"}
+        "Battery-powered charging hub Amsterdam",
+        style={"marginLeft": "10px","fontSize": "25", "color": "rgb(78,75,72)"}
     )
 
+    logo_image_amst = html.Img(src=app.get_asset_url(
+        "amsterdam_logo.png"), style={"marginTop": 5, "height": 60, "left": "3%","float": "left", "display": "inline-block",})
     logo_image = html.Img(src=app.get_asset_url(
-        "VF_logo.png"), style={"height": 100})
+        "VF_logo.png"), style={"marginTop": -20,"height": 100, "right": "3%", "float": "right", "display": "inline-block",})
 
     return dbc.Row([
+        dbc.Col([logo_image_amst], width={'size':4}),
         dbc.Col([
             dbc.Row([title]),
             dbc.Row([info_about_app])],
-            width={'size': 3}),
-        dbc.Col([logo_image], width={'size': 2})], justify='between'
+            width={'size':4}, className='text-center'),
+        dbc.Col([logo_image], width={'size':4}),
+        ]
     )
 
 
 #  get data from csv
-df = pd.read_csv('./assets/data.csv')
+df = pd.read_csv('assets/data.csv')
 process_df()
 # df, df_button, x_test, y_test = data_preprocessing()
 
@@ -463,21 +521,64 @@ graphs = dbc.Card(
                             id="Main-Graph",
                             figure={
                                 "layout": {
-                                    "margin": {"t": 30, "r": 35, "b": 40, "l": 50},
+                                    "margin": {"t": 0, "r": 0, "b": 0, "l": 0},
                                     "xaxis": {
                                         "dtick": 5,
                                         "gridcolor": "#636363",
                                         "showline": False,
                                     },
                                     "yaxis": {"showgrid": False, "showline": False},
-                                    "plot_bgcolor": "black",
+                                    "plot_bgcolor": "black", 
+                                    "title":"Battery %",
                                     "paper_bgcolor": "black",
                                     "font": {"color": "gray"},
+                                    "height": 200,
                                 },
                             },
                             config={"displayModeBar": False},
                         ),
                         html.Pre(id="update-on-click-data"),
+                    ],
+                    style={"width": "98%", "display": "inline-block"},
+                ),
+            ],
+            style={
+                "backgroundColor": "black",
+                "border-radius": "1px",
+                "border-width": "1px",
+                "border-top": "1px solid rgb(216, 216, 216)",
+            },
+        )
+    ]
+)
+
+graphs_pow = dbc.Card(
+    children=[
+        dbc.CardBody(
+            [
+                html.Div(
+                    [
+                        dcc.Graph(
+                            id="Pow-Graph",
+                            figure={
+                                "layout": {
+                                    "margin": {"t": 0, "r": 0, "b": 0, "l": 0},
+                                    "xaxis": {
+                                        "dtick": 5,
+                                        "gridcolor": "#636363",
+                                        "showline": False,
+                                    },
+                                    "yaxis": {"showgrid": False, "showline": False},
+                                    "plot_bgcolor": "black",                                
+                                    "title":"Power kW/h",
+                                    "paper_bgcolor": "black",
+                                    "font": {"color": "gray"},
+                                    "height": 200,
+                                },
+                            },
+                            config={"displayModeBar": False},
+                        ),
+                        html.Pre(id="update-on-click-data-2"),
                     ],
                     style={"width": "98%", "display": "inline-block"},
                 ),
@@ -491,18 +592,19 @@ graphs = dbc.Card(
                             # max_date_allowed=date.today(),
                             initial_visible_month=pd.Series.max(
                                 df['Interval']),
-                            start_date_placeholder_text="Start Period",
-                            end_date_placeholder_text="End Period",
+                            start_date_placeholder_text="Start Date",
+                            end_date_placeholder_text="End Date",
                             calendar_orientation="vertical",
                         ),
                         html.Div(id="output-container-date-picker-range"),
                     ],
                     style={
-                        "vertical-align": "top",
+                        "vertical-align": "bottom",
                         "position": "absolute",
+                        "bottom": 0,
                         "right": "3%",
                         "float": "right",
-                        "display": "inline-block",
+                        "display": "inline-block",                    
                         "color": "black",
                     },
                 ),
@@ -510,77 +612,48 @@ graphs = dbc.Card(
             style={
                 "backgroundColor": "black",
                 "border-radius": "1px",
-                "border-width": "5px",
-                "border-top": "1px solid rgb(216, 216, 216)",
+                "border-width": "1px",
+                "border-top": "1px solid black",
             },
         )
     ]
 )
 
-info_box = dbc.Card(
-    children=[
-        dbc.CardBody(
-            [
-                html.Div(
-                    dcc.Textarea(
-                        id="Info-Textbox",
-                        placeholder="This field is used to display information about a feature displayed "
-                        "on the graph.",
-                        rows=8,
-                        style={
-                            "width": "100%",
-                            "height": "30rem",
-                            "background-color": "black",
-                            "color": "#fec036",
-                            "placeholder": "#fec036",
-                            "fontFamily": "Arial",
-                            "fontSize": "16",
-                            "display": "inline-block",
-                        },
-                    )
-                )
-            ],
-            style={
-                "backgroundColor": "black",
-                "border-radius": "1px",
-                "border-width": "5px",
-                "border-top": "1px solid rgb(216, 216, 216)",
-            },
-        ),
-    ],
+info_box = dcc.Textarea(
+    id="Info-Textbox",
+    placeholder="This field is used to display information about a feature displayed "
+    "on the graph.",
+    rows=6,
+    style={
+        "width": "100%",
+        "height": "32rem",
+        "resize" : "none",
+        "background-color": "rgb(189,213,233)",
+        "color": "#00000",
+        "placeholder": "#00000",
+        "fontFamily": "Vattenfall",
+        "fontSize": "30",
+        "display": "inline-block",
+    },
 )
+                
 
-info_box2 = dbc.Card(
-    children=[
-        dbc.CardBody(
-            [
-                html.Div(
-                    dcc.Textarea(
-                        id="Info-Textbox2",
-                        placeholder="This field is used to display information about a feature displayed "
-                        "on the graph.",
-                        rows=8,
-                        style={
-                            "width": "100%",
-                            "height": "30rem",
-                            "background-color": "black",
-                            "color": "#fec036",
-                            "placeholder": "#fec036",
-                            "fontFamily": "Arial",
-                            "fontSize": "16",
-                            "display": "inline-block",
-                        },
-                    )
-                )
-            ],
-            style={
-                "backgroundColor": "black",
-                "border-radius": "1px",
-                "border-width": "5px",
-                "border-top": "1px solid rgb(216, 216, 216)",
-            },
-        ),
-    ],
+info_box2 = dcc.Textarea(
+    id="Info-Textbox2",
+    placeholder="This field is used to display information about a feature displayed "
+    "on the graph.",
+    rows=8,
+    style={
+        "width": "100%",
+        "height": "32rem",
+        "resize" : "none",
+        "background-color": "rgb(189,213,233)",
+        "color": "#00000",
+        "placeholder": "#00000",
+        "fontFamily": "Vattenfall",
+        "fontSize": "30",
+        "display": "inline-block",
+    },
 )
 
 flowView = html.Div(
@@ -804,9 +877,9 @@ app.layout = dbc.Container(
         ),
         logo(app),
         dbc.Row([
-                dbc.Col([info_box], width=2),
-                dbc.Col([info_box2], width=2),
-                dbc.Col([graphs])
+                dbc.Col([info_box], width=4),
+                dbc.Col([info_box2], width=4),
+                dbc.Col([graphs, graphs_pow])
                 ]),
         bottomView,
     ]

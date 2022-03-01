@@ -21,6 +21,10 @@
     width: 85%;
     padding: 0; }
 }
+@font-face {
+    font-family: 'Vattenfall'; 
+    src: url('Vattenfall.otf');
+}
 /* For devices larger than 550px */
 @media (min-width: 550px) {
   .container {
@@ -77,16 +81,19 @@
   .offset-by-one-half.column,
   .offset-by-one-half.columns     { margin-left: 52%; }
 }
+*{
+    font-family: "Vattenfall";
+}
 body {
-	 background-color: #a3c0ec;
+	 background-color: rgb(233, 241, 248);
 }
 .bottom-view{
 	top: 1rem;
 	position: relative;
   	left: 0px;
-	width: 90rem;
+	width: 150rem;
 	height: 32rem;
-  	background-color: #a3c0ec;
+  	background-color: rgb(189, 213, 233);
 }
  .windmill {
 	 position: absolute;
@@ -107,14 +114,14 @@ body {
 	 position: absolute;
 	 width: 8px;
 	 height: 100px;
-	 background-color: #414c68;
+	 background-color: rgb(30, 50, 79);
 	 margin-right: 10px;
 	 left: 92px;
 }
  .windwheel:before {
 	 positioN: absolute;
 	 content: "";
-	 background-color: #414c68;
+	 background-color: rgb(255, 237, 128);
 	 opacity: 0.7;
 	 width: 15px;
 	 height: 75px;
@@ -138,7 +145,7 @@ body {
  .windwheel4:after {
 	 position: absolute;
 	 content: "";
-	 background-color: #414c68;
+	 background-color: rgb(30, 50, 79);
 	 opacity: 0.7;
 	 width: 22px;
 	 height: 22px;
@@ -154,7 +161,7 @@ body {
 	 height: 0;
 	 border-left: 50px solid transparent;
 	 border-right: 50px solid transparent;
-	 border-bottom: 50px solid #df615c;
+	 border-bottom: 50px solid rgb(255, 218, 0);
 }
  .mill {
 	 z-index: 3;
@@ -172,9 +179,9 @@ body {
 	 background-color: #fff;
 	 top: 184px;
 	 left: 70px;
-	 border-top: 20px solid #df615c;
+	 border-top: 20px solid rgb(255, 218, 0);
 }
- .house:after {
+ /* .house:after {
 	 content: "";
 	 position: absolute;
 	 background-color: #414c68;
@@ -183,7 +190,7 @@ body {
 	 bottom: 0;
 	 left: 70px;
 	 border-left: 5px solid #82a7df;
-}
+} */
  .bush {
 	 position: relative;
 	 top: 203px;
@@ -325,7 +332,7 @@ body {
 	 width: 2rem;
 	 height: 2rem;
 	 border: 0.5rem solid;
-	 border-color: #ccffac transparent transparent #ccffac;
+	 border-color: rgb(61, 192, 124) transparent transparent rgb(61, 192, 124);
 	 transform: rotate(-135deg);
 }
 
@@ -333,7 +340,7 @@ body {
 	 width: 2rem;
 	 height: 2rem;
 	 border: 0.5rem solid;
-	 border-color: #ccffac transparent transparent #ccffac;
+	 border-color: rgb(61, 192, 124) transparent transparent rgb(61, 192, 124);
 	 transform: rotate(135deg);
 }
 
@@ -416,407 +423,6 @@ body {
 	}
 }
 
-/* .bottom-view {
-    position: relative;
-    bottom: 35rem;
-    left: 0px;
-    width: 1000px;
-    height: 450px;
-    background-color: #a3c0ec;
-}
-
-.windmill {
-    position: absolute;
-    left: 5%;
-    top: 75%;
-}
-
-.hills {
-    width: 280px;
-    height: 180px;
-    background-color: #82a7df;
-    position: absolute;
-    top: 64px;
-    left: -75px;
-    opacity: 0.5;
-    border-radius: 300px 300px 0 0;
-}
-
-.hills:before,
-.hills:after {
-    content: '';
-    position: absolute;
-    background-color: #82a7df;
-    border-radius: 300px 300px 0 0;
-}
-
-.hills:before {
-    width: 250px;
-    height: 110px;
-    bottom: 0;
-    right: -120px;
-}
-
-.wheel {
-    z-index: 10;
-    width: 192px;
-    height: 192px;
-    position: absolute;
-    left: -45px;
-    top: 10px;
-    animation: spin 4s linear infinite;
-    animation-direction: reverse;
-}
-
-.windwheel {
-    position: absolute;
-    width: 8px;
-    height: 100px;
-    background-color: #414c68;
-    margin-right: 10px;
-    left: 92px;
-}
-
-.windwheel:before {
-    positioN: absolute;
-    content: "";
-    background-color: #414c68;
-    opacity: 0.7;
-    width: 15px;
-    height: 75px;
-    left: 8px;
-}
-
-.windwheel2 {
-    transform: rotate(90deg);
-    top: 46px;
-    left: 138px;
-    z-index: 40;
-}
-
-.windwheel3 {
-    transform: rotate(180deg);
-    top: 92px;
-}
-
-.windwheel4 {
-    transform: rotate(-90deg);
-    top: 46px;
-    left: 46px;
-}
-
-.windwheel4:after {
-    position: absolute;
-    content: "";
-    background-color: #414c68;
-    opacity: 0.7;
-    width: 22px;
-    height: 22px;
-    bottom: -7px;
-    left: -7px;
-    transform: rotate(45deg);
-}
-
-.roof {
-    position: absolute;
-    z-index: 9;
-    top: 75px;
-    width: 0;
-    height: 0;
-    border-left: 50px solid transparent;
-    border-right: 50px solid transparent;
-    border-bottom: 50px solid #df615c;
-}
-
-.mill {
-    position: absolute;
-    left: 0px;
-    top: 124px;
-    width: 100px;
-    height: 120px;
-    background-color: #fff;
-}
-
-.house {
-    position: absolute;
-    width: 120px;
-    height: 60px;
-    background-color: #fff;
-    top: 184px;
-    left: 70px;
-    border-top: 20px solid #df615c;
-}
-
-.house:after {
-    content: "";
-    position: absolute;
-    background-color: #414c68;
-    width: 20px;
-    height: 30px;
-    bottom: 0;
-    left: 70px;
-    border-left: 5px solid #82a7df;
-}
-
-.bush {
-    position: relative;
-    top: 203px;
-    left: -60px;
-}
-
-.bush li {
-    float: left;
-    list-style: none;
-    background-color: #df615c;
-    width: 40px;
-    height: 25px;
-    border-radius: 100px 100px 0 0;
-}
-
-.bush2 {
-    top: 178px;
-    left: 160px;
-}
-
-.tree {
-    position: absolute;
-    left: -50px;
-    top: 120px;
-}
-
-.tree li {
-    list-style: none;
-    background-color: #414c68;
-    width: 45px;
-    height: 45px;
-    border-radius: 100%;
-    margin-bottom: -15px;
-}
-
-.tree:after {
-    content: "";
-    position: absolute;
-    background-color: #82a7df;
-    width: 3px;
-    height: 80px;
-    top: 25px;
-    right: 21px;
-}
-
-.cloud {
-    position: absolute;
-    top: 40px;
-    left: -100px;
-    background-color: #fff;
-    height: 20px;
-    width: 40px;
-    z-index: 1000;
-    border-radius: 40px 40px 0 0;
-    opacity: 0.7;
-    animation: clouds 14s linear alternate infinite;
-}
-
-.cloud:before {
-    content: "";
-    position: absolute;
-    background-color: #fff;
-    height: 30px;
-    width: 60px;
-    border-radius: 60px 60px 0 0;
-    bottom: 0;
-    right: 20px;
-}
-
-.cloud2 {
-    height: 40px;
-    width: 80px;
-    top: -20px;
-    z-index: 1;
-    animation: clouds 24s linear alternate-reverse infinite;
-}
-
-.cloud2:before {
-    content: "";
-    position: absolute;
-    background-color: #fff;
-    height: 30px;
-    width: 60px;
-    border-radius: 60px 60px 0 0;
-    bottom: 0;
-    right: 40px;
-}
-
-@keyframes spin {
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-@keyframes clouds {
-    100% {
-        transform: translateX(540px);
-    }
-}
-
-.verticalPipe {
-    position: absolute;
-    left: 85px;
-    top: 243px;
-    width: 44px;
-    height: 370px;
-    border-right: 5px solid gray;
-    border-left: 5px solid gray;
-    background-color: none;
-}
-
-.horizontalPipe {
-    position: absolute;
-    left: 210px;
-    top: 699px;
-    width: 370px;
-    height: 44px;
-    border-top: 5px solid gray;
-    border-bottom: 5px solid gray;
-    background-color: none;
-}
-
-#verticalArrowAnim {
-    margin-top: 210px;
-    margin-left: 98px;
-    width: 100vw;
-    height: 100vh;
-    display: absolute;
-    justify-content: center;
-    align-items: center;
-}
-
-#horizontalArrowAnim1 {
-    margin-top: 1045px;
-    margin-left: 280px;
-    width: 100vw;
-    height: 100vh;
-    display: absolute;
-    justify-content: center;
-    align-items: center;
-}
-
-#horizontalArrowAnim2 {
-    margin-top: -1280px;
-    margin-left: 950px;
-    width: 100vw;
-    height: 100vh;
-    display: absolute;
-    justify-content: center;
-    align-items: center;
-}
-
-.arrow {
-    width: 10px;
-    height: 10px;
-    border: 8px solid;
-    border-color: #ccffac transparent transparent #ccffac;
-    transform: rotate(-135deg);
-}
-
-.arrow1 {
-    width: 30px;
-    height: 30px;
-    border: 8px solid;
-    border-color: #ccffac transparent transparent #ccffac;
-    transform: rotate(135deg);
-}
-
-.verticalArrowSliding {
-    position: absolute;
-    -webkit-animation: verticalSlide 4s linear infinite;
-    animation: verticalSlide 4s linear infinite;
-}
-
-.horizontalArrowSliding {
-    position: absolute;
-    -webkit-animation: horizontalSlide 4s linear infinite;
-    animation: horizontalSlide 4s linear infinite;
-}
-
-.delay1 {
-    -webkit-animation-delay: 0.5s;
-    animation-delay: 0.5s;
-}
-
-.delay2 {
-    -webkit-animation-delay: 1s;
-    animation-delay: 1s;
-}
-
-.delay3 {
-    -webkit-animation-delay: 1.5s;
-    animation-delay: 1.5s;
-}
-
-.delay4 {
-    -webkit-animation-delay: 2s;
-    animation-delay: 2s;
-}
-
-.delay5 {
-    -webkit-animation-delay: 2.5s;
-    animation-delay: 2.5s;
-}
-
-.delay6 {
-    -webkit-animation-delay: 3s;
-    animation-delay: 3s;
-}
-
-.delay7 {
-    -webkit-animation-delay: 3.5s;
-    animation-delay: 3.5s;
-}
-
-@-webkit-keyframes verticalSlide {
-    80% {
-        opacity: 1;
-        transform: translateY(300px);
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(900px);
-    }
-}
-
-@keyframes verticalSlide {
-    80% {
-        opacity: 1;
-        transform: translateY(300px);
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(400px);
-    }
-}
-
-@-webkit-keyframes horizontalSlide {
-    80% {
-        opacity: 1;
-        transform: translateX(300px);
-    }
-    100% {
-        opacity: 0;
-        transform: translateX(900px);
-    }
-}
-
-@keyframes horizontalSlide {
-    80% {
-        opacity: 1;
-        transform: translateX(300px);
-    }
-    100% {
-        opacity: 0;
-        transform: translateX(400px);
-    }
-}
-*/
 #battery {
 	 position: absolute;
 	 top: -8rem;
@@ -845,7 +451,7 @@ body {
 	 position: absolute;
 	 bottom: 1rem;
 	 display: block;
-	 background-color: #ccffac;
+	 background-color: rgb(159, 255, 101);
 	 width: 13rem;
 	 height: 0px;
 	 margin: 0 1rem;
@@ -855,7 +461,7 @@ body {
 	 border-bottom: 0.2rem solid #fff;
 	 color: #fff;
 	 font-size: 2rem;
-	 font-family: 'Arial';
+	 /* font-family: 'Arial'; */
 	 width: 6rem;
 	 margin-left: 20rem;
 	 margin-top: 15rem;
@@ -876,7 +482,7 @@ body {
   position: absolute;
   width: 120rem;
   height: 25rem;
-  background: #82A7DF;
+  background: rgb(32, 113, 181);
   border-radius: 80% 20% 20% 10% / 100% 0% 0% 0%;
 }
 .hills2{
@@ -884,7 +490,7 @@ body {
   top: 20.313rem;
   width: 30rem;
   height: 184.56px;
-  background: #82A7DF;
+  background: rgb(32, 113, 181);
   border-radius: 10% 100% 10% 50% / 0% 100% 0% 0%;
 }
 .chargeArea{
@@ -893,7 +499,7 @@ body {
   position: absolute;
   width: 30rem;
   height: 20rem;
-  background: linear-gradient(90deg, #ccffac 50%, transparent 50%), linear-gradient(90deg, #ccffac 50%, transparent 50%), linear-gradient(0deg, #ccffac 50%, transparent 50%), linear-gradient(0deg, #ccffac 50%, transparent 50%);
+  background: linear-gradient(90deg, rgb(61, 192, 124) 50%, transparent 50%), linear-gradient(90deg, rgb(61, 192, 124) 50%, transparent 50%), linear-gradient(0deg, rgb(61, 192, 124) 50%, transparent 50%), linear-gradient(0deg, rgb(61, 192, 124) 50%, transparent 50%);
   background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
   background-size: 15px 4px, 15px 4px, 4px 15px, 4px 15px;
   background-position: left top, right bottom, left bottom, right   top;
