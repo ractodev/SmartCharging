@@ -1071,31 +1071,77 @@ body {
 /* TULIP */
 
 
- .tulip {
+ .tulip1 {
+   position: relative;
+   transform: scale(0.2);
+   top: -16rem;
+   left: 80rem;
 	 width: 10px;
 	 height: 400px;
 	 margin: 30px 100px;
 	 float: left;
 }
- .leftBabyTulip {
-	 transform: scale(0.6);
-	 left: -153px;
-	 top: 74px;
+ .tulip2 {
+   position: relative;
+   transform: scale(0.2);
+   top: -15rem;
+   left: 35rem;
+	 width: 10px;
+	 height: 400px;
+	 margin: 30px 100px;
+	 float: left;
 }
- .leftBabyTulip .rightStemLeaf {
-	 top: 105px;
-	 transform: rotate(-32deg);
-	 left: -15px;
+ .tulip3 {
+   position: relative;
+   transform: scale(0.1);
+   top: -15rem;
+   left: 55rem;
+	 width: 10px;
+	 height: 400px;
+	 margin: 30px 100px;
+	 float: left;
 }
- .leftBabyTulip leftStemLeaf {
-	 transform: scale(0.7) rotate(90deg);
-	 left: -54px;
+ .tulip4 {
+   position: relative;
+   transform: scale(0.15);
+   top: -18rem;
+   left: 32rem;
+	 width: 10px;
+	 height: 400px;
+	 margin: 30px 100px;
+	 float: left;
 }
- .rightBabyTulip {
-	 transform: scale(0.8);
-	 left: 163px;
-	 top: 42px;
+ .tulip7 {
+   position: relative;
+   transform: scale(0.15);
+   top: -19rem;
+   left: 55rem;
+	 width: 10px;
+	 height: 400px;
+	 margin: 30px 100px;
+	 float: left;
 }
+ .tulip5 {
+   position: relative;
+   transform: scale(0.1);
+   top: -16rem;
+   left: 40rem;
+	 width: 10px;
+	 height: 400px;
+	 margin: 30px 100px;
+	 float: left;
+}
+ .tulip6 {
+   position: relative;
+   transform: scale(0.2);
+   top: -15rem;
+   left: 22rem;
+	 width: 10px;
+	 height: 400px;
+	 margin: 30px 100px;
+	 float: left;
+}
+
  .rightBabyTulip .tulipHead {
 	 transform: rotate(23deg);
 	 left: -80px;
