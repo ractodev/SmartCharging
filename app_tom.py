@@ -941,73 +941,57 @@ chargeView = html.Div(
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_0_0'),
-                     html.Div(id='car_0_1'),
-                     carFlow1,
-                     carFlow2,
+                     html.Div(id='car_0_0', children=[carFlow1]),
+                     html.Div(id='car_0_1', children=[carFlow2]),
                  ]),
         html.Div(id='chargeSpot2',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_1_0'),
-                     html.Div(id='car_1_1'),
-                     carFlow1,
-                     carFlow2,
+                     html.Div(id='car_1_0', children=[carFlow1]),
+                     html.Div(id='car_1_1', children=[carFlow2])
                  ]),
         html.Div(id='chargeSpot3',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_2_0'),
-                     html.Div(id='car_2_1'),
-                     carFlow1,
-                     carFlow2,
+                     html.Div(id='car_2_0', children=[carFlow1]),
+                     html.Div(id='car_2_1', children=[carFlow2])
                  ]),
         html.Div(id='chargeSpot4',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_3_0'),
-                     html.Div(id='car_3_1'),
-                     carFlow1,
-                     carFlow2,
+                     html.Div(id='car_3_0', children=[carFlow1]),
+                     html.Div(id='car_3_1', children=[carFlow2])
                  ]),
         html.Div(id='chargeSpot5',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_4_0'),
-                     html.Div(id='car_4_1'),
-                     carFlow1,
-                     carFlow2,
+                     html.Div(id='car_4_0', children=[carFlow1]),
+                     html.Div(id='car_4_1', children=[carFlow2])
                  ]),
         html.Div(id='chargeSpot6',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_5_0'),
-                     html.Div(id='car_5_1'),
-                     carFlow1,
-                     carFlow2,
+                     html.Div(id='car_5_0', children=[carFlow1]),
+                     html.Div(id='car_5_1', children=[carFlow2])
                  ]),
         html.Div(id='chargeSpot7',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_6_0'),
-                     html.Div(id='car_6_1'),
-                     carFlow1,
-                     carFlow2,
+                     html.Div(id='car_6_0', children=[carFlow1]),
+                     html.Div(id='car_6_1', children=[carFlow2])
                  ]),
         html.Div(id='chargeSpot8',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_7_0'),
-                     html.Div(id='car_7_1'),
-                     carFlow1,
-                     carFlow2,
+                     html.Div(id='car_7_0', children=[carFlow1]),
+                     html.Div(id='car_7_1', children=[carFlow2])
                  ]),
     ]
 )
