@@ -953,6 +953,70 @@ carFlow2 = html.Div(
     ],
 )
 
+tulip = html.Div(className='stem',
+                 children=[
+                     html.Div(className='tulipHead',
+                              children=[
+                                  html.Div(
+                                      className="tulipHair lightTulip lightTulip-1"),
+                                  html.Div(
+                                      className="tulipHair darkTulip darkTulip-1"),
+                                  html.Div(
+                                      className="tulipHair lightTulip lightTulip-2"),
+                                  html.Div(
+                                      className="tulipHair darkTulip darkTulip-2"),
+                                  html.Div(
+                                      className="tulipHair lightTulip lightTulip-3"),
+                              ]),
+                     html.Div(className="rightTulipLeaf tulipLeaf leaf"),
+                     html.Div(className="leftTulipLeaf tulipLeaf leaf"),
+                     html.Div(className="rightStemLeaf stemLeaf leaf"),
+                     html.Div(className="leftStemLeaf stemLeaf leaf")
+                 ]
+                 )
+
+
+leftTulip1 = html.Div(
+    className='tulip1',
+    children=[tulip]
+)
+rightTulip1 = html.Div(
+    className='tulip2 rightBabyTulip',
+    children=[tulip]
+)
+leftTulip2 = html.Div(
+    className='tulip3',
+    children=[tulip]
+)
+rightTulip2 = html.Div(
+    className='tulip4 rightBabyTulip',
+    children=[tulip]
+)
+leftTulip3 = html.Div(
+    className='tulip5',
+    children=[tulip]
+)
+rightTulip3 = html.Div(
+    className='tulip6 rightBabyTulip',
+    children=[tulip]
+)
+leftTulip4 = html.Div(
+    className='tulip7',
+    children=[tulip]
+)
+
+tulipsView = html.Div(
+    children=[
+        leftTulip1,
+        leftTulip2,
+        leftTulip3,
+        leftTulip4,
+        rightTulip1,
+        rightTulip2,
+        rightTulip3
+    ]
+)
+
 chargeView = html.Div(
     className='chargeArea',
     children=[
@@ -1099,7 +1163,8 @@ bottomView = html.Div(
         hills,
         windmillView,
         flowView,
-        chargeView
+        chargeView,
+        tulipsView
     ]
 )
 
