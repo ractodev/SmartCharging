@@ -20,8 +20,8 @@ app = dash.Dash(
 )
 server = app.server
 app.title = "Vattenfall Smart Charging"
-width_data_points = 10
-speed = 50000
+width_data_points = 50
+speed = 5000
 yellow ="rgb(255, 218, 0)"
 # yellow ="rgb(32, 113, 181)"
 
@@ -129,7 +129,22 @@ def update_cars(selection, start_date, end_date, index):
 
 @app.callback(
     [
-    
+        Output('car_0_0', 'children'),
+        Output('car_0_1', 'children'),
+        Output('car_1_0', 'children'),
+        Output('car_1_1', 'children'),
+        Output('car_2_0', 'children'),
+        Output('car_2_1', 'children'),
+        Output('car_3_0', 'children'),
+        Output('car_3_1', 'children'),
+        Output('car_4_0', 'children'),
+        Output('car_4_1', 'children'),
+        Output('car_5_0', 'children'),
+        Output('car_5_1', 'children'),
+        Output('car_6_0', 'children'),
+        Output('car_6_1', 'children'),
+        Output('car_7_0', 'children'),
+        Output('car_7_1', 'children'),
     ],
     [
         Input("Main-Graph", "relayoutData"),
@@ -142,6 +157,8 @@ def update_flow_cars(selection, start_date, end_date, index):
     ctx = dash.callback_context
     trigger = ctx.triggered[0]['prop_id'].split('.')[0]
     end_point = 0
+    df_slice = df.iloc[:,10:-49:3]
+    ret = list()
     if trigger == 'interval-component':
         end_point = (index*width_data_points) % 1000
     elif trigger == 'date-picker':
@@ -154,46 +171,17 @@ def update_flow_cars(selection, start_date, end_date, index):
             end_date_object = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S.%f")
             mask = (df['Interval'] > start_date_object) & (
                 df['Interval'] <= end_date_object)
-            df_within_dates = df.loc[mask]
+            df_within_dates = df_slice.loc[mask]
             end_point = df_within_dates.index[-1]
         else:
-            end_point = df.index[-1]
+            end_point = df_slice.index[-1]
     else:
-        end_point = df.index[-1]
-    
-    level = round(df.iloc[end_point, 6])
-    ret = list()
-    if level < 0: # discharging battery
-        level = round(((1-normalize_data(abs(level), 0, 17.159))+0.5)*5)
-        windmill = {'animation': 'spin '+str(0)+'s linear infinite reverse'}
-        ret.append(windmill)
-        for i in range(1,9):
-            flow_in = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(0) +'s'}
-            ret.append(flow_in)
-        for i in range(1,9):
-            delay = str((level*i)/8)
-            flow_out = {'animation': 'horizontalSlide '+str(level)+'s linear infinite', 'animation-delay': delay+'s'}
-            ret.append(flow_out)
-    elif level>0: # charging battery
-        level = round(((1-normalize_data(abs(level), 0, 42.795))+0.5)*5)
-        windmill = {'animation': 'spin '+str(level)+'s linear infinite reverse'}
-        ret.append(windmill)
-        for i in range(1,9):
-            delay = str((level*i)/8)
-            flow_in = {'animation': 'horizontalSlide '+str(level)+'s linear infinite', 'animation-delay': delay+'s'}
-            ret.append(flow_in)
-        for i in range(1,9):
-            flow_out = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
-            ret.append(flow_out)
-    else:
-        windmill = {'animation': 'spin '+str(0)+'s linear infinite reverse'}
-        ret.append(windmill)
-        for i in range(1,9):
-            flow_in = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(0)+'s'}
-            ret.append(flow_in)
-        for i in range(1,9):
-            flow_out = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
-            ret.append(flow_out)
+        end_point = df_slice.index[-1]
+    for i in range(0, 16):
+        if df_slice.iloc[end_point,i] > 0:
+            ret.append([carFlow1])
+        else:
+            ret.append([html.H1()])
     return ret
 
 
@@ -972,73 +960,57 @@ chargeView = html.Div(
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_0_0'),
-                     html.Div(id='car_0_1'),
-                     carFlow1, 
-                     carFlow2,
+                     html.Div(id='car_0_0', children=[carFlow1]),
+                     html.Div(id='car_0_1', children=[carFlow1]),
                  ]),
         html.Div(id='chargeSpot2',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_1_0'),
-                     html.Div(id='car_1_1'),
-                     carFlow1,
-                     carFlow2,
+                     html.Div(id='car_1_0', children=[carFlow1]),
+                     html.Div(id='car_1_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot3',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_2_0'),
-                     html.Div(id='car_2_1'),
-                     carFlow1,
-                     carFlow2,
+                     html.Div(id='car_2_0', children=[carFlow1]),
+                     html.Div(id='car_2_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot4',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_3_0'),
-                     html.Div(id='car_3_1'),
-                     carFlow1,
-                     carFlow2,
+                     html.Div(id='car_3_0', children=[carFlow1]),
+                     html.Div(id='car_3_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot5',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_4_0'),
-                     html.Div(id='car_4_1'),
-                     carFlow1,
-                     carFlow2,
+                     html.Div(id='car_4_0', children=[carFlow1]),
+                     html.Div(id='car_4_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot6',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_5_0'),
-                     html.Div(id='car_5_1'),
-                     carFlow1,
-                     carFlow2,
+                     html.Div(id='car_5_0', children=[carFlow1]),
+                     html.Div(id='car_5_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot7',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_6_0'),
-                     html.Div(id='car_6_1'),
-                     carFlow1,
-                     carFlow2,
+                     html.Div(id='car_6_0', children=[carFlow1]),
+                     html.Div(id='car_6_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot8',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_7_0'),
-                     html.Div(id='car_7_1'),
-                     carFlow1,
-                     carFlow2,
+                     html.Div(id='car_7_0', children=[carFlow1]),
+                     html.Div(id='car_7_1', children=[carFlow1])
                  ]),
     ]
 )
