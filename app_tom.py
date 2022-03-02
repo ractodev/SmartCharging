@@ -1,3 +1,4 @@
+from pydoc import classname
 from xml.dom.minidom import Document
 from matplotlib.pyplot import margins
 import pandas as pd
@@ -192,7 +193,8 @@ def update_flow_speed(selection, start_date, end_date, index):
     ret = list()
     if level < 0:  # discharging battery
         level = round(((1-normalize_data(abs(level), 0, 17.159))+0.5)*5)
-        windmill = {'animation': 'spin '+str(0)+'s linear infinite'}
+        windmill = {'animation': 'spin ' +
+                    str(0)+'s linear infinite ', 'animation-direction': 'reverse'}
         ret.append(windmill)
         for i in range(1, 9):
             flow_in = {'animation': 'horizontalSlide ' +
@@ -205,7 +207,8 @@ def update_flow_speed(selection, start_date, end_date, index):
             ret.append(flow_out)
     elif level > 0:  # charging battery
         level = round(((1-normalize_data(abs(level), 0, 42.795))+0.5)*5)
-        windmill = {'animation': 'spin '+str(level)+'s linear infinite'}
+        windmill = {'animation': 'spin ' +
+                    str(level)+'s linear infinite', 'animation-direction': 'reverse'}
         ret.append(windmill)
         for i in range(1, 9):
             delay = str((level*i)/8)
@@ -217,7 +220,8 @@ def update_flow_speed(selection, start_date, end_date, index):
                         str(0)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
             ret.append(flow_out)
     else:
-        windmill = {'animation': 'spin '+str(0)+'s linear infinite'}
+        windmill = {'animation': 'spin ' +
+                    str(0)+'s linear infinite', 'animation-direction': 'reverse'}
         ret.append(windmill)
         for i in range(1, 9):
             flow_in = {'animation': 'horizontalSlide ' +
@@ -920,6 +924,15 @@ carFlow2 = html.Div(
     ],
 )
 
+tulipView = html.Div(
+    className='tulip',
+    children=[
+        html.Div(className='stem', children=[
+            html.Div(className='')
+        ])
+    ]
+)
+
 
 chargeView = html.Div(
     className='chargeArea',
@@ -1045,6 +1058,11 @@ hills = html.Div(
     children=[
         html.Div(className="hills1"),
         html.Div(className="hills2"),
+        html.Div(className="hills3"),
+        html.Div(className="hills4"),
+        html.Div(className="hills5"),
+        html.Div(className="hills6"),
+        html.Div(className="hills7"),
     ]
 )
 
