@@ -22,7 +22,7 @@ app = dash.Dash(
 server = app.server
 app.title = "Vattenfall Smart Charging"
 width_data_points = 10
-speed = 50000
+speed = 800
 # yellow ="rgb(255, 218, 0)"
 yellow = "rgb(32, 113, 181)"
 
@@ -127,9 +127,10 @@ def update_cars(selection, start_date, end_date, index):
     for i in range(0, 16):
         car_i = cars_connected_avg.iloc[end_point, i]
         if car_i != 0.0:
-            output.append({'background-color': '#ccffac'})
+            output.append(
+                {'background-image': 'url(../assets/car-charging.svg)'})
         else:
-            output.append({'background-color': '#595656'})
+            output.append({'background-image': 'url(../assets/car-none.svg)'})
     return output
 
 # to be fixed
@@ -811,7 +812,7 @@ flowView = html.Div(
 
 
 carFlow1 = html.Div(
-    id="carFlow1",
+    className="carFlow1",
     children=[
         html.Div(
             className="horizontalCarArrowSliding",
@@ -820,45 +821,43 @@ carFlow1 = html.Div(
             ],
         ),
         html.Div(
-            className="horizontalCarArrowSliding delay1",
+            className="horizontalCarArrowSliding d1",
             children=[
                 html.Div(className="arrow2")
             ],
         ),
         html.Div(
-            id='arrow_out_3',
-            className="horizontalCarArrowSliding delay2",
-            children=[
-                html.Div(className="arrow1")
-            ],
-        ),
-        html.Div(
-            className="horizontalCarArrowSliding delay3",
+            className="horizontalCarArrowSliding d2",
             children=[
                 html.Div(className="arrow2")
             ],
         ),
         html.Div(
-            id='arrow2',
-            className="horizontalCarArrowSliding delay4",
+            className="horizontalCarArrowSliding d3",
             children=[
                 html.Div(className="arrow2")
             ],
         ),
         html.Div(
-            className="horizontalCarArrowSliding delay5",
+            className="horizontalCarArrowSliding d4",
             children=[
                 html.Div(className="arrow2")
             ],
         ),
         html.Div(
-            className="horizontalCarArrowSliding delay6",
+            className="horizontalCarArrowSliding d5",
             children=[
                 html.Div(className="arrow2")
             ],
         ),
         html.Div(
-            className="horizontalCarArrowSliding delay7",
+            className="horizontalCarArrowSliding d6",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d7",
             children=[
                 html.Div(className="arrow2")
             ],
@@ -866,16 +865,136 @@ carFlow1 = html.Div(
     ],
 )
 
+carFlow2 = html.Div(
+    className="carFlow2",
+    children=[
+        html.Div(
+            className="horizontalCarArrowSliding",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d1",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d2",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d3",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d4",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d5",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d6",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d7",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+
+    ],
+)
+
 
 chargeView = html.Div(
-    id='chargeArea',
+    className='chargeArea',
     children=[
         html.Div(id='chargeSpot1',
                  children=[
-                     html.Div(id='pole', children=[
-                              html.Div(id='car-charging')]),
-                     html.Div(id='poleHead'),
+                     html.Div(className='pole'),
+                     html.Div(className='poleHead'),
+                     html.Div(id='car_0_0'),
+                     html.Div(id='car_0_1'),
                      carFlow1,
+                     carFlow2,
+                 ]),
+        html.Div(id='chargeSpot2',
+                 children=[
+                     html.Div(className='pole'),
+                     html.Div(className='poleHead'),
+                     html.Div(id='car_1_0'),
+                     html.Div(id='car_1_1'),
+                     carFlow1,
+                     carFlow2,
+                 ]),
+        html.Div(id='chargeSpot3',
+                 children=[
+                     html.Div(className='pole'),
+                     html.Div(className='poleHead'),
+                     html.Div(id='car_2_0'),
+                     html.Div(id='car_2_1'),
+                     carFlow1,
+                     carFlow2,
+                 ]),
+        html.Div(id='chargeSpot4',
+                 children=[
+                     html.Div(className='pole'),
+                     html.Div(className='poleHead'),
+                     html.Div(id='car_3_0'),
+                     html.Div(id='car_3_1'),
+                     carFlow1,
+                     carFlow2,
+                 ]),
+        html.Div(id='chargeSpot5',
+                 children=[
+                     html.Div(className='pole'),
+                     html.Div(className='poleHead'),
+                     html.Div(id='car_4_0'),
+                     html.Div(id='car_4_1'),
+                     carFlow1,
+                     carFlow2,
+                 ]),
+        html.Div(id='chargeSpot6',
+                 children=[
+                     html.Div(className='pole'),
+                     html.Div(className='poleHead'),
+                     html.Div(id='car_5_0'),
+                     html.Div(id='car_5_1'),
+                     carFlow1,
+                     carFlow2,
+                 ]),
+        html.Div(id='chargeSpot7',
+                 children=[
+                     html.Div(className='pole'),
+                     html.Div(className='poleHead'),
+                     html.Div(id='car_6_0'),
+                     html.Div(id='car_6_1'),
+                     carFlow1,
+                     carFlow2,
+                 ]),
+        html.Div(id='chargeSpot8',
+                 children=[
+                     html.Div(className='pole'),
+                     html.Div(className='poleHead'),
+                     html.Div(id='car_7_0'),
+                     html.Div(id='car_7_1'),
+                     carFlow1,
+                     carFlow2,
                  ]),
     ]
 )

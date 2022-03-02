@@ -107,8 +107,8 @@ body {
 	 position: absolute;
 	 left: -45px;
 	 top: 10px;
-	 animation: spin var(--speed) linear infinite reverse;
-	 /* animation-direction: normal; */
+	 animation: spin var(--speed) linear infinite;
+	 animation-direction: reverse; 
 }
  .windwheel {
 	 position: absolute;
@@ -173,6 +173,7 @@ body {
 	 background-color: #fff;
 }
  .house {
+   z-index: 2;
 	 position: absolute;
 	 width: 120px;
 	 height: 60px;
@@ -310,7 +311,7 @@ body {
 }
  #horizontalArrowAnim1 {
 	 top: 24.5rem;
-	 left: 45rem;
+	 left: 50rem;
 	 width: 5rem;
 	 height: 5rem;
 	 position: relative;
@@ -320,7 +321,7 @@ body {
  #horizontalArrowAnim2 {
 	 z-index: 0;
 	 top: 20rem;
-	 left: 12rem;
+	 left: 15rem;
 	 width: 5rem;
 	 height: 5rem;
 	 position: relative;
@@ -354,7 +355,7 @@ body {
 	 -webkit-animation: horizontalSlide var(--speed) linear infinite;
 	 animation: horizontalSlide var(--speed) linear infinite;
 }
-.delay1 {
+/* .delay1 {
   -webkit-animation-delay: calc(var(--speed) / 8) ; 
     animation-delay: calc(var(--speed) / 8) ;
 }
@@ -381,7 +382,38 @@ body {
 .delay7 {
   -webkit-animation-delay: calc((var(--speed) * 7) / 8) ; 
     animation-delay: calc((var(--speed) * 7) / 8);
+} */
+
+
+.delay1 {
+  -webkit-animation-delay: 0.5s ; 
+    animation-delay: 0.5s ;
 }
+.delay2 {
+  -webkit-animation-delay: 1s ; 
+    animation-delay: 1s;
+}
+.delay3 {
+  -webkit-animation-delay: 1.5s ; 
+    animation-delay: 1.5s;
+}
+.delay4 {
+  -webkit-animation-delay: 2s ; 
+    animation-delay: 2s;
+}
+.delay5 {
+  -webkit-animation-delay: 2.5s ; 
+    animation-delay: 2.5s ;
+}
+.delay6 {
+  -webkit-animation-delay: 3s ; 
+    animation-delay: 3s;
+}
+.delay7 {
+  -webkit-animation-delay: 3.5s; 
+    animation-delay: 3.5s;
+}
+
  @-webkit-keyframes verticalSlide {
 	 80% {
 		 opacity: 1;
@@ -451,7 +483,7 @@ body {
 	 position: absolute;
 	 bottom: 1rem;
 	 display: block;
-	 background-color: rgb(159, 255, 101);
+	 background-color: rgb(61, 192, 124);
 	 width: 13rem;
 	 height: 0px;
 	 margin: 0 1rem;
@@ -493,13 +525,240 @@ body {
   background: rgb(32, 113, 181);
   border-radius: 10% 100% 10% 50% / 0% 100% 0% 0%;
 }
-.chargeArea{
-  top: 10rem;
-  left: 63rem;
+/* 
+#car_0_0 {
+    position: flex;
+    background-color: #414c68;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_0_1 {
+    position: flex;
+    background-color: #4e5057;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_1_0 {
+    position: flex;
+    background-color: #414c68;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_1_1 {
+    position: flex;
+    background-color: #414c68;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_2_0 {
+    position: flex;
+    background-color: #414c68;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_2_1 {
+    position: flex;
+    background-color: #414c68;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_3_0 {
+    position: flex;
+    background-color: #414c68;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_3_1 {
+    position: flex;
+    background-color: #414c68;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_4_0 {
+    position: flex;
+    background-color: #414c68;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_4_1 {
+    position: flex;
+    background-color: #414c68;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_5_0 {
+    position: flex;
+    background-color: #414c68;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_5_1 {
+    position: flex;
+    background-color: #414c68;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_6_0 {
+    position: flex;
+    background-color: #414c68;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_6_1 {
+    position: flex;
+    background-color: #414c68;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_7_0 {
+    position: flex;
+    background-color: #414c68;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+}
+
+#car_7_1 {
+    position: flex;
+    background-color: #414c68;
+    display:block;
+    width: 4rem;
+    height: 4rem;
+} */
+
+
+.arrow2 {
+  width: 13px;
+  height: 13px;
+  border: 4px solid;
+  border-color:  rgb(61, 192, 124) transparent transparent  rgb(61, 192, 124);
+  transform: rotate(135deg);
+}
+
+ .horizontalCarArrowSliding {
+	 position: absolute;
+	 -webkit-animation: horizontalCarSlide 4s linear infinite;
+	 animation: horizontalCarSlide 4s linear infinite;
+}
+
+ @-webkit-keyframes horizontalCarSlide {
+	 80% {
+		 opacity: 1;
+		 transform: translateX(80px);
+	}
+	 100% {
+		 opacity: 0;
+		 transform: translateX(100px);
+	}
+}
+ @keyframes horizontalCarSlide {
+	 80% {
+		 opacity: 1;
+		 transform: translateX(80px);
+	}
+	 100% {
+		 opacity: 0;
+		 transform: translateX(100px);
+	}
+}
+
+ /* CHARGING */
+
+#chargeSpot1{
   position: absolute;
-  width: 30rem;
-  height: 20rem;
-  background: linear-gradient(90deg, rgb(61, 192, 124) 50%, transparent 50%), linear-gradient(90deg, rgb(61, 192, 124) 50%, transparent 50%), linear-gradient(0deg, rgb(61, 192, 124) 50%, transparent 50%), linear-gradient(0deg, rgb(61, 192, 124) 50%, transparent 50%);
+  top: 2rem;
+  left: 2rem;
+}
+#chargeSpot2{
+  position: absolute;
+  top: 10rem;
+  left: 2rem;
+}
+#chargeSpot3{
+  position: absolute;
+  top: 2rem;
+  left: 12rem;
+}
+#chargeSpot4{
+  position: absolute;
+  top: 10rem;
+  left: 12rem;
+}
+#chargeSpot5{
+  position: absolute;
+  top: 2rem;
+  left: 22rem;
+}
+#chargeSpot6{
+  position: absolute;
+  top: 10rem;
+  left: 22rem;
+}
+#chargeSpot7{
+  position: absolute;
+  top: 2rem;
+  left: 32rem;
+}
+#chargeSpot8{
+  position: absolute;
+  top: 10rem;
+  left: 32rem;
+}
+
+.pole{
+  position: absolute; 
+  width: 4.95px;
+  height: 5.5rem;
+  background-color: white;
+  left: 7px;
+  z-index: 2;
+
+}
+.poleHead{
+  position: absolute; 
+  width: 19.51px;
+  height: 17.12px;
+  border-radius: 28px;
+  background-color: white;
+  z-index: 2;
+}
+
+.chargeArea{
+  border-radius: 25px;
+  top: 13rem;
+  left: 68rem;
+  position: absolute;
+  width: 42.5rem;
+  height: 18rem;
+  background: linear-gradient(90deg,  rgb(61, 192, 124) 50%, transparent 50%), linear-gradient(90deg,  rgb(61, 192, 124) 50%, transparent 50%), linear-gradient(0deg,  rgb(61, 192, 124) 50%, transparent 50%), linear-gradient(0deg,  rgb(61, 192, 124) 50%, transparent 50%);
   background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
   background-size: 15px 4px, 15px 4px, 4px 15px, 4px 15px;
   background-position: left top, right bottom, left bottom, right   top;
@@ -517,198 +776,248 @@ body {
     }
 } 
 
+.carFlow1 {
+  top: -5.5rem;
+  width: 3rem;
+	position: relative;
+  justify-content: center;
+  align-items: center;
+}
+.carFlow2 {
+  top: -1.8rem;
+  height: 0.5rem;
+	position: relative;
+  justify-content: center;
+  align-items: center;
+}
+
+.d1 {
+  -webkit-animation-delay: 0.5s ; 
+    animation-delay: 0.5s ;
+}
+.d2 {
+  -webkit-animation-delay: 1s ; 
+    animation-delay: 1s;
+}
+.d3 {
+  -webkit-animation-delay: 1.5s ; 
+    animation-delay: 1.5s;
+}
+.d4 {
+  -webkit-animation-delay: 2s ; 
+    animation-delay: 2s;
+}
+.d5 {
+  -webkit-animation-delay: 2.5s ; 
+    animation-delay: 2.5s ;
+}
+.d6 {
+  -webkit-animation-delay: 3s ; 
+    animation-delay: 3s;
+}
+.d7 {
+  -webkit-animation-delay: 3.5s; 
+    animation-delay: 3.5s;
+}
+
+
 #car_0_0 {
-    position: flex;
-    background-color: #414c68;
-    /* left: 0.5rem;
-    top: 0.5rem; */
-    display:block;
-    width: 4rem;
-    height: 4rem;
+	background-image: url(../assets/car-charging.svg);
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    transform: scale(-1,1);
+    left: 5rem;
+    top: -0.5rem;
+    position: relative;
+    /* Other styles here */
 }
-
 #car_0_1 {
-    position: flex;
-    background-color: #4e5057;
-    /* left: 4.7rem;
-    top: 0.5rem; */
-    display:block;
-    width: 4rem;
-    height: 4rem;
+	background-image: url(../assets/car-charging.svg);
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    transform: scale(-1,1);
+    left: 5rem;
+    position: relative;
+    /* Other styles here */
 }
-
 #car_1_0 {
-    position: flex;
-    background-color: #414c68;
-    /* left: 0.5rem;
-    top: 5rem; */
-    display:block;
-    width: 4rem;
-    height: 4rem;
+	background-image: url(../assets/car-charging.svg);
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    transform: scale(-1,1);
+    left: 5rem;
+    top: -0.5rem;
+    position: relative;
+    /* Other styles here */
 }
-
 #car_1_1 {
-    position: flex;
-    background-color: #414c68;
-    /* left: 4.7rem;
-    top: 5rem; */
-    display:block;
-    width: 4rem;
-    height: 4rem;
+	background-image: url(../assets/car-charging.svg);
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    transform: scale(-1,1);
+    left: 5rem;
+    position: relative;
+    /* Other styles here */
 }
-
 #car_2_0 {
-    position: flex;
-    background-color: #414c68;
-    /* left: 0.5rem;
-    top: 9.5rem; */
-    display:block;
-    width: 4rem;
-    height: 4rem;
+	background-image: url(../assets/car-charging.svg);
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    transform: scale(-1,1);
+    left: 5rem;
+    top: -0.5rem;
+    position: relative;
+    /* Other styles here */
 }
-
 #car_2_1 {
-    position: flex;
-    background-color: #414c68;
-    /* left: 4.7rem;
-    top: 9.5rem; */
-    display:block;
-    width: 4rem;
-    height: 4rem;
+	background-image: url(../assets/car-charging.svg);
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    transform: scale(-1,1);
+    left: 5rem;
+    position: relative;
+    /* Other styles here */
 }
-
 #car_3_0 {
-    position: flex;
-    background-color: #414c68;
-    /* left: 0.5rem;
-    top: 14rem; */
-    display:block;
-    width: 4rem;
-    height: 4rem;
+	background-image: url(../assets/car-charging.svg);
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    transform: scale(-1,1);
+    left: 5rem;
+    top: -0.5rem;
+    position: relative;
+    /* Other styles here */
 }
-
 #car_3_1 {
-    position: flex;
-    background-color: #414c68;
-    /* left: 4.7rem;
-    top: 14rem; */
-    display:block;
-    width: 4rem;
-    height: 4rem;
+	background-image: url(../assets/car-charging.svg);
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    transform: scale(-1,1);
+    left: 5rem;
+    position: relative;
+    /* Other styles here */
 }
-
 #car_4_0 {
-    position: flex;
-    background-color: #414c68;
-    /* left: 20rem;
-    top: 0.5rem; */
-    display:block;
-    width: 4rem;
-    height: 4rem;
+	background-image: url(../assets/car-charging.svg);
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    transform: scale(-1,1);
+    left: 5rem;
+    top: -0.5rem;
+    position: relative;
+    /* Other styles here */
 }
-
 #car_4_1 {
-    position: flex;
-    background-color: #414c68;
-    /* left: 24.7rem;
-    top: 0.5rem; */
-    display:block;
-    width: 4rem;
-    height: 4rem;
+	background-image: url(../assets/car-charging.svg);
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    transform: scale(-1,1);
+    left: 5rem;
+    position: relative;
+    /* Other styles here */
 }
-
 #car_5_0 {
-    position: flex;
-    background-color: #414c68;
-    /* left: 0.5rem;
-    top: 0.5rem; */
-    display:block;
-    width: 4rem;
-    height: 4rem;
+	background-image: url(../assets/car-charging.svg);
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    transform: scale(-1,1);
+    left: 5rem;
+    top: -0.5rem;
+    position: relative;
+    /* Other styles here */
 }
-
 #car_5_1 {
-    position: flex;
-    background-color: #414c68;
-    /* left: 0.5rem;
-    top: 0.5rem; */
-    display:block;
-    width: 4rem;
-    height: 4rem;
+	background-image: url(../assets/car-charging.svg);
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    transform: scale(-1,1);
+    left: 5rem;
+    position: relative;
+    /* Other styles here */
 }
-
 #car_6_0 {
-    position: flex;
-    background-color: #414c68;
-    /* left: 0.5rem;
-    top: 0.5rem; */
-    display:block;
-    width: 4rem;
-    height: 4rem;
+	background-image: url(../assets/car-charging.svg);
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    transform: scale(-1,1);
+    left: 5rem;
+    top: -0.5rem;
+    position: relative;
+    /* Other styles here */
 }
-
 #car_6_1 {
-    position: flex;
-    background-color: #414c68;
-    /* left: 0.5rem;
-    top: 0.5rem; */
-    display:block;
-    width: 4rem;
-    height: 4rem;
+	background-image: url(../assets/car-charging.svg);
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    transform: scale(-1,1);
+    left: 5rem;
+    position: relative;
+    /* Other styles here */
 }
-
 #car_7_0 {
-    position: flex;
-    background-color: #414c68;
-    /* left: 0.5rem;
-    top: 0.5rem; */
-    display:block;
-    width: 4rem;
-    height: 4rem;
+	background-image: url(../assets/car-charging.svg);
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    transform: scale(-1,1);
+    left: 5rem;
+    top: -0.5rem;
+    position: relative;
+    /* Other styles here */
 }
-
 #car_7_1 {
-    position: flex;
-    background-color: #414c68;
-    /* left: 0.5rem;
-    top: 0.5rem; */
-    display:block;
-    width: 4rem;
-    height: 4rem;
-}
-
-
-.arrow2 {
-  width: 8px;
-  height: 8px;
-  border: 5px solid;
-  border-color: #CCFFAC transparent transparent #CCFFAC;
-  transform: rotate(135deg);
-}
-
- .horizontalCarArrowSliding {
-	 position: absolute;
-	 -webkit-animation: horizontalCarSlide 2s linear infinite;
-	 animation: horizontalCarSlide 2s linear infinite;
-}
-
- @-webkit-keyframes horizontalCarSlide {
-	 80% {
-		 opacity: 1;
-		 transform: translateX(100px);
-	}
-	 100% {
-		 opacity: 0;
-		 transform: translateX(120px);
-	}
-}
- @keyframes horizontalCarSlide {
-	 80% {
-		 opacity: 1;
-		 transform: translateX(100px);
-	}
-	 100% {
-		 opacity: 0;
-		 transform: translateX(120px);
-	}
+	background-image: url(../assets/car-charging.svg);
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    transform: scale(-1,1);
+    left: 5rem;
+    position: relative;
+    /* Other styles here */
 }
