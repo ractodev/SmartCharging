@@ -107,8 +107,8 @@ body {
 	 position: absolute;
 	 left: -45px;
 	 top: 10px;
-	 animation: spin var(--speed) linear infinite;
-	 animation-direction: reverse;
+	 animation: spin var(--speed) linear infinite reverse;
+	 /* animation-direction: normal; */
 }
  .windwheel {
 	 position: absolute;
