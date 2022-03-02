@@ -924,15 +924,69 @@ carFlow2 = html.Div(
     ],
 )
 
-tulipView = html.Div(
-    className='tulip',
-    children=[
-        html.Div(className='stem', children=[
-            html.Div(className='')
-        ])
-    ]
+tulip = html.Div(className='stem',
+                 children=[
+                     html.Div(className='tulipHead',
+                              children=[
+                                  html.Div(
+                                      className="tulipHair lightTulip lightTulip-1"),
+                                  html.Div(
+                                      className="tulipHair darkTulip darkTulip-1"),
+                                  html.Div(
+                                      className="tulipHair lightTulip lightTulip-2"),
+                                  html.Div(
+                                      className="tulipHair darkTulip darkTulip-2"),
+                                  html.Div(
+                                      className="tulipHair lightTulip lightTulip-3"),
+                              ]),
+                     html.Div(className="rightTulipLeaf tulipLeaf leaf"),
+                     html.Div(className="leftTulipLeaf tulipLeaf leaf"),
+                     html.Div(className="rightStemLeaf stemLeaf leaf"),
+                     html.Div(className="leftStemLeaf stemLeaf leaf")
+                 ]
+                 )
+
+
+leftTulip1 = html.Div(
+    className='tulip1',
+    children=[tulip]
+)
+rightTulip1 = html.Div(
+    className='tulip2 rightBabyTulip',
+    children=[tulip]
+)
+leftTulip2 = html.Div(
+    className='tulip3',
+    children=[tulip]
+)
+rightTulip2 = html.Div(
+    className='tulip4 rightBabyTulip',
+    children=[tulip]
+)
+leftTulip3 = html.Div(
+    className='tulip5',
+    children=[tulip]
+)
+rightTulip3 = html.Div(
+    className='tulip6 rightBabyTulip',
+    children=[tulip]
+)
+leftTulip4 = html.Div(
+    className='tulip7',
+    children=[tulip]
 )
 
+tulipsView = html.Div(
+    children=[
+        leftTulip1,
+        leftTulip2,
+        leftTulip3,
+        leftTulip4,
+        rightTulip1,
+        rightTulip2,
+        rightTulip3
+    ]
+)
 
 chargeView = html.Div(
     className='chargeArea',
@@ -941,57 +995,57 @@ chargeView = html.Div(
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_0_0', children=[carFlow1]),
-                     html.Div(id='car_0_1', children=[carFlow2]),
+                     html.Div(id='car_0_0', children=[]),
+                     html.Div(id='car_0_1', children=[]),
                  ]),
         html.Div(id='chargeSpot2',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_1_0', children=[carFlow1]),
-                     html.Div(id='car_1_1', children=[carFlow2])
+                     html.Div(id='car_1_0', children=[]),
+                     html.Div(id='car_1_1', children=[])
                  ]),
         html.Div(id='chargeSpot3',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_2_0', children=[carFlow1]),
-                     html.Div(id='car_2_1', children=[carFlow2])
+                     html.Div(id='car_2_0', children=[]),
+                     html.Div(id='car_2_1', children=[])
                  ]),
         html.Div(id='chargeSpot4',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_3_0', children=[carFlow1]),
-                     html.Div(id='car_3_1', children=[carFlow2])
+                     html.Div(id='car_3_0', children=[]),
+                     html.Div(id='car_3_1', children=[])
                  ]),
         html.Div(id='chargeSpot5',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_4_0', children=[carFlow1]),
-                     html.Div(id='car_4_1', children=[carFlow2])
+                     html.Div(id='car_4_0', children=[]),
+                     html.Div(id='car_4_1', children=[])
                  ]),
         html.Div(id='chargeSpot6',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_5_0', children=[carFlow1]),
-                     html.Div(id='car_5_1', children=[carFlow2])
+                     html.Div(id='car_5_0', children=[]),
+                     html.Div(id='car_5_1', children=[])
                  ]),
         html.Div(id='chargeSpot7',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_6_0', children=[carFlow1]),
-                     html.Div(id='car_6_1', children=[carFlow2])
+                     html.Div(id='car_6_0', children=[]),
+                     html.Div(id='car_6_1', children=[])
                  ]),
         html.Div(id='chargeSpot8',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_7_0', children=[carFlow1]),
-                     html.Div(id='car_7_1', children=[carFlow2])
+                     html.Div(id='car_7_0', children=[]),
+                     html.Div(id='car_7_1', children=[])
                  ]),
     ]
 )
@@ -1080,7 +1134,8 @@ bottomView = html.Div(
         hills,
         windmillView,
         flowView,
-        chargeView
+        chargeView,
+        tulipsView
     ]
 )
 
