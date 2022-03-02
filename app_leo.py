@@ -121,12 +121,82 @@ def update_cars(selection, start_date, end_date, index):
     for i in range(0, 16):
         car_i = cars_connected_avg.iloc[end_point, i]
         if car_i != 0.0:
-            output.append({'background-color': '#ccffac'})
+            output.append(
+                {'background-image': 'url(../assets/car-charging.svg)'})
         else:
-            output.append({'background-color': '#595656'})
+            output.append({'background-image': 'url(../assets/car-none.svg)'})
     return output
 
-# to be fixed
+@app.callback(
+    [
+    
+    ],
+    [
+        Input("Main-Graph", "relayoutData"),
+        Input("date-picker", "start_date"),
+        Input("date-picker", "end_date"),
+        Input('interval-component', 'n_intervals'),
+    ],
+)
+def update_flow_cars(selection, start_date, end_date, index):
+    ctx = dash.callback_context
+    trigger = ctx.triggered[0]['prop_id'].split('.')[0]
+    end_point = 0
+    if trigger == 'interval-component':
+        end_point = (index*width_data_points) % 1000
+    elif trigger == 'date-picker':
+        end_point = df.loc[(df['Interval'] <= end_date)].index[-1]
+    elif trigger == 'Main-Graph':
+        if "xaxis.range[0]" in selection:
+            start_date = str(selection["xaxis.range[0]"])
+            end_date = str(selection["xaxis.range[1]"])
+            start_date_object = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S.%f")
+            end_date_object = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S.%f")
+            mask = (df['Interval'] > start_date_object) & (
+                df['Interval'] <= end_date_object)
+            df_within_dates = df.loc[mask]
+            end_point = df_within_dates.index[-1]
+        else:
+            end_point = df.index[-1]
+    else:
+        end_point = df.index[-1]
+    
+    level = round(df.iloc[end_point, 6])
+    ret = list()
+    if level < 0: # discharging battery
+        level = round(((1-normalize_data(abs(level), 0, 17.159))+0.5)*5)
+        windmill = {'animation': 'spin '+str(0)+'s linear infinite reverse'}
+        ret.append(windmill)
+        for i in range(1,9):
+            flow_in = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(0) +'s'}
+            ret.append(flow_in)
+        for i in range(1,9):
+            delay = str((level*i)/8)
+            flow_out = {'animation': 'horizontalSlide '+str(level)+'s linear infinite', 'animation-delay': delay+'s'}
+            ret.append(flow_out)
+    elif level>0: # charging battery
+        level = round(((1-normalize_data(abs(level), 0, 42.795))+0.5)*5)
+        windmill = {'animation': 'spin '+str(level)+'s linear infinite reverse'}
+        ret.append(windmill)
+        for i in range(1,9):
+            delay = str((level*i)/8)
+            flow_in = {'animation': 'horizontalSlide '+str(level)+'s linear infinite', 'animation-delay': delay+'s'}
+            ret.append(flow_in)
+        for i in range(1,9):
+            flow_out = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
+            ret.append(flow_out)
+    else:
+        windmill = {'animation': 'spin '+str(0)+'s linear infinite reverse'}
+        ret.append(windmill)
+        for i in range(1,9):
+            flow_in = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(0)+'s'}
+            ret.append(flow_in)
+        for i in range(1,9):
+            flow_out = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
+            ret.append(flow_out)
+    return ret
+
+
 @app.callback(
     [
     Output("wheel", "style"),
@@ -786,52 +856,244 @@ flowView = html.Div(
     ]
 )
 
-chargeView = html.Div(
-    className="chargeArea",
+carFlow1 = html.Div(
+    className="carFlow1",
     children=[
-        dbc.Row([
-                dbc.Col([html.Div(id='car_0_0', children=[html.H6('0_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_0_1', children=[html.H6('0_1', style={'color': '#000000'})])]), dbc.Col(
-                    [html.Div(id='car_1_0', children=[html.H6('1_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_1_1', children=[html.H6('1_1', style={'color': '#000000'})])])
-                ]),
-        dbc.Row([
-                dbc.Col([html.Div(id='car_2_0', children=[html.H6('2_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_2_1', children=[html.H6('2_1', style={'color': '#000000'})])]), dbc.Col(
-                    [html.Div(id='car_3_0', children=[html.H6('3_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_3_1', children=[html.H6('3_1', style={'color': '#000000'})])])
-                ]),
-        dbc.Row([
-                dbc.Col([html.Div(id='car_4_0', children=[html.H6('4_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_4_1', children=[html.H6('4_1', style={'color': '#000000'})])]), dbc.Col(
-                    [html.Div(id='car_5_0', children=[html.H6('5_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_5_1', children=[html.H6('5_1', style={'color': '#000000'})])])
-                ]),
-        dbc.Row([
-                dbc.Col([html.Div(id='car_6_0', children=[html.H6('6_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_6_1', children=[html.H6('6_1', style={'color': '#000000'})])]), dbc.Col(
-                    [html.Div(id='car_7_0', children=[html.H6('7_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_7_1', children=[html.H6('7_1', style={'color': '#000000'})])])
-                ])
+        html.Div(
+            className="horizontalCarArrowSliding",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d1",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d2",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d3",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d4",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d5",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d6",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d7",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        )
+    ],
+)
 
-        # gives more flexibility of where to place "cars"
-        # children=[
-        #     html.Div(id='car_0_0'),
-        #     html.Div(id='car_0_1'),
-        #     html.Div(id='car_1_0'),
-        #     html.Div(id='car_1_1'),
-        #     html.Div(id='car_2_0'),
-        #     html.Div(id='car_2_1'),
-        #     html.Div(id='car_3_0'),
-        #     html.Div(id='car_3_1'),
-        #     html.Div(id='car_4_0'),
-        #     html.Div(id='car_4_1'),
-        #     html.Div(id='car_5_0'),
-        #     html.Div(id='car_5_1'),
-        #     html.Div(id='car_6_0'),
-        #     html.Div(id='car_6_1'),
-        #     html.Div(id='car_7_0'),
-        #     html.Div(id='car_7_1'),
-        # ]
+carFlow2 = html.Div(
+    className="carFlow2",
+    children=[
+        html.Div(
+            className="horizontalCarArrowSliding",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d1",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d2",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d3",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d4",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d5",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d6",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+        html.Div(
+            className="horizontalCarArrowSliding d7",
+            children=[
+                html.Div(className="arrow2")
+            ],
+        ),
+
+    ],
+)
+
+chargeView = html.Div(
+    className='chargeArea',
+    children=[
+        html.Div(id='chargeSpot1',
+                 children=[
+                     html.Div(className='pole'),
+                     html.Div(className='poleHead'),
+                     html.Div(id='car_0_0'),
+                     html.Div(id='car_0_1'),
+                     carFlow1, 
+                     carFlow2,
+                 ]),
+        html.Div(id='chargeSpot2',
+                 children=[
+                     html.Div(className='pole'),
+                     html.Div(className='poleHead'),
+                     html.Div(id='car_1_0'),
+                     html.Div(id='car_1_1'),
+                     carFlow1,
+                     carFlow2,
+                 ]),
+        html.Div(id='chargeSpot3',
+                 children=[
+                     html.Div(className='pole'),
+                     html.Div(className='poleHead'),
+                     html.Div(id='car_2_0'),
+                     html.Div(id='car_2_1'),
+                     carFlow1,
+                     carFlow2,
+                 ]),
+        html.Div(id='chargeSpot4',
+                 children=[
+                     html.Div(className='pole'),
+                     html.Div(className='poleHead'),
+                     html.Div(id='car_3_0'),
+                     html.Div(id='car_3_1'),
+                     carFlow1,
+                     carFlow2,
+                 ]),
+        html.Div(id='chargeSpot5',
+                 children=[
+                     html.Div(className='pole'),
+                     html.Div(className='poleHead'),
+                     html.Div(id='car_4_0'),
+                     html.Div(id='car_4_1'),
+                     carFlow1,
+                     carFlow2,
+                 ]),
+        html.Div(id='chargeSpot6',
+                 children=[
+                     html.Div(className='pole'),
+                     html.Div(className='poleHead'),
+                     html.Div(id='car_5_0'),
+                     html.Div(id='car_5_1'),
+                     carFlow1,
+                     carFlow2,
+                 ]),
+        html.Div(id='chargeSpot7',
+                 children=[
+                     html.Div(className='pole'),
+                     html.Div(className='poleHead'),
+                     html.Div(id='car_6_0'),
+                     html.Div(id='car_6_1'),
+                     carFlow1,
+                     carFlow2,
+                 ]),
+        html.Div(id='chargeSpot8',
+                 children=[
+                     html.Div(className='pole'),
+                     html.Div(className='poleHead'),
+                     html.Div(id='car_7_0'),
+                     html.Div(id='car_7_1'),
+                     carFlow1,
+                     carFlow2,
+                 ]),
     ]
 )
+
+# chargeView = html.Div(
+#     className="chargeArea",
+#     children=[
+#         dbc.Row([
+#                 dbc.Col([html.Div(id='car_0_0', children=[html.H6('0_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_0_1', children=[html.H6('0_1', style={'color': '#000000'})])]), dbc.Col(
+#                     [html.Div(id='car_1_0', children=[html.H6('1_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_1_1', children=[html.H6('1_1', style={'color': '#000000'})])])
+#                 ]),
+#         dbc.Row([
+#                 dbc.Col([html.Div(id='car_2_0', children=[html.H6('2_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_2_1', children=[html.H6('2_1', style={'color': '#000000'})])]), dbc.Col(
+#                     [html.Div(id='car_3_0', children=[html.H6('3_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_3_1', children=[html.H6('3_1', style={'color': '#000000'})])])
+#                 ]),
+#         dbc.Row([
+#                 dbc.Col([html.Div(id='car_4_0', children=[html.H6('4_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_4_1', children=[html.H6('4_1', style={'color': '#000000'})])]), dbc.Col(
+#                     [html.Div(id='car_5_0', children=[html.H6('5_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_5_1', children=[html.H6('5_1', style={'color': '#000000'})])])
+#                 ]),
+#         dbc.Row([
+#                 dbc.Col([html.Div(id='car_6_0', children=[html.H6('6_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_6_1', children=[html.H6('6_1', style={'color': '#000000'})])]), dbc.Col(
+#                     [html.Div(id='car_7_0', children=[html.H6('7_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_7_1', children=[html.H6('7_1', style={'color': '#000000'})])])
+#                 ])
+
+#         # gives more flexibility of where to place "cars"
+#         # children=[
+#         #     html.Div(id='car_0_0'),
+#         #     html.Div(id='car_0_1'),
+#         #     html.Div(id='car_1_0'),
+#         #     html.Div(id='car_1_1'),
+#         #     html.Div(id='car_2_0'),
+#         #     html.Div(id='car_2_1'),
+#         #     html.Div(id='car_3_0'),
+#         #     html.Div(id='car_3_1'),
+#         #     html.Div(id='car_4_0'),
+#         #     html.Div(id='car_4_1'),
+#         #     html.Div(id='car_5_0'),
+#         #     html.Div(id='car_5_1'),
+#         #     html.Div(id='car_6_0'),
+#         #     html.Div(id='car_6_1'),
+#         #     html.Div(id='car_7_0'),
+#         #     html.Div(id='car_7_1'),
+#         # ]
+#     ]
+# )
 
 hills = html.Div(
     children=[
         html.Div(className="hills1"),
         html.Div(className="hills2"),
+        html.Div(className="hills3"),
+        html.Div(className="hills4"),
+        html.Div(className="hills5"),
+        html.Div(className="hills6"),
+        html.Div(className="hills7"),
     ]
 )
 
