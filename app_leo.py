@@ -22,10 +22,11 @@ server = app.server
 app.title = "Vattenfall Smart Charging"
 width_data_points = 50
 speed = 5000
-yellow ="rgb(255, 218, 0)"
+yellow = "rgb(255, 218, 0)"
 # yellow ="rgb(32, 113, 181)"
 
 ################ Functions definition ######################
+
 
 def fig_update_layout(fig, myTitle):
     fig.update_layout(
@@ -38,7 +39,8 @@ def fig_update_layout(fig, myTitle):
             linecolor="rgb(255, 218, 0)",
             linewidth=2,
             tickfont=dict(family="Vattenfall", size=12, color="white",),
-            title=dict(font=dict(family="Vattenfall", size=24, color="#fec036"),),
+            title=dict(font=dict(family="Vattenfall",
+                       size=24, color="#fec036"),),
         ),
         yaxis=dict(
             showline=False,
@@ -49,7 +51,8 @@ def fig_update_layout(fig, myTitle):
             linecolor="rgb(255, 218, 0)",
             linewidth=2,
             tickfont=dict(family="Vattenfall", size=12, color="white",),
-            title=dict(font=dict(family="Vattenfall", size=24, color="#fec036"),),
+            title=dict(font=dict(family="Vattenfall",
+                       size=24, color="#fec036"),),
         ),
         autosize=True,
         margin=dict(autoexpand=True, l=50, b=40, r=35, t=30),
@@ -106,8 +109,10 @@ def update_cars(selection, start_date, end_date, index):
         if "xaxis.range[0]" in selection:
             start_date = str(selection["xaxis.range[0]"])
             end_date = str(selection["xaxis.range[1]"])
-            start_date_object = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S.%f")
-            end_date_object = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S.%f")
+            start_date_object = datetime.strptime(
+                start_date, "%Y-%m-%d %H:%M:%S.%f")
+            end_date_object = datetime.strptime(
+                end_date, "%Y-%m-%d %H:%M:%S.%f")
             mask = (df['Interval'] > start_date_object) & (
                 df['Interval'] <= end_date_object)
             df_within_dates = df.loc[mask]
@@ -126,6 +131,7 @@ def update_cars(selection, start_date, end_date, index):
         else:
             output.append({'background-image': 'url(../assets/car-none.svg)'})
     return output
+
 
 @app.callback(
     [
@@ -157,7 +163,7 @@ def update_flow_cars(selection, start_date, end_date, index):
     ctx = dash.callback_context
     trigger = ctx.triggered[0]['prop_id'].split('.')[0]
     end_point = 0
-    df_slice = df.iloc[:,10:-49:3]
+    df_slice = df.iloc[:, 10:-49:3]
     ret = list()
     if trigger == 'interval-component':
         end_point = (index*width_data_points) % 1000
@@ -167,8 +173,10 @@ def update_flow_cars(selection, start_date, end_date, index):
         if "xaxis.range[0]" in selection:
             start_date = str(selection["xaxis.range[0]"])
             end_date = str(selection["xaxis.range[1]"])
-            start_date_object = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S.%f")
-            end_date_object = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S.%f")
+            start_date_object = datetime.strptime(
+                start_date, "%Y-%m-%d %H:%M:%S.%f")
+            end_date_object = datetime.strptime(
+                end_date, "%Y-%m-%d %H:%M:%S.%f")
             mask = (df['Interval'] > start_date_object) & (
                 df['Interval'] <= end_date_object)
             df_within_dates = df_slice.loc[mask]
@@ -178,32 +186,38 @@ def update_flow_cars(selection, start_date, end_date, index):
     else:
         end_point = df_slice.index[-1]
     for i in range(0, 16):
-        if df_slice.iloc[end_point,i] > 0:
-            ret.append([carFlow1])
+        if df_slice.iloc[end_point, i] > 0:
+            ret.append(carFlow1)
         else:
-            ret.append([html.H1()])
+            ret.append(html.H6(", ", style={"color": "rgb(32, 113, 181)"}))
+            # ret.append(
+            #     html.H6("Free", style={
+            #         'transform': 'scale(-1,1)',
+            #         'top': '-0.3rem',
+            #         'left': '-1rem',
+            #         'position': 'relative'}))
     return ret
 
 
 @app.callback(
     [
-    Output("wheel", "style"),
-    Output("arrow_in_1", "style"),
-    Output("arrow_in_2", "style"),
-    Output("arrow_in_3", "style"),
-    Output("arrow_in_4", "style"),
-    Output("arrow_in_5", "style"),
-    Output("arrow_in_6", "style"),
-    Output("arrow_in_7", "style"),
-    Output("arrow_in_8", "style"),
-    Output("arrow_out_1", "style"),
-    Output("arrow_out_2", "style"),
-    Output("arrow_out_3", "style"),
-    Output("arrow_out_4", "style"),
-    Output("arrow_out_5", "style"),
-    Output("arrow_out_6", "style"),
-    Output("arrow_out_7", "style"),
-    Output("arrow_out_8", "style"),
+        Output("wheel", "style"),
+        Output("arrow_in_1", "style"),
+        Output("arrow_in_2", "style"),
+        Output("arrow_in_3", "style"),
+        Output("arrow_in_4", "style"),
+        Output("arrow_in_5", "style"),
+        Output("arrow_in_6", "style"),
+        Output("arrow_in_7", "style"),
+        Output("arrow_in_8", "style"),
+        Output("arrow_out_1", "style"),
+        Output("arrow_out_2", "style"),
+        Output("arrow_out_3", "style"),
+        Output("arrow_out_4", "style"),
+        Output("arrow_out_5", "style"),
+        Output("arrow_out_6", "style"),
+        Output("arrow_out_7", "style"),
+        Output("arrow_out_8", "style"),
     ],
     [
         Input("Main-Graph", "relayoutData"),
@@ -224,8 +238,10 @@ def update_flow_speed(selection, start_date, end_date, index):
         if "xaxis.range[0]" in selection:
             start_date = str(selection["xaxis.range[0]"])
             end_date = str(selection["xaxis.range[1]"])
-            start_date_object = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S.%f")
-            end_date_object = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S.%f")
+            start_date_object = datetime.strptime(
+                start_date, "%Y-%m-%d %H:%M:%S.%f")
+            end_date_object = datetime.strptime(
+                end_date, "%Y-%m-%d %H:%M:%S.%f")
             mask = (df['Interval'] > start_date_object) & (
                 df['Interval'] <= end_date_object)
             df_within_dates = df.loc[mask]
@@ -234,44 +250,53 @@ def update_flow_speed(selection, start_date, end_date, index):
             end_point = df.index[-1]
     else:
         end_point = df.index[-1]
-    
+
     level = round(df.iloc[end_point, 6])
     ret = list()
-    if level < 0: # discharging battery
+    if level < 0:  # discharging battery
         level = round(((1-normalize_data(abs(level), 0, 17.159))+0.5)*5)
         windmill = {'animation': 'spin '+str(0)+'s linear infinite reverse'}
         ret.append(windmill)
-        for i in range(1,9):
-            flow_in = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(0) +'s'}
+        for i in range(1, 9):
+            flow_in = {'animation': 'horizontalSlide ' +
+                       str(0)+'s linear infinite', 'animation-delay': str(0) + 's'}
             ret.append(flow_in)
-        for i in range(1,9):
+        for i in range(1, 9):
             delay = str((level*i)/8)
-            flow_out = {'animation': 'horizontalSlide '+str(level)+'s linear infinite', 'animation-delay': delay+'s'}
+            flow_out = {'animation': 'horizontalSlide ' +
+                        str(level)+'s linear infinite', 'animation-delay': delay+'s'}
             ret.append(flow_out)
-    elif level>0: # charging battery
+    elif level > 0:  # charging battery
         level = round(((1-normalize_data(abs(level), 0, 42.795))+0.5)*5)
-        windmill = {'animation': 'spin '+str(level)+'s linear infinite reverse'}
+        windmill = {'animation': 'spin ' +
+                    str(level)+'s linear infinite reverse'}
         ret.append(windmill)
-        for i in range(1,9):
+        for i in range(1, 9):
             delay = str((level*i)/8)
-            flow_in = {'animation': 'horizontalSlide '+str(level)+'s linear infinite', 'animation-delay': delay+'s'}
+            flow_in = {'animation': 'horizontalSlide ' +
+                       str(level)+'s linear infinite', 'animation-delay': delay+'s'}
             ret.append(flow_in)
-        for i in range(1,9):
-            flow_out = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
+        for i in range(1, 9):
+            flow_out = {'animation': 'horizontalSlide ' +
+                        str(0)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
             ret.append(flow_out)
     else:
         windmill = {'animation': 'spin '+str(0)+'s linear infinite reverse'}
         ret.append(windmill)
-        for i in range(1,9):
-            flow_in = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(0)+'s'}
+        for i in range(1, 9):
+            flow_in = {'animation': 'horizontalSlide ' +
+                       str(0)+'s linear infinite', 'animation-delay': str(0)+'s'}
             ret.append(flow_in)
-        for i in range(1,9):
-            flow_out = {'animation': 'horizontalSlide '+str(0)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
+        for i in range(1, 9):
+            flow_out = {'animation': 'horizontalSlide ' +
+                        str(0)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
             ret.append(flow_out)
     return ret
 
+
 def normalize_data(data, min, max):
     return (data - min) / (max - min)
+
 
 @app.callback(
 
@@ -296,8 +321,10 @@ def update_battery_level(selection, start_date, end_date, index):
         if "xaxis.range[0]" in selection:
             start_date = str(selection["xaxis.range[0]"])
             end_date = str(selection["xaxis.range[1]"])
-            start_date_object = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S.%f")
-            end_date_object = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S.%f")
+            start_date_object = datetime.strptime(
+                start_date, "%Y-%m-%d %H:%M:%S.%f")
+            end_date_object = datetime.strptime(
+                end_date, "%Y-%m-%d %H:%M:%S.%f")
             mask = (df['Interval'] > start_date_object) & (
                 df['Interval'] <= end_date_object)
             df_within_dates = df.loc[mask]
@@ -306,7 +333,7 @@ def update_battery_level(selection, start_date, end_date, index):
             end_point = df.index[-1]
     else:
         end_point = df.index[-1]
-    
+
     level = df.iloc[end_point, 3]
     return {'height': str(level*20)+'rem'}
 
@@ -341,6 +368,7 @@ def get_info(df_within_dates):
     msg += "Usage of battery: " + str(in_use_rate) + "%\n"
     return msg
 
+
 @app.callback(
     [
         Output("Main-Graph", "figure"),
@@ -364,9 +392,10 @@ def update_graph_timer(selection, start_date, end_date, index):
         if index == 0:
             index = 1
         end_date = df['Interval'].iloc[index]
-        start_date = end_date - timedelta(days=3) # select a max range of 3 days to show from end date
+        # select a max range of 3 days to show from end date
+        start_date = end_date - timedelta(days=3)
         mask = (df['Interval'] > start_date) & (df['Interval'] <= end_date)
-        df_within_dates = df.loc[mask] 
+        df_within_dates = df.loc[mask]
         tmp_data = df_within_dates.iloc[:, 3]
         information_update = get_info(df_within_dates)
         fig = go.Figure(
@@ -426,8 +455,10 @@ def update_graph_timer(selection, start_date, end_date, index):
         if "xaxis.range[0]" in selection:
             start_date = str(selection["xaxis.range[0]"])
             end_date = str(selection["xaxis.range[1]"])
-            start_date_object = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S.%f")
-            end_date_object = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S.%f")
+            start_date_object = datetime.strptime(
+                start_date, "%Y-%m-%d %H:%M:%S.%f")
+            end_date_object = datetime.strptime(
+                end_date, "%Y-%m-%d %H:%M:%S.%f")
             mask = (df['Interval'] > start_date_object) & (
                 df['Interval'] <= end_date_object)
             df_within_dates = df.loc[mask]
@@ -451,17 +482,18 @@ def update_graph_timer(selection, start_date, end_date, index):
                 ]
             )
         else:
-            if start_date==None and end_date== None:
+            if start_date == None and end_date == None:
                 end_date = df['Interval'].iloc[df.index[-1]]
-                start_date = end_date - timedelta(days=3) # select a max range of 3 days to show from end date
+                # select a max range of 3 days to show from end date
+                start_date = end_date - timedelta(days=3)
             mask = (df['Interval'] > start_date) & (df['Interval'] <= end_date)
-            df_within_dates = df.loc[mask] 
+            df_within_dates = df.loc[mask]
             information_update = get_info(df_within_dates)
             fig = go.Figure(
                 data=[
                     go.Scatter(
                         x=df_within_dates.iloc[:, 1],
-                        y=df_within_dates.iloc[:,3]*100,
+                        y=df_within_dates.iloc[:, 3]*100,
                         line_color=yellow,
                     )
                 ]
@@ -477,15 +509,16 @@ def update_graph_timer(selection, start_date, end_date, index):
             )
     else:
         end_date = df['Interval'].iloc[df.index[-1]]
-        start_date = end_date - timedelta(days=3) # select a max range of 3 days to show from end date
+        # select a max range of 3 days to show from end date
+        start_date = end_date - timedelta(days=3)
         mask = (df['Interval'] > start_date) & (df['Interval'] <= end_date)
-        df_within_dates = df.loc[mask] 
+        df_within_dates = df.loc[mask]
         information_update = get_info(df_within_dates)
         fig = go.Figure(
             data=[
                 go.Scatter(
                     x=df_within_dates.iloc[:, 1],
-                    y=df_within_dates.iloc[:,3]*100,
+                    y=df_within_dates.iloc[:, 3]*100,
                     line_color=yellow,
                 )
             ]
@@ -542,27 +575,29 @@ def process_df():
 def logo(app):
     title = html.H5(
         "BPCH AMSTERDAM",
-        style={"marginTop": 5, "marginLeft": "10px", "fontSize": "35", "color": "rgb(78,75,72)"},
+        style={"marginTop": 5, "marginLeft": "10px",
+               "fontSize": "35", "color": "rgb(78,75,72)"},
     )
 
     info_about_app = html.H6(
         "Battery-Powered Charging Hub Amsterdam",
-        style={"marginLeft": "10px","fontSize": "25", "color": "rgb(78,75,72)"}
+        style={"marginLeft": "10px", "fontSize": "25",
+               "color": "rgb(78,75,72)"}
     )
 
     logo_image_amst = html.Img(src=app.get_asset_url(
-        "amsterdam_logo.png"), style={"marginTop": 5, "height": 60, "left": "3%","float": "left", "display": "inline-block",})
+        "amsterdam_logo.png"), style={"marginTop": 5, "height": 60, "left": "3%", "float": "left", "display": "inline-block", })
     logo_image = html.Img(src=app.get_asset_url(
-        "VF_logo.png"), style={"marginTop": -20,"height": 100, "right": "3%", "float": "right", "display": "inline-block",})
+        "VF_logo.png"), style={"marginTop": -20, "height": 100, "right": "3%", "float": "right", "display": "inline-block", })
 
     return dbc.Row([
-        dbc.Col([logo_image_amst], width={'size':4}),
+        dbc.Col([logo_image_amst], width={'size': 4}),
         dbc.Col([
             dbc.Row([title]),
             dbc.Row([info_about_app])],
-            width={'size':4}, className='text-center'),
-        dbc.Col([logo_image], width={'size':4}),
-        ]
+            width={'size': 4}, className='text-center'),
+        dbc.Col([logo_image], width={'size': 4}),
+    ]
     )
 
 
@@ -589,8 +624,8 @@ graphs = dbc.Card(
                                         "showline": False,
                                     },
                                     "yaxis": {"showgrid": False, "showline": False},
-                                    "plot_bgcolor": "black", 
-                                    "title":"Battery %",
+                                    "plot_bgcolor": "black",
+                                    "title": "Battery %",
                                     "paper_bgcolor": "black",
                                     "font": {"color": "gray"},
                                     "height": 200,
@@ -630,8 +665,8 @@ graphs_pow = dbc.Card(
                                         "showline": False,
                                     },
                                     "yaxis": {"showgrid": False, "showline": False},
-                                    "plot_bgcolor": "black",                                
-                                    "title":"Power kW/h",
+                                    "plot_bgcolor": "black",
+                                    "title": "Power kW/h",
                                     "paper_bgcolor": "black",
                                     "font": {"color": "gray"},
                                     "height": 200,
@@ -665,7 +700,7 @@ graphs_pow = dbc.Card(
                         "bottom": 0,
                         "right": "3%",
                         "float": "right",
-                        "display": "inline-block",                    
+                        "display": "inline-block",
                         "color": "black",
                     },
                 ),
@@ -688,7 +723,7 @@ info_box = dcc.Textarea(
     style={
         "width": "100%",
         "height": "32rem",
-        "resize" : "none",
+        "resize": "none",
         "background-color": "rgb(189,213,233)",
         "color": "#00000",
         "placeholder": "#00000",
@@ -697,7 +732,7 @@ info_box = dcc.Textarea(
         "display": "inline-block",
     },
 )
-                
+
 
 info_box2 = dcc.Textarea(
     id="Info-Textbox2",
@@ -707,7 +742,7 @@ info_box2 = dcc.Textarea(
     style={
         "width": "100%",
         "height": "32rem",
-        "resize" : "none",
+        "resize": "none",
         "background-color": "rgb(189,213,233)",
         "color": "#00000",
         "placeholder": "#00000",

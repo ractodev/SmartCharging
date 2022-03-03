@@ -1,5 +1,3 @@
-from pydoc import classname
-from xml.dom.minidom import Document
 from matplotlib.pyplot import margins
 import pandas as pd
 import numpy as np
@@ -11,7 +9,7 @@ import dash_daq as daq
 
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output, State
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from dash.exceptions import PreventUpdate
 
 app = dash.Dash(
@@ -22,10 +20,10 @@ app = dash.Dash(
 )
 server = app.server
 app.title = "Vattenfall Smart Charging"
-width_data_points = 10
-speed = 800
-# yellow ="rgb(255, 218, 0)"
-yellow = "rgb(32, 113, 181)"
+width_data_points = 50
+speed = 5000
+yellow = "rgb(255, 218, 0)"
+# yellow ="rgb(32, 113, 181)"
 
 ################ Functions definition ######################
 
@@ -134,7 +132,71 @@ def update_cars(selection, start_date, end_date, index):
             output.append({'background-image': 'url(../assets/car-none.svg)'})
     return output
 
-# to be fixed
+
+@app.callback(
+    [
+        Output('car_0_0', 'children'),
+        Output('car_0_1', 'children'),
+        Output('car_1_0', 'children'),
+        Output('car_1_1', 'children'),
+        Output('car_2_0', 'children'),
+        Output('car_2_1', 'children'),
+        Output('car_3_0', 'children'),
+        Output('car_3_1', 'children'),
+        Output('car_4_0', 'children'),
+        Output('car_4_1', 'children'),
+        Output('car_5_0', 'children'),
+        Output('car_5_1', 'children'),
+        Output('car_6_0', 'children'),
+        Output('car_6_1', 'children'),
+        Output('car_7_0', 'children'),
+        Output('car_7_1', 'children'),
+    ],
+    [
+        Input("Main-Graph", "relayoutData"),
+        Input("date-picker", "start_date"),
+        Input("date-picker", "end_date"),
+        Input('interval-component', 'n_intervals'),
+    ],
+)
+def update_flow_cars(selection, start_date, end_date, index):
+    ctx = dash.callback_context
+    trigger = ctx.triggered[0]['prop_id'].split('.')[0]
+    end_point = 0
+    df_slice = df.iloc[:, 10:-49:3]
+    ret = list()
+    if trigger == 'interval-component':
+        end_point = (index*width_data_points) % 1000
+    elif trigger == 'date-picker':
+        end_point = df.loc[(df['Interval'] <= end_date)].index[-1]
+    elif trigger == 'Main-Graph':
+        if "xaxis.range[0]" in selection:
+            start_date = str(selection["xaxis.range[0]"])
+            end_date = str(selection["xaxis.range[1]"])
+            start_date_object = datetime.strptime(
+                start_date, "%Y-%m-%d %H:%M:%S.%f")
+            end_date_object = datetime.strptime(
+                end_date, "%Y-%m-%d %H:%M:%S.%f")
+            mask = (df['Interval'] > start_date_object) & (
+                df['Interval'] <= end_date_object)
+            df_within_dates = df_slice.loc[mask]
+            end_point = df_within_dates.index[-1]
+        else:
+            end_point = df_slice.index[-1]
+    else:
+        end_point = df_slice.index[-1]
+    for i in range(0, 16):
+        if df_slice.iloc[end_point, i] > 0:
+            ret.append(carFlow1)
+        else:
+            ret.append(html.H6(", ", style={"color": "rgb(32, 113, 181)"}))
+            # ret.append(
+            #     html.H6("Free", style={
+            #         'transform': 'scale(-1,1)',
+            #         'top': '-0.3rem',
+            #         'left': '-1rem',
+            #         'position': 'relative'}))
+    return ret
 
 
 @app.callback(
@@ -193,8 +255,7 @@ def update_flow_speed(selection, start_date, end_date, index):
     ret = list()
     if level < 0:  # discharging battery
         level = round(((1-normalize_data(abs(level), 0, 17.159))+0.5)*5)
-        windmill = {'animation': 'spin ' +
-                    str(0)+'s linear infinite ', 'animation-direction': 'reverse'}
+        windmill = {'animation': 'spin '+str(0)+'s linear infinite reverse'}
         ret.append(windmill)
         for i in range(1, 9):
             flow_in = {'animation': 'horizontalSlide ' +
@@ -208,7 +269,7 @@ def update_flow_speed(selection, start_date, end_date, index):
     elif level > 0:  # charging battery
         level = round(((1-normalize_data(abs(level), 0, 42.795))+0.5)*5)
         windmill = {'animation': 'spin ' +
-                    str(level)+'s linear infinite', 'animation-direction': 'reverse'}
+                    str(level)+'s linear infinite reverse'}
         ret.append(windmill)
         for i in range(1, 9):
             delay = str((level*i)/8)
@@ -220,8 +281,7 @@ def update_flow_speed(selection, start_date, end_date, index):
                         str(0)+'s linear infinite', 'animation-delay': str(i*0.5)+'s'}
             ret.append(flow_out)
     else:
-        windmill = {'animation': 'spin ' +
-                    str(0)+'s linear infinite', 'animation-direction': 'reverse'}
+        windmill = {'animation': 'spin '+str(0)+'s linear infinite reverse'}
         ret.append(windmill)
         for i in range(1, 9):
             flow_in = {'animation': 'horizontalSlide ' +
@@ -278,27 +338,20 @@ def update_battery_level(selection, start_date, end_date, index):
     return {'height': str(level*20)+'rem'}
 
 
-def get_info(index, mask):
+def get_info(df_within_dates):
     msg = ""
     charging = 0
     discharging = 0
     idle = 0
-    if index > 0:
-        mask = (df.index < index)
-    elif len(mask) != 0:
-        1
-    else:
-        mask = df.index
-    df_within_mask = df.loc[mask]
-    tot = len(df_within_mask)
-    msg += "Battery level: " + str(int(df.iloc[tot-1, 3]*100)) + "\n"
-    msg += "Number of cars connected: " + \
-        str(int(
-            df_within_mask['numberOfConnectedVehicles/numConnVehicles.numConnVehicles'].iloc[-1])) + "\n"
-    msg += "Total delivered active power: " + \
-        str(int(df_within_mask['Total_W'].iloc[-1]/1000)) + 'kW\n'
+    tot = len(df_within_dates)
+    # msg += "Battery level: " + str(int(df_within_dates.iloc[-1, 3]*100)) + "\n"
+    # msg += "Number of cars connected: " + \
+    #     str(int(
+    #         df_within_dates['numberOfConnectedVehicles/numConnVehicles.numConnVehicles'].iloc[-1])) + "\n"
+    msg += "Total delivered power: " + \
+        str(int(df_within_dates['Total_W'].sum()/1000)) + 'kW\n'
     for i in range(0, tot):
-        current_val = df_within_mask['ams-a-bat-ew/AvgValue.avg'].iloc[i]
+        current_val = df_within_dates['ams-a-bat-ew/AvgValue.avg'].iloc[i]
         if current_val == 0:
             idle += 1
         elif current_val > 0:
@@ -309,12 +362,10 @@ def get_info(index, mask):
     discharging_rate = int((discharging/tot)*100)
     idle_rate = int((idle/tot)*100)
     in_use_rate = int(((charging+discharging)/tot)*100)
-    msg += "Charging rate in selected period: " + str(charging_rate) + "%\n"
-    msg += "Discharging rate in selected period: " + \
-        str(discharging_rate) + "%\n"
-    msg += "Idle rate in selected period: " + str(idle_rate) + "%\n"
-    msg += "Usage of battery compared to idle time in selected period: " + \
-        str(in_use_rate) + "%\n"
+    msg += "Charging rate: " + str(charging_rate) + "%\n"
+    msg += "Discharging rate: " + str(discharging_rate) + "%\n"
+    msg += "Idle rate: " + str(idle_rate) + "%\n"
+    msg += "Usage of battery: " + str(in_use_rate) + "%\n"
     return msg
 
 
@@ -340,12 +391,17 @@ def update_graph_timer(selection, start_date, end_date, index):
         index = (index*width_data_points) % 1000
         if index == 0:
             index = 1
-        tmp_data = df.iloc[0:index, 3]
-        information_update = get_info(index, [])
+        end_date = df['Interval'].iloc[index]
+        # select a max range of 3 days to show from end date
+        start_date = end_date - timedelta(days=3)
+        mask = (df['Interval'] > start_date) & (df['Interval'] <= end_date)
+        df_within_dates = df.loc[mask]
+        tmp_data = df_within_dates.iloc[:, 3]
+        information_update = get_info(df_within_dates)
         fig = go.Figure(
             data=[
                 go.Scatter(
-                    x=df.iloc[0:index, 1],
+                    x=df_within_dates['Interval'],
                     y=tmp_data*100,
                     line_color=yellow,
                 )
@@ -354,8 +410,8 @@ def update_graph_timer(selection, start_date, end_date, index):
         fig1 = go.Figure(
             data=[
                 go.Scatter(
-                    x=df.iloc[0:index, 1],
-                    y=df['Total_W'].iloc[0:index],
+                    x=df_within_dates['Interval'],
+                    y=df_within_dates['Total_W'],
                     line_color=yellow,
                 )
             ]
@@ -376,7 +432,7 @@ def update_graph_timer(selection, start_date, end_date, index):
         mask = (df['Interval'] > start_date_object) & (
             df['Interval'] <= end_date_object)
         df_within_dates = df.loc[mask]
-        information_update = get_info(-1, mask)
+        information_update = get_info(df_within_dates)
         fig = go.Figure(
             data=[
                 go.Scatter(
@@ -406,7 +462,7 @@ def update_graph_timer(selection, start_date, end_date, index):
             mask = (df['Interval'] > start_date_object) & (
                 df['Interval'] <= end_date_object)
             df_within_dates = df.loc[mask]
-            information_update = get_info(-1, mask)
+            information_update = get_info(df_within_dates)
             fig = go.Figure(
                 data=[
                     go.Scatter(
@@ -426,13 +482,18 @@ def update_graph_timer(selection, start_date, end_date, index):
                 ]
             )
         else:
-            tmp_data = df.iloc[:, 3]
-            information_update = get_info(-1, [])
+            if start_date == None and end_date == None:
+                end_date = df['Interval'].iloc[df.index[-1]]
+                # select a max range of 3 days to show from end date
+                start_date = end_date - timedelta(days=3)
+            mask = (df['Interval'] > start_date) & (df['Interval'] <= end_date)
+            df_within_dates = df.loc[mask]
+            information_update = get_info(df_within_dates)
             fig = go.Figure(
                 data=[
                     go.Scatter(
-                        x=df.iloc[:, 1],
-                        y=tmp_data*100,
+                        x=df_within_dates.iloc[:, 1],
+                        y=df_within_dates.iloc[:, 3]*100,
                         line_color=yellow,
                     )
                 ]
@@ -440,20 +501,24 @@ def update_graph_timer(selection, start_date, end_date, index):
             fig1 = go.Figure(
                 data=[
                     go.Scatter(
-                        x=df.iloc[:, 1],
-                        y=df['Total_W'],
+                        x=df_within_dates.iloc[:, 1],
+                        y=df_within_dates['Total_W'],
                         line_color=yellow,
                     )
                 ]
             )
     else:
-        tmp_data = df.iloc[:, 3]
-        information_update = get_info(-1, [])
+        end_date = df['Interval'].iloc[df.index[-1]]
+        # select a max range of 3 days to show from end date
+        start_date = end_date - timedelta(days=3)
+        mask = (df['Interval'] > start_date) & (df['Interval'] <= end_date)
+        df_within_dates = df.loc[mask]
+        information_update = get_info(df_within_dates)
         fig = go.Figure(
             data=[
                 go.Scatter(
-                    x=df.iloc[:, 1],
-                    y=tmp_data*100,
+                    x=df_within_dates.iloc[:, 1],
+                    y=df_within_dates.iloc[:, 3]*100,
                     line_color=yellow,
                 )
             ]
@@ -461,8 +526,8 @@ def update_graph_timer(selection, start_date, end_date, index):
         fig1 = go.Figure(
             data=[
                 go.Scatter(
-                    x=df.iloc[:, 1],
-                    y=df['Total_W'],
+                    x=df_within_dates.iloc[:, 1],
+                    y=df_within_dates['Total_W'],
                     line_color=yellow,
                 )
             ]
@@ -515,7 +580,7 @@ def logo(app):
     )
 
     info_about_app = html.H6(
-        "Battery-powered charging hub Amsterdam",
+        "Battery-Powered Charging Hub Amsterdam",
         style={"marginLeft": "10px", "fontSize": "25",
                "color": "rgb(78,75,72)"}
     )
@@ -975,6 +1040,14 @@ leftTulip4 = html.Div(
     className='tulip7',
     children=[tulip]
 )
+leftTulip5 = html.Div(
+    className='tulip8',
+    children=[tulip]
+)
+rightTulip4 = html.Div(
+    className='tulip9 rightBabyTulip',
+    children=[tulip]
+)
 
 tulipsView = html.Div(
     children=[
@@ -982,9 +1055,11 @@ tulipsView = html.Div(
         leftTulip2,
         leftTulip3,
         leftTulip4,
+        leftTulip5,
         rightTulip1,
         rightTulip2,
-        rightTulip3
+        rightTulip3,
+        rightTulip4
     ]
 )
 
@@ -995,8 +1070,8 @@ chargeView = html.Div(
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_0_0', children=[]),
-                     html.Div(id='car_0_1', children=[]),
+                     html.Div(id='car_0_0', children=[carFlow1]),
+                     html.Div(id='car_0_1', children=[carFlow1]),
                  ]),
         html.Div(id='chargeSpot2',
                  children=[

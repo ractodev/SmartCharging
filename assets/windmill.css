@@ -811,9 +811,8 @@ body {
 
 .carFlow1 {
   transform: scale(-1,1);
-  left: 5.5rem;
+  left: 4.6rem;
   top: 1.5rem;
-  width: 3rem;
 	position: relative;
   justify-content: center;
   align-items: center;
@@ -823,7 +822,6 @@ body {
   right: 2rem;
   left: 5rem;
   top: 1.5rem;
-  height: 0.5rem;
 	position: relative;
   justify-content: center;
   align-items: center;
@@ -1037,6 +1035,7 @@ body {
     display: block;
     transform: scale(-1,1);
     left: 5rem;
+    top: -0.5rem;
     position: relative;
     /* Other styles here */
 }
@@ -1094,8 +1093,8 @@ body {
  .tulip3 {
    position: relative;
    transform: scale(0.1);
-   top: -15rem;
-   left: 55rem;
+   top: -16em;
+   left: 56rem;
 	 width: 10px;
 	 height: 400px;
 	 margin: 30px 100px;
@@ -1105,7 +1104,7 @@ body {
    position: relative;
    transform: scale(0.15);
    top: -18rem;
-   left: 32rem;
+   left: 18rem;
 	 width: 10px;
 	 height: 400px;
 	 margin: 30px 100px;
@@ -1135,7 +1134,29 @@ body {
    position: relative;
    transform: scale(0.2);
    top: -15rem;
-   left: 22rem;
+   left: -3rem;
+	 width: 10px;
+	 height: 400px;
+	 margin: 30px 100px;
+	 float: left;
+}
+ .tulip8 {
+   z-index: 2;
+   position: relative;
+   transform: scale(0.15);
+   top: -6.5rem;
+   left: -38rem;
+	 width: 10px;
+	 height: 400px;
+	 margin: 30px 100px;
+	 float: left;
+}
+ .tulip9 {
+   z-index: 2;
+   position: relative;
+   transform: scale(0.15);
+   top: -5rem;
+   left: -88rem;
 	 width: 10px;
 	 height: 400px;
 	 margin: 30px 100px;
