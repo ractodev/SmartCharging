@@ -383,7 +383,6 @@ def get_info(df_within_dates):
 def rolling_info(index):
     now = datetime.now()
     seconds = now.second
-    print(seconds)
     interval = 5
     number_messages = 3
     sel_msg = int(seconds/interval)%number_messages
