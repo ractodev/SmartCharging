@@ -21,8 +21,8 @@ app = dash.Dash(
 )
 server = app.server
 app.title = "Vattenfall Smart Charging"
-width_data_points = 50
-speed = 50000
+width_data_points = 10
+speed = 500
 yellow = "rgb(255, 218, 0)"
 # yellow ="rgb(32, 113, 181)"
 
@@ -76,7 +76,6 @@ def fig_update_layout(fig, myTitle):
     Input("Pow-Graph", "relayoutData"),
 )
 def graph_call_connection(selection):
-    print(selection)
     return selection
 
 
@@ -377,12 +376,32 @@ def get_info(df_within_dates):
     msg += "Usage of battery: " + str(in_use_rate) + "%\n"
     return msg
 
+@app.callback(
+    Output("Info-Textbox", "placeholder"),
+    Input('interval-component', 'n_intervals'),
+)
+def rolling_info(index):
+    now = datetime.now()
+    seconds = now.second
+    print(seconds)
+    interval = 5
+    number_messages = 3
+    sel_msg = int(seconds/interval)%number_messages
+    msg = ""
+    if sel_msg == 0:
+        msg += "my green message!"
+    elif sel_msg == 1:
+        msg += "my red message!"
+    elif sel_msg == 2:
+        msg += "my blue message!"
+    elif sel_msg == 3:
+        msg += "my white message!"
+    return msg
 
 @app.callback(
     [
         Output("Main-Graph", "figure"),
         Output("Pow-Graph", "figure"),
-        Output("Info-Textbox", "placeholder"),
         Output("Info-Textbox2", "placeholder"),
     ],
 
@@ -406,7 +425,6 @@ def update_graph_timer(selection, start_date, end_date, index):
         mask = (df['Interval'] > start_date) & (df['Interval'] <= end_date)
         df_within_dates = df.loc[mask]
         tmp_data = df_within_dates.iloc[:, 3]
-        information_update = get_info(df_within_dates)
         fig = go.Figure(
             data=[
                 go.Scatter(
@@ -441,7 +459,6 @@ def update_graph_timer(selection, start_date, end_date, index):
         mask = (df['Interval'] > start_date_object) & (
             df['Interval'] <= end_date_object)
         df_within_dates = df.loc[mask]
-        information_update = get_info(df_within_dates)
         fig = go.Figure(
             data=[
                 go.Scatter(
@@ -471,7 +488,6 @@ def update_graph_timer(selection, start_date, end_date, index):
             mask = (df['Interval'] > start_date_object) & (
                 df['Interval'] <= end_date_object)
             df_within_dates = df.loc[mask]
-            information_update = get_info(df_within_dates)
             fig = go.Figure(
                 data=[
                     go.Scatter(
@@ -497,7 +513,6 @@ def update_graph_timer(selection, start_date, end_date, index):
                 start_date = end_date - timedelta(days=3)
             mask = (df['Interval'] > start_date) & (df['Interval'] <= end_date)
             df_within_dates = df.loc[mask]
-            information_update = get_info(df_within_dates)
             fig = go.Figure(
                 data=[
                     go.Scatter(
@@ -522,7 +537,6 @@ def update_graph_timer(selection, start_date, end_date, index):
         start_date = end_date - timedelta(days=3)
         mask = (df['Interval'] > start_date) & (df['Interval'] <= end_date)
         df_within_dates = df.loc[mask]
-        information_update = get_info(df_within_dates)
         fig = go.Figure(
             data=[
                 go.Scatter(
@@ -541,9 +555,10 @@ def update_graph_timer(selection, start_date, end_date, index):
                 )
             ]
         )
+    information_update = get_info(df_within_dates)
     fig = fig_update_layout(fig, "Battery Level")
     fig1 = fig_update_layout(fig1, "Power kW/h")
-    return fig, fig1, information_update, information_update
+    return fig, fig1, information_update
 
 
 def fix_datapoints():
