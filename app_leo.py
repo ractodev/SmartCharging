@@ -71,6 +71,21 @@ def fig_update_layout(fig, myTitle):
     )
     return fig
 
+@app.callback(
+    Output("sun", 'style'),
+    Input('interval-component', 'n_intervals'),
+)
+def move_sun(index):
+    now = datetime.now()
+    seconds = now.second
+    a = -0.01
+    h = 0.3
+    x = (index*1)%90
+    y = (a*(x-50)**2+h)-1
+    print(x)
+    print(y)
+    style = {'left': str(x)+'rem','top': str(-y)+'rem'}
+    return style
 
 @app.callback(
     Output("Main-Graph", "relayoutData"),
@@ -392,7 +407,7 @@ def rolling_info(index):
     if sel_msg == 0:
         msg += "Did you know... \n Like a piggy bank, I save energy when we have some over\nand give it back when you need it"
     elif sel_msg == 1:
-        msg += "Did you know... \n Before I was here \nyou could only charge 3 vehicles. \nNow you can charge 8! "
+        msg += "Did you know... \n Before I was here \nyou could only charge 3 vehicles. \nNow you can charge 16! "
     elif sel_msg == 2:
         msg += "Did you know... \nBy charging your vehicle here you help save the environment!\n "
     elif sel_msg == 3:
@@ -1184,6 +1199,7 @@ chargeView = html.Div(
 
 hills = html.Div(
     children=[
+        html.Div(id="sun"),
         html.Div(className="hills1"),
         html.Div(className="hills2"),
         html.Div(className="hills3"),

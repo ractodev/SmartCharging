@@ -1067,6 +1067,18 @@ body {
 }
 
 
+/* SUN/MOON */
+#sun{
+  z-index: -3;
+  position: relative;
+  background-color: #f1ee18;
+  display:block;
+  left: 0rem;
+  top: 17rem;
+  width: 3rem;
+  height: 3rem;
+}
+
 /* TULIP */
 
 
