@@ -1,3 +1,4 @@
+from multiprocessing import connection
 from matplotlib.pyplot import margins
 import pandas as pd
 import numpy as np
@@ -21,7 +22,7 @@ app = dash.Dash(
 server = app.server
 app.title = "Vattenfall Smart Charging"
 width_data_points = 50
-speed = 5000
+speed = 50000
 yellow = "rgb(255, 218, 0)"
 # yellow ="rgb(32, 113, 181)"
 
@@ -69,6 +70,14 @@ def fig_update_layout(fig, myTitle):
         ),
     )
     return fig
+
+@app.callback(
+    Output("Main-Graph", "relayoutData"),
+    Input("Pow-Graph", "relayoutData"),
+)
+def graph_call_connection(selection):
+    print(selection)
+    return selection
 
 
 @app.callback(
