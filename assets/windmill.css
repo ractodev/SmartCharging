@@ -85,16 +85,18 @@
     font-family: "Vattenfall";
 }
 body {
-	 background-color: rgb(233, 241, 248);
+	 background-color:rgb(189, 213, 233);
+   /* background-color: #1E324F; */
+
 }
 .bottom-view{
   z-index: -1;
-	top: 1rem;
+	top: 3rem;
 	position: relative;
   	left: 0px;
 	width: 150rem;
 	height: 32rem;
-  	background-color: rgb(189, 213, 233);
+
 }
  .windmill {
 	 position: absolute;
@@ -489,6 +491,16 @@ body {
 	 width: 13rem;
 	 height: 0px;
 	 margin: 0 1rem;
+}
+#battery-percentage{
+  color: #e9f1f8;
+  position: relative;
+  top: 6rem;
+  left: 18rem;
+  font-size: 55px;
+  background: transparent;
+  border: none;
+
 }
  
 .hills1{
@@ -1072,9 +1084,10 @@ body {
   z-index: -3;
   position: relative;
   background-color: #f1ee18;
+  border-radius: 100%;
   display:block;
   left: 0rem;
-  top: 17rem;
+  top: -17rem;
   width: 3rem;
   height: 3rem;
 }
@@ -1320,13 +1333,15 @@ body {
 }
 
 #Info-Textbox{
+  padding-top: 2.5rem;
   line-height: 2;
   font-size: 2rem;
   text-align: center;
 }
 #Info-Textbox2{
+  padding-top: 2.5rem;
   top: 5rem;
   font-size: 2rem;
   text-align: center;
-  line-height: 3;
+  line-height: 2.5;
 }

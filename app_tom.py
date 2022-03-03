@@ -301,6 +301,7 @@ def normalize_data(data, min, max):
 @app.callback(
 
     Output("battery-fill", "style"),
+    Output("battery-percentage", "placeholder"),
 
     [
         Input("Main-Graph", "relayoutData"),
@@ -335,7 +336,7 @@ def update_battery_level(selection, start_date, end_date, index):
         end_point = df.index[-1]
 
     level = df.iloc[end_point, 3]
-    return {'height': str(level*20)+'rem'}
+    return {'height': str(level*20)+'rem'}, str(round(level*100))+"%"
 
 
 def get_info(df_within_dates):
@@ -596,7 +597,9 @@ def logo(app):
             dbc.Row([info_about_app])],
             width={'size': 4}, className='text-center'),
         dbc.Col([logo_image], width={'size': 4}),
-    ]
+    ], style={
+        "backgroundColor": "rgb(233, 241, 248)",
+    }
     )
 
 
@@ -719,10 +722,11 @@ info_box = dcc.Textarea(
     placeholder="Did you know... \n Like a piggy bank, I save energy when we have some over\nand give it back when you need it",
     rows=6,
     style={
+        "top": "2rem",
         "width": "100%",
         "height": "32rem",
         "resize": "none",
-        "background-color": "rgb(189,213,233)",
+        "background-color": "rgb(233, 241, 248)",
         "color": "#00000",
         "placeholder": "#00000",
         "fontFamily": "Vattenfall",
@@ -738,10 +742,11 @@ info_box2 = dcc.Textarea(
     "on the graph.",
     rows=8,
     style={
+        "top": "2rem",
         "width": "100%",
         "height": "32rem",
         "resize": "none",
-        "background-color": "rgb(189,213,233)",
+        "background-color": "rgb(233, 241, 248)",
         "color": "#00000",
         "placeholder": "#00000",
         "fontFamily": "Vattenfall",
@@ -1123,48 +1128,6 @@ chargeView = html.Div(
     ]
 )
 
-# chargeView = html.Div(
-#     className="chargeArea",
-#     children=[
-#         dbc.Row([
-#                 dbc.Col([html.Div(id='car_0_0', children=[html.H6('0_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_0_1', children=[html.H6('0_1', style={'color': '#000000'})])]), dbc.Col(
-#                     [html.Div(id='car_1_0', children=[html.H6('1_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_1_1', children=[html.H6('1_1', style={'color': '#000000'})])])
-#                 ]),
-#         dbc.Row([
-#                 dbc.Col([html.Div(id='car_2_0', children=[html.H6('2_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_2_1', children=[html.H6('2_1', style={'color': '#000000'})])]), dbc.Col(
-#                     [html.Div(id='car_3_0', children=[html.H6('3_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_3_1', children=[html.H6('3_1', style={'color': '#000000'})])])
-#                 ]),
-#         dbc.Row([
-#                 dbc.Col([html.Div(id='car_4_0', children=[html.H6('4_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_4_1', children=[html.H6('4_1', style={'color': '#000000'})])]), dbc.Col(
-#                     [html.Div(id='car_5_0', children=[html.H6('5_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_5_1', children=[html.H6('5_1', style={'color': '#000000'})])])
-#                 ]),
-#         dbc.Row([
-#                 dbc.Col([html.Div(id='car_6_0', children=[html.H6('6_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_6_1', children=[html.H6('6_1', style={'color': '#000000'})])]), dbc.Col(
-#                     [html.Div(id='car_7_0', children=[html.H6('7_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_7_1', children=[html.H6('7_1', style={'color': '#000000'})])])
-#                 ])
-
-# gives more flexibility of where to place "cars"
-# children=[
-#     html.Div(id='car_0_0'),
-#     html.Div(id='car_0_1'),
-#     html.Div(id='car_1_0'),
-#     html.Div(id='car_1_1'),
-#     html.Div(id='car_2_0'),
-#     html.Div(id='car_2_1'),
-#     html.Div(id='car_3_0'),
-#     html.Div(id='car_3_1'),
-#     html.Div(id='car_4_0'),
-#     html.Div(id='car_4_1'),
-#     html.Div(id='car_5_0'),
-#     html.Div(id='car_5_1'),
-#     html.Div(id='car_6_0'),
-#     html.Div(id='car_6_1'),
-#     html.Div(id='car_7_0'),
-#     html.Div(id='car_7_1'),
-# ]
-#     ]
-# )
-
 hills = html.Div(
     children=[
         html.Div(className="hills1"),
@@ -1182,7 +1145,15 @@ windmillView = html.Div(
     children=[
         html.Div(
             id="battery",
-            children=[html.Div(id="battery-fill")],
+            children=[
+                html.Div(id="battery-fill"),
+                dbc.Row(dcc.Textarea(
+                    id="battery-percentage",
+                    placeholder="60%",
+                    rows=1,
+                    style={'color': '#e9f1f8'}
+                ), style={'color': '#e9f1f8'})
+            ],
         ),
         html.Div(className="house"),
         html.Div(className="mill"),
@@ -1226,7 +1197,7 @@ app.layout = dbc.Container(
                 dbc.Col([info_box], width=4),
                 dbc.Col([info_box2], width=4),
                 dbc.Col([graphs, graphs_pow])
-                ]),
+                ], style={'padding-top': '2rem'}),
         bottomView,
     ]
 )

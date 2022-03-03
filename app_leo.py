@@ -71,6 +71,7 @@ def fig_update_layout(fig, myTitle):
     )
     return fig
 
+
 @app.callback(
     Output("sun", 'style'),
     Input('interval-component', 'n_intervals'),
@@ -80,12 +81,13 @@ def move_sun(index):
     seconds = now.second
     a = -0.01
     h = 0.3
-    x = (index*1)%90
-    y = (a*(x-50)**2+h)-1
+    x = (index*2) % 90
+    y = (a*(x-10)**2+h)
     print(x)
     print(y)
-    style = {'left': str(x)+'rem','top': str(-y)+'rem'}
+    style = {'left': str(x)+'rem', 'top': str(-y)+'rem'}
     return style
+
 
 @app.callback(
     Output("Main-Graph", "relayoutData"),
@@ -1199,7 +1201,6 @@ chargeView = html.Div(
 
 hills = html.Div(
     children=[
-        html.Div(id="sun"),
         html.Div(className="hills1"),
         html.Div(className="hills2"),
         html.Div(className="hills3"),
@@ -1241,7 +1242,8 @@ bottomView = html.Div(
         windmillView,
         flowView,
         chargeView,
-        tulipsView
+        tulipsView,
+        html.Div(id="sun")
     ]
 )
 
