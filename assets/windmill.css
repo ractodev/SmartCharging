@@ -1306,3 +1306,15 @@ body {
 	 top: 66px;
 	 left: 123px;
 }
+
+#Info-Textbox{
+  line-height: 2;
+  font-size: 2rem;
+  text-align: center;
+}
+#Info-Textbox2{
+  top: 5rem;
+  font-size: 2rem;
+  text-align: center;
+  line-height: 3;
+}

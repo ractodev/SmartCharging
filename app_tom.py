@@ -373,7 +373,6 @@ def get_info(df_within_dates):
     [
         Output("Main-Graph", "figure"),
         Output("Pow-Graph", "figure"),
-        Output("Info-Textbox", "placeholder"),
         Output("Info-Textbox2", "placeholder"),
     ],
 
@@ -534,7 +533,7 @@ def update_graph_timer(selection, start_date, end_date, index):
         )
     fig = fig_update_layout(fig, "Battery Level")
     fig1 = fig_update_layout(fig1, "Power kW/h")
-    return fig, fig1, information_update, information_update
+    return fig, fig1, information_update
 
 
 def fix_datapoints():
@@ -717,8 +716,7 @@ graphs_pow = dbc.Card(
 
 info_box = dcc.Textarea(
     id="Info-Textbox",
-    placeholder="This field is used to display information about a feature displayed "
-    "on the graph.",
+    placeholder="Did you know... \n Like a piggy bank, I save energy when we have some over\nand give it back when you need it",
     rows=6,
     style={
         "width": "100%",
