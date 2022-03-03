@@ -82,8 +82,6 @@ def move_sun(index):
     h = 0.3
     x = (index*1)%90
     y = (a*(x-50)**2+h)-1
-    print(x)
-    print(y)
     style = {'left': str(x)+'rem','top': str(-y)+'rem'}
     return style
 
@@ -373,7 +371,7 @@ def get_info(df_within_dates):
     #     str(int(
     #         df_within_dates['numberOfConnectedVehicles/numConnVehicles.numConnVehicles'].iloc[-1])) + "\n"
     msg += "Total delivered power: " + \
-        str(int(df_within_dates['Total_W'].sum()/1000)) + 'kW\n'
+        str(int(df_within_dates['Total_W'].sum()/6000)) + 'kWh\n'
     for i in range(0, tot):
         current_val = df_within_dates['ams-a-bat-ew/AvgValue.avg'].iloc[i]
         if current_val == 0:
@@ -574,7 +572,7 @@ def update_graph_timer(selection, start_date, end_date, index):
         )
     information_update = get_info(df_within_dates)
     fig = fig_update_layout(fig, "Battery Level")
-    fig1 = fig_update_layout(fig1, "Power kW/h")
+    fig1 = fig_update_layout(fig1, "Power W")
     return fig, fig1, information_update
 
 
@@ -1199,7 +1197,6 @@ chargeView = html.Div(
 
 hills = html.Div(
     children=[
-        html.Div(id="sun"),
         html.Div(className="hills1"),
         html.Div(className="hills2"),
         html.Div(className="hills3"),
@@ -1207,6 +1204,7 @@ hills = html.Div(
         html.Div(className="hills5"),
         html.Div(className="hills6"),
         html.Div(className="hills7"),
+        html.Div(id="sun")
     ]
 )
 

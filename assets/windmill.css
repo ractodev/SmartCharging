@@ -1070,7 +1070,7 @@ body {
 /* SUN/MOON */
 #sun{
   z-index: -3;
-  position: relative;
+  position: absolute;
   background-color: #f1ee18;
   display:block;
   left: 0rem;
@@ -1078,6 +1078,28 @@ body {
   width: 3rem;
   height: 3rem;
 }
+
+/* #sun{
+  z-index: -3;
+  position: relative;
+  background-color: #f1ee18;
+  display:block;
+  left: 40rem;
+  top: 17rem;
+  width: 3rem;
+  height: 3rem;
+  animation: sun_mov 2s linear infinite;
+}
+
+@keyframes sun_mov {
+  0% {
+    transform: rotate(-180deg) translate(15rem);
+  }
+
+  100% {
+    transform: rotate(0deg) translate(15rem);
+  }
+} */
 
 /* TULIP */
 
@@ -1322,11 +1344,13 @@ body {
 #Info-Textbox{
   line-height: 2;
   font-size: 2rem;
+  /* padding-left:2rem; */
   text-align: center;
 }
 #Info-Textbox2{
   top: 5rem;
   font-size: 2rem;
+  /* padding-left:2rem; */
   text-align: center;
   line-height: 3;
 }
