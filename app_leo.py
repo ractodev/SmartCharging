@@ -71,6 +71,7 @@ def fig_update_layout(fig, myTitle):
     )
     return fig
 
+
 @app.callback(
     Output("Main-Graph", "relayoutData"),
     Input("Pow-Graph", "relayoutData"),
@@ -376,6 +377,7 @@ def get_info(df_within_dates):
     msg += "Usage of battery: " + str(in_use_rate) + "%\n"
     return msg
 
+
 @app.callback(
     Output("Info-Textbox", "placeholder"),
     Input('interval-component', 'n_intervals'),
@@ -385,17 +387,18 @@ def rolling_info(index):
     seconds = now.second
     interval = 5
     number_messages = 3
-    sel_msg = int(seconds/interval)%number_messages
+    sel_msg = int(seconds/interval) % number_messages
     msg = ""
     if sel_msg == 0:
-        msg += "my green message!"
+        msg += "Did you know... \n Like a piggy bank, I save energy when we have some over\nand give it back when you need it"
     elif sel_msg == 1:
-        msg += "my red message!"
+        msg += "Did you know... \n Before I was here \nyou could only charge 3 vehicles. \nNow you can charge 8! "
     elif sel_msg == 2:
-        msg += "my blue message!"
+        msg += "Did you know... \nBy charging your vehicle here you help save the environment!\n "
     elif sel_msg == 3:
-        msg += "my white message!"
+        msg += "Did you know... \n That I think Amsterdam is a wonderful city! Fijne dag"
     return msg
+
 
 @app.callback(
     [
