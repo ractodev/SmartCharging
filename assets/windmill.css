@@ -86,7 +86,7 @@
 }
 body {
 	 background-color:rgb(189, 213, 233);
-   /* background-color: #1E324F; */
+   background-color: #1E324F;
 
 }
 .bottom-view{
@@ -1292,30 +1292,6 @@ body {
 	 top: -43px;
 	 left: 156px;
 }
- .tulipEyes {
-	 width: 10px;
-	 height: 10px;
-	 border-radius: 50%;
-	 background-color: #222;
-	 top: 55px;
-}
- .leftEye {
-	 left: 69px;
-}
- .rightEye {
-	 left: 119px;
-}
- .tulipSmile {
-	 width: 37px;
-	 height: 18.5px;
-	 border-top-left-radius: 100px;
-	 border-top-right-radius: 100px;
-	 border: 5px solid #222;
-	 transform: rotate(180deg);
-	 top: 73px;
-	 left: 81px;
-	 border-bottom: 0;
-}
  .tulipBlush {
 	 border-radius: 50%;
 	 background-color: #FFDA00;
@@ -1332,20 +1308,19 @@ body {
 }
 
 #Info-Textbox{
-  padding: 3rem;
+  padding: 1.8rem;
+  display: flex;
   line-height: 1.8;
-  font-size: 2rem;
-  /* padding-left:2rem; */
+  font-size: 50px;
   text-align: center;
   border: none;
 }
 #Info-Textbox2{
-  padding-top: 4rem;
+  padding: 2rem;
+  line-height: 1.8;
   top: 5rem;
-  font-size: 2rem;
-  /* padding-left:2rem; */
+  font-size: 45px;
   text-align: center;
-  line-height: 2.3;
   border: none;
 }
 .card-body{
