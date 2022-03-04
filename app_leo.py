@@ -71,19 +71,19 @@ def fig_update_layout(fig, myTitle):
     )
     return fig
 
-@app.callback(
-    Output("sun", 'style'),
-    Input('interval-component', 'n_intervals'),
-)
-def move_sun(index):
-    now = datetime.now()
-    seconds = now.second
-    a = -0.01
-    h = 0.3
-    x = (index*1)%90
-    y = (a*(x-50)**2+h)-1
-    style = {'left': str(x)+'rem','top': str(-y)+'rem'}
-    return style
+# @app.callback(
+#     Output("sun", 'style'),
+#     Input('interval-component', 'n_intervals'),
+# )
+# def move_sun(index):
+#     now = datetime.now()
+#     seconds = now.second
+#     a = -0.01
+#     h = 0.3
+#     x = (index*1)%90
+#     y = (a*(x-50)**2+h)-1
+#     style = {'left': str(x)+'rem','top': str(-y)+'rem'}
+#     return style
 
 @app.callback(
     Output("Main-Graph", "relayoutData"),
@@ -636,7 +636,9 @@ def logo(app):
             dbc.Row([info_about_app])],
             width={'size': 4}, className='text-center'),
         dbc.Col([logo_image], width={'size': 4}),
-    ]
+    ], style={
+                "backgroundColor": "white",
+                }
     )
 
 

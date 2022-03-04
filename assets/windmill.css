@@ -1068,7 +1068,7 @@ body {
 
 
 /* SUN/MOON */
-#sun{
+/* #sun{
   z-index: -3;
   position: absolute;
   background-color: #f1ee18;
@@ -1077,9 +1077,9 @@ body {
   top: 17rem;
   width: 3rem;
   height: 3rem;
-}
+} */
 
-/* #sun{
+#sun{
   z-index: -3;
   position: relative;
   background-color: #f1ee18;
@@ -1099,7 +1099,7 @@ body {
   100% {
     transform: rotate(0deg) translate(15rem);
   }
-} */
+}
 
 /* TULIP */
 
