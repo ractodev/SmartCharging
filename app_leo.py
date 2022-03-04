@@ -1,4 +1,3 @@
-from multiprocessing import connection
 from matplotlib.pyplot import margins
 import pandas as pd
 import numpy as np
@@ -21,7 +20,7 @@ app = dash.Dash(
 )
 server = app.server
 app.title = "Vattenfall Smart Charging"
-width_data_points = 10
+width_data_points = 1
 speed = 500
 yellow = "rgb(255, 218, 0)"
 # yellow ="rgb(32, 113, 181)"
@@ -74,15 +73,57 @@ def fig_update_layout(fig, myTitle):
 
 @app.callback(
     Output("sun", 'style'),
-    Input('interval-component', 'n_intervals'),
+    [
+        Input("Main-Graph", "relayoutData"),
+        Input("date-picker", "start_date"),
+        Input("date-picker", "end_date"),
+        Input('interval-component', 'n_intervals'),
+    ],
+    
 )
-def move_sun(index):
-    now = datetime.now()
-    seconds = now.second
-    a = -0.01
-    h = 0.3
-    x = (index*2) % 90
-    y = (a*(x-50)**2+h)
+def move_sun(selection, start_date, end_date, index):
+    ctx = dash.callback_context
+    trigger = ctx.triggered[0]['prop_id'].split('.')[0]
+    end_point = 0
+    if trigger == 'interval-component':
+        end_point = (index*width_data_points) % 1000
+    elif trigger == 'date-picker':
+        end_point = df.loc[(df['Interval'] <= end_date)].index[-1]
+    elif trigger == 'Main-Graph':
+        if "xaxis.range[0]" in selection:
+            start_date = str(selection["xaxis.range[0]"])
+            end_date = str(selection["xaxis.range[1]"])
+            start_date_object = datetime.strptime(
+                start_date, "%Y-%m-%d %H:%M:%S.%f")
+            end_date_object = datetime.strptime(
+                end_date, "%Y-%m-%d %H:%M:%S.%f")
+            mask = (df['Interval'] > start_date_object) & (
+                df['Interval'] <= end_date_object)
+            df_within_dates = df.loc[mask]
+            end_point = df_within_dates.index[-1]
+        else:
+            end_point = df.index[-1]
+    else:
+        end_point = df.index[-1]
+    now = df["Interval"].iloc[end_point]
+    seconds = now.hour*60*60 + now.minute*60 + now.second # total seconds in 24h = 86400
+    seconds -=21600 # 0 start at 06:00
+    if seconds<0:
+        seconds+=64800
+    if seconds > 43250:
+        night = 1
+    else:
+        night = 0
+    seconds = ((seconds/43250)*100)%100
+    print(now)
+    print(seconds)
+    a = -0.0076
+    h = 0
+    x = (seconds)%50
+    x0 = 50
+    y = (a*(x-x0)**2+h)
+    print(x)
+    print(y)
     style = {'transform': 'translate('+str(x)+'rem, '+str(-y)+'rem)'}
     return style
 
@@ -214,12 +255,6 @@ def update_flow_cars(selection, start_date, end_date, index):
             ret.append(carFlow1)
         else:
             ret.append(html.H6(", ", style={"color": "rgb(32, 113, 181)"}))
-            # ret.append(
-            #     html.H6("Free", style={
-            #         'transform': 'scale(-1,1)',
-            #         'top': '-0.3rem',
-            #         'left': '-1rem',
-            #         'position': 'relative'}))
     return ret
 
 
