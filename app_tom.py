@@ -375,7 +375,7 @@ def get_info(df_within_dates):
     # msg += "Number of cars connected: " + \
     #     str(int(
     #         df_within_dates['numberOfConnectedVehicles/numConnVehicles.numConnVehicles'].iloc[-1])) + "\n"
-    msg += "Total delivered power: " + \
+    msg += "Total Delivered Power: " + \
         str(int(df_within_dates['Total_W'].sum()/1000)) + 'kW\n'
     for i in range(0, tot):
         current_val = df_within_dates['ams-a-bat-ew/AvgValue.avg'].iloc[i]
@@ -389,10 +389,10 @@ def get_info(df_within_dates):
     discharging_rate = int((discharging/tot)*100)
     idle_rate = int((idle/tot)*100)
     in_use_rate = int(((charging+discharging)/tot)*100)
-    msg += "Charging rate: " + str(charging_rate) + "%\n"
-    msg += "Discharging rate: " + str(discharging_rate) + "%\n"
-    msg += "Idle rate: " + str(idle_rate) + "%\n"
-    msg += "Usage of battery: " + str(in_use_rate) + "%\n"
+    msg += "Charging Rate: " + str(charging_rate) + "%\n"
+    msg += "Discharging Rate: " + str(discharging_rate) + "%\n"
+    # msg += "Idle rate: " + str(idle_rate) + "%\n"
+    msg += "Usage of Battery: " + str(in_use_rate) + "%\n"
     return msg
 
 
@@ -408,13 +408,13 @@ def rolling_info(index):
     sel_msg = int(seconds/interval) % number_messages
     msg = ""
     if sel_msg == 0:
-        msg += "Did you know... \n\n Like a piggy bank, I save energy when we have some over and give it back when you need it"
+        msg += "I save energy we do not need and give it back when you do"
     elif sel_msg == 1:
-        msg += "Did you know... \n\n Before I was here you could only charge 3 vehicles. \nNow you can charge 16! "
+        msg += "Before I was here you could only charge 6 vehicles. Now you can charge 16 "
     elif sel_msg == 2:
-        msg += "Did you know... \n\nBy charging your vehicle here you help save the environment!\n "
+        msg += "Charge your vehicle here, help save the environment\n "
     elif sel_msg == 3:
-        msg += "Did you know... \n\n That I think Amsterdam is a wonderful city! Fijne dag"
+        msg += "That I think Amsterdam is a wonderful city! Fijne dag"
     return msg
 
 
@@ -769,7 +769,7 @@ graphs_pow = dbc.Card(
 
 info_box = dcc.Textarea(
     id="Info-Textbox",
-    placeholder="Did you know... \n\n Like a piggy bank, I save energy when we have some over\nand give it back when you need it",
+    placeholder="Like a piggy bank, I save energy when we have some over\nand give it back when you need it",
     rows=6,
     style={
         "top": "2rem",
@@ -777,6 +777,7 @@ info_box = dcc.Textarea(
         "height": "32rem",
         "resize": "none",
         "background-color": "rgb(233, 241, 248)",
+        "background-color": "#1E324F",
         "color": "#00000",
         "placeholder": "#00000",
         "fontFamily": "Vattenfall",
@@ -797,6 +798,7 @@ info_box2 = dcc.Textarea(
         "height": "32rem",
         "resize": "none",
         "background-color": "rgb(233, 241, 248)",
+        "background-color": "#1E324F",
         "color": "#00000",
         "placeholder": "#00000",
         "fontFamily": "Vattenfall",
