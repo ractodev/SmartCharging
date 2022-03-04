@@ -1182,7 +1182,10 @@ windmillView = html.Div(
     children=[
         html.Div(
             id="battery",
-            children=[html.Div(id="battery-fill")],
+            children=[
+                html.Div(id="battery-fill"),
+                html.H2("80%", id="battery-percentage")
+            ],
         ),
         html.Div(className="house"),
         html.Div(className="mill"),
