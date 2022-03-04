@@ -82,10 +82,8 @@ def move_sun(index):
     a = -0.01
     h = 0.3
     x = (index*2) % 90
-    y = (a*(x-10)**2+h)
-    print(x)
-    print(y)
-    style = {'left': str(x)+'rem', 'top': str(-y)+'rem'}
+    y = (a*(x-50)**2+h)
+    style = {'transform': 'translate('+str(x)+'rem, '+str(-y)+'rem)'}
     return style
 
 
@@ -375,7 +373,7 @@ def get_info(df_within_dates):
     #     str(int(
     #         df_within_dates['numberOfConnectedVehicles/numConnVehicles.numConnVehicles'].iloc[-1])) + "\n"
     msg += "Total delivered power: " + \
-        str(int(df_within_dates['Total_W'].sum()/1000)) + 'kW\n'
+        str(int(df_within_dates['Total_W'].sum()/6000)) + 'kWh\n'
     for i in range(0, tot):
         current_val = df_within_dates['ams-a-bat-ew/AvgValue.avg'].iloc[i]
         if current_val == 0:
@@ -576,7 +574,7 @@ def update_graph_timer(selection, start_date, end_date, index):
         )
     information_update = get_info(df_within_dates)
     fig = fig_update_layout(fig, "Battery Level")
-    fig1 = fig_update_layout(fig1, "Power kW/h")
+    fig1 = fig_update_layout(fig1, "Power W")
     return fig, fig1, information_update
 
 
@@ -629,7 +627,7 @@ def logo(app):
     )
 
     logo_image_amst = html.Img(src=app.get_asset_url(
-        "amsterdam_logo.png"), style={"marginTop": 5, "height": 60, "left": "3%", "float": "left", "display": "inline-block", })
+        "amsterdam-logo-black.png"), style={"marginTop": 5, "height": 60, "left": "3%", "float": "left", "display": "inline-block", })
     logo_image = html.Img(src=app.get_asset_url(
         "VF_logo.png"), style={"marginTop": -20, "height": 100, "right": "3%", "float": "right", "display": "inline-block", })
 
@@ -640,7 +638,9 @@ def logo(app):
             dbc.Row([info_about_app])],
             width={'size': 4}, className='text-center'),
         dbc.Col([logo_image], width={'size': 4}),
-    ]
+    ], style={
+        "backgroundColor": "rgb(233, 241, 248)",
+    }
     )
 
 
@@ -760,14 +760,14 @@ graphs_pow = dbc.Card(
 
 info_box = dcc.Textarea(
     id="Info-Textbox",
-    placeholder="This field is used to display information about a feature displayed "
-    "on the graph.",
+    placeholder="Did you know... \n\n Like a piggy bank, I save energy when we have some over\nand give it back when you need it",
     rows=6,
     style={
+        "top": "2rem",
         "width": "100%",
         "height": "32rem",
         "resize": "none",
-        "background-color": "rgb(189,213,233)",
+        "background-color": "rgb(233, 241, 248)",
         "color": "#00000",
         "placeholder": "#00000",
         "fontFamily": "Vattenfall",
@@ -783,10 +783,11 @@ info_box2 = dcc.Textarea(
     "on the graph.",
     rows=8,
     style={
+        "top": "2rem",
         "width": "100%",
         "height": "32rem",
         "resize": "none",
-        "background-color": "rgb(189,213,233)",
+        "background-color": "rgb(233, 241, 248)",
         "color": "#00000",
         "placeholder": "#00000",
         "fontFamily": "Vattenfall",
@@ -1054,6 +1055,29 @@ tulip = html.Div(className='stem',
                  )
 
 
+tulip = html.Div(className='stem',
+                 children=[
+                     html.Div(className='tulipHead',
+                              children=[
+                                  html.Div(
+                                      className="tulipHair lightTulip lightTulip-1"),
+                                  html.Div(
+                                      className="tulipHair darkTulip darkTulip-1"),
+                                  html.Div(
+                                      className="tulipHair lightTulip lightTulip-2"),
+                                  html.Div(
+                                      className="tulipHair darkTulip darkTulip-2"),
+                                  html.Div(
+                                      className="tulipHair lightTulip lightTulip-3"),
+                              ]),
+                     html.Div(className="rightTulipLeaf tulipLeaf leaf"),
+                     html.Div(className="leftTulipLeaf tulipLeaf leaf"),
+                     html.Div(className="rightStemLeaf stemLeaf leaf"),
+                     html.Div(className="leftStemLeaf stemLeaf leaf")
+                 ]
+                 )
+
+
 leftTulip1 = html.Div(
     className='tulip1',
     children=[tulip]
@@ -1082,6 +1106,14 @@ leftTulip4 = html.Div(
     className='tulip7',
     children=[tulip]
 )
+leftTulip5 = html.Div(
+    className='tulip8',
+    children=[tulip]
+)
+rightTulip4 = html.Div(
+    className='tulip9 rightBabyTulip',
+    children=[tulip]
+)
 
 tulipsView = html.Div(
     children=[
@@ -1089,9 +1121,11 @@ tulipsView = html.Div(
         leftTulip2,
         leftTulip3,
         leftTulip4,
+        leftTulip5,
         rightTulip1,
         rightTulip2,
-        rightTulip3
+        rightTulip3,
+        rightTulip4
     ]
 )
 
@@ -1157,48 +1191,6 @@ chargeView = html.Div(
     ]
 )
 
-# chargeView = html.Div(
-#     className="chargeArea",
-#     children=[
-#         dbc.Row([
-#                 dbc.Col([html.Div(id='car_0_0', children=[html.H6('0_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_0_1', children=[html.H6('0_1', style={'color': '#000000'})])]), dbc.Col(
-#                     [html.Div(id='car_1_0', children=[html.H6('1_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_1_1', children=[html.H6('1_1', style={'color': '#000000'})])])
-#                 ]),
-#         dbc.Row([
-#                 dbc.Col([html.Div(id='car_2_0', children=[html.H6('2_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_2_1', children=[html.H6('2_1', style={'color': '#000000'})])]), dbc.Col(
-#                     [html.Div(id='car_3_0', children=[html.H6('3_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_3_1', children=[html.H6('3_1', style={'color': '#000000'})])])
-#                 ]),
-#         dbc.Row([
-#                 dbc.Col([html.Div(id='car_4_0', children=[html.H6('4_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_4_1', children=[html.H6('4_1', style={'color': '#000000'})])]), dbc.Col(
-#                     [html.Div(id='car_5_0', children=[html.H6('5_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_5_1', children=[html.H6('5_1', style={'color': '#000000'})])])
-#                 ]),
-#         dbc.Row([
-#                 dbc.Col([html.Div(id='car_6_0', children=[html.H6('6_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_6_1', children=[html.H6('6_1', style={'color': '#000000'})])]), dbc.Col(
-#                     [html.Div(id='car_7_0', children=[html.H6('7_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_7_1', children=[html.H6('7_1', style={'color': '#000000'})])])
-#                 ])
-
-#         # gives more flexibility of where to place "cars"
-#         # children=[
-#         #     html.Div(id='car_0_0'),
-#         #     html.Div(id='car_0_1'),
-#         #     html.Div(id='car_1_0'),
-#         #     html.Div(id='car_1_1'),
-#         #     html.Div(id='car_2_0'),
-#         #     html.Div(id='car_2_1'),
-#         #     html.Div(id='car_3_0'),
-#         #     html.Div(id='car_3_1'),
-#         #     html.Div(id='car_4_0'),
-#         #     html.Div(id='car_4_1'),
-#         #     html.Div(id='car_5_0'),
-#         #     html.Div(id='car_5_1'),
-#         #     html.Div(id='car_6_0'),
-#         #     html.Div(id='car_6_1'),
-#         #     html.Div(id='car_7_0'),
-#         #     html.Div(id='car_7_1'),
-#         # ]
-#     ]
-# )
-
 hills = html.Div(
     children=[
         html.Div(className="hills1"),
@@ -1208,6 +1200,7 @@ hills = html.Div(
         html.Div(className="hills5"),
         html.Div(className="hills6"),
         html.Div(className="hills7"),
+        html.Div(id="sun")
     ]
 )
 
@@ -1243,7 +1236,7 @@ bottomView = html.Div(
         flowView,
         chargeView,
         tulipsView,
-        html.Div(id="sun")
+        # html.Div(id="sun")
     ]
 )
 
@@ -1261,7 +1254,7 @@ app.layout = dbc.Container(
                 dbc.Col([info_box], width=4),
                 dbc.Col([info_box2], width=4),
                 dbc.Col([graphs, graphs_pow])
-                ]),
+                ], style={'padding-top': '2rem'}),
         bottomView,
     ]
 )
