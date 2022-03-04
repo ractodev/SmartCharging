@@ -1,3 +1,4 @@
+from multiprocessing import connection
 from matplotlib.pyplot import margins
 import pandas as pd
 import numpy as np
@@ -20,8 +21,8 @@ app = dash.Dash(
 )
 server = app.server
 app.title = "Vattenfall Smart Charging"
-width_data_points = 50
-speed = 5000
+width_data_points = 10
+speed = 500
 yellow = "rgb(255, 218, 0)"
 # yellow ="rgb(32, 113, 181)"
 
@@ -69,6 +70,31 @@ def fig_update_layout(fig, myTitle):
         ),
     )
     return fig
+
+
+@app.callback(
+    Output("sun", 'style'),
+    Input('interval-component', 'n_intervals'),
+)
+def move_sun(index):
+    now = datetime.now()
+    seconds = now.second
+    a = -0.01
+    h = 0.3
+    x = (index*2) % 90
+    y = (a*(x-10)**2+h)
+    print(x)
+    print(y)
+    style = {'left': str(x)+'rem', 'top': str(-y)+'rem'}
+    return style
+
+
+@app.callback(
+    Output("Main-Graph", "relayoutData"),
+    Input("Pow-Graph", "relayoutData"),
+)
+def graph_call_connection(selection):
+    return selection
 
 
 @app.callback(
@@ -336,7 +362,7 @@ def update_battery_level(selection, start_date, end_date, index):
         end_point = df.index[-1]
 
     level = df.iloc[end_point, 3]
-    return {'height': str(level*20)+'rem'}, str(round(level*100))+"%"
+    return {'height': str(level*20)+'rem'}, str(round(level*100))+'%'
 
 
 def get_info(df_within_dates):
@@ -371,6 +397,28 @@ def get_info(df_within_dates):
 
 
 @app.callback(
+    Output("Info-Textbox", "placeholder"),
+    Input('interval-component', 'n_intervals'),
+)
+def rolling_info(index):
+    now = datetime.now()
+    seconds = now.second
+    interval = 5
+    number_messages = 3
+    sel_msg = int(seconds/interval) % number_messages
+    msg = ""
+    if sel_msg == 0:
+        msg += "Did you know... \n\n Like a piggy bank, I save energy when we have some over and give it back when you need it"
+    elif sel_msg == 1:
+        msg += "Did you know... \n\n Before I was here you could only charge 3 vehicles. \nNow you can charge 16! "
+    elif sel_msg == 2:
+        msg += "Did you know... \n\nBy charging your vehicle here you help save the environment!\n "
+    elif sel_msg == 3:
+        msg += "Did you know... \n\n That I think Amsterdam is a wonderful city! Fijne dag"
+    return msg
+
+
+@app.callback(
     [
         Output("Main-Graph", "figure"),
         Output("Pow-Graph", "figure"),
@@ -397,7 +445,6 @@ def update_graph_timer(selection, start_date, end_date, index):
         mask = (df['Interval'] > start_date) & (df['Interval'] <= end_date)
         df_within_dates = df.loc[mask]
         tmp_data = df_within_dates.iloc[:, 3]
-        information_update = get_info(df_within_dates)
         fig = go.Figure(
             data=[
                 go.Scatter(
@@ -432,7 +479,6 @@ def update_graph_timer(selection, start_date, end_date, index):
         mask = (df['Interval'] > start_date_object) & (
             df['Interval'] <= end_date_object)
         df_within_dates = df.loc[mask]
-        information_update = get_info(df_within_dates)
         fig = go.Figure(
             data=[
                 go.Scatter(
@@ -462,7 +508,6 @@ def update_graph_timer(selection, start_date, end_date, index):
             mask = (df['Interval'] > start_date_object) & (
                 df['Interval'] <= end_date_object)
             df_within_dates = df.loc[mask]
-            information_update = get_info(df_within_dates)
             fig = go.Figure(
                 data=[
                     go.Scatter(
@@ -488,7 +533,6 @@ def update_graph_timer(selection, start_date, end_date, index):
                 start_date = end_date - timedelta(days=3)
             mask = (df['Interval'] > start_date) & (df['Interval'] <= end_date)
             df_within_dates = df.loc[mask]
-            information_update = get_info(df_within_dates)
             fig = go.Figure(
                 data=[
                     go.Scatter(
@@ -513,7 +557,6 @@ def update_graph_timer(selection, start_date, end_date, index):
         start_date = end_date - timedelta(days=3)
         mask = (df['Interval'] > start_date) & (df['Interval'] <= end_date)
         df_within_dates = df.loc[mask]
-        information_update = get_info(df_within_dates)
         fig = go.Figure(
             data=[
                 go.Scatter(
@@ -532,6 +575,7 @@ def update_graph_timer(selection, start_date, end_date, index):
                 )
             ]
         )
+    information_update = get_info(df_within_dates)
     fig = fig_update_layout(fig, "Battery Level")
     fig1 = fig_update_layout(fig1, "Power kW/h")
     return fig, fig1, information_update
@@ -573,10 +617,10 @@ def process_df():
 
 
 def logo(app):
-    title = html.H5(
+    title = html.H4(
         "BPCH AMSTERDAM",
-        style={"marginTop": 5, "marginLeft": "10px",
-               "fontSize": "35", "color": "rgb(78,75,72)"},
+        style={"marginTop": 8, "marginLeft": "10px",
+               "fontSize": "40", "color": "rgb(78,75,72)"},
     )
 
     info_about_app = html.H6(
@@ -586,9 +630,9 @@ def logo(app):
     )
 
     logo_image_amst = html.Img(src=app.get_asset_url(
-        "amsterdam_logo.png"), style={"marginTop": 5, "height": 60, "left": "3%", "float": "left", "display": "inline-block", })
+        "amsterdam-logo-black.png"), style={"marginTop": 8, "height": 60, "marginLeft": "3%", "float": "left", "display": "inline-block", })
     logo_image = html.Img(src=app.get_asset_url(
-        "VF_logo.png"), style={"marginTop": -20, "height": 100, "right": "3%", "float": "right", "display": "inline-block", })
+        "VF_logo.png"), style={"marginTop": -15, "height": 100, "right": "3%", "float": "right", "display": "inline-block", })
 
     return dbc.Row([
         dbc.Col([logo_image_amst], width={'size': 4}),
@@ -617,6 +661,7 @@ graphs = dbc.Card(
                     [
                         dcc.Graph(
                             id="Main-Graph",
+                            style={'border': 'none'},
                             figure={
                                 "layout": {
                                     "margin": {"t": 0, "r": 0, "b": 0, "l": 0},
@@ -637,7 +682,8 @@ graphs = dbc.Card(
                         ),
                         html.Pre(id="update-on-click-data"),
                     ],
-                    style={"width": "98%", "display": "inline-block"},
+                    style={"width": "98%",
+                           "display": "inline-block", 'border': 'none'},
                 ),
             ],
             style={
@@ -645,6 +691,7 @@ graphs = dbc.Card(
                 "border-radius": "1px",
                 "border-width": "1px",
                 "border-top": "1px solid rgb(216, 216, 216)",
+                'border': 'none'
             },
         )
     ]
@@ -678,7 +725,8 @@ graphs_pow = dbc.Card(
                         ),
                         html.Pre(id="update-on-click-data-2"),
                     ],
-                    style={"width": "98%", "display": "inline-block"},
+                    style={"width": "98%", "display": "inline-block",
+                           'border': 'none', 'border': 'none'},
                 ),
                 html.Div(
                     [
@@ -704,6 +752,7 @@ graphs_pow = dbc.Card(
                         "float": "right",
                         "display": "inline-block",
                         "color": "black",
+                        'border': 'none'
                     },
                 ),
             ],
@@ -712,6 +761,7 @@ graphs_pow = dbc.Card(
                 "border-radius": "1px",
                 "border-width": "1px",
                 "border-top": "1px solid black",
+                'border': 'none'
             },
         )
     ]
@@ -719,7 +769,7 @@ graphs_pow = dbc.Card(
 
 info_box = dcc.Textarea(
     id="Info-Textbox",
-    placeholder="Did you know... \n Like a piggy bank, I save energy when we have some over\nand give it back when you need it",
+    placeholder="Did you know... \n\n Like a piggy bank, I save energy when we have some over\nand give it back when you need it",
     rows=6,
     style={
         "top": "2rem",

@@ -405,13 +405,13 @@ def rolling_info(index):
     sel_msg = int(seconds/interval) % number_messages
     msg = ""
     if sel_msg == 0:
-        msg += "Did you know... \n Like a piggy bank, I save energy when we have some over\nand give it back when you need it"
+        msg += "Did you know... \n\n Like a piggy bank, I save energy when we have some over\nand give it back when you need it"
     elif sel_msg == 1:
-        msg += "Did you know... \n Before I was here \nyou could only charge 3 vehicles. \nNow you can charge 16! "
+        msg += "Did you know... \n\n Before I was here \nyou could only charge 3 vehicles. \nNow you can charge 16! "
     elif sel_msg == 2:
-        msg += "Did you know... \nBy charging your vehicle here you help save the environment!\n "
+        msg += "Did you know... \n\nBy charging your vehicle here you help save the environment!\n "
     elif sel_msg == 3:
-        msg += "Did you know... \n That I think Amsterdam is a wonderful city! Fijne dag"
+        msg += "Did you know... \n\n That I think Amsterdam is a wonderful city! Fijne dag"
     return msg
 
 

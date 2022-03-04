@@ -1332,17 +1332,22 @@ body {
 }
 
 #Info-Textbox{
-  padding-top: 2.5rem;
-  line-height: 2;
+  padding: 3rem;
+  line-height: 1.8;
   font-size: 2rem;
   /* padding-left:2rem; */
   text-align: center;
+  border: none;
 }
 #Info-Textbox2{
-  padding-top: 2.5rem;
+  padding-top: 4rem;
   top: 5rem;
   font-size: 2rem;
   /* padding-left:2rem; */
   text-align: center;
-  line-height: 2.5;
+  line-height: 2.3;
+  border: none;
+}
+.card-body{
+  border: none !important;
 }
