@@ -72,7 +72,11 @@ def fig_update_layout(fig, myTitle):
 
 
 @app.callback(
-    Output("sun", 'style'),
+    [
+        Output("sun", 'style'),
+        Output('container', 'style')
+    ],
+    
     [
         Input("Main-Graph", "relayoutData"),
         Input("date-picker", "start_date"),
@@ -106,26 +110,47 @@ def move_sun(selection, start_date, end_date, index):
     else:
         end_point = df.index[-1]
     now = df["Interval"].iloc[end_point]
-    seconds = now.hour*60*60 + now.minute*60 + now.second # total seconds in 24h = 86400
-    seconds -=21600 # 0 start at 06:00
-    if seconds<0:
-        seconds+=64800
-    if seconds > 43250:
-        night = 1
-    else:
-        night = 0
-    seconds = ((seconds/43250)*100)%100
     print(now)
+    seconds = now.hour*60*60 + now.minute*60 + now.second # total seconds in 24h = 86400
     print(seconds)
+    if seconds >= 21600 and seconds < 64800: # day
+        seconds-=21600
+        container_style = {
+            'verticalAlign':'middle',
+            'textAlign': 'center',
+            'background-color':'rgb(189, 213, 233)',
+            'position':'fixed',
+            'width':'100%',
+            'height':'100%',
+            'top':'0px',
+            'left':'0px',
+            'z-index':'1000',
+            'background-color': 'rgb(189, 213, 233)'
+        }
+    else: # night
+        container_style = {
+            'verticalAlign':'middle', 
+            'textAlign': 'center',
+            'background-color':'rgb(189, 213, 233)',
+            'position':'fixed',
+            'width':'100%',
+            'height':'100%',
+            'top':'0px',
+            'left':'0px',
+            'z-index':'1000','background-color': '#1E324F'
+        }
+        if seconds>=64800:
+            seconds -= 64800
+        else:
+            seconds += 21600
+    seconds = ((seconds/43200)*100)
     a = -0.0076
-    h = 0
-    x = (seconds)%50
+    h = -2
+    x = (seconds)
     x0 = 50
     y = (a*(x-x0)**2+h)
-    print(x)
-    print(y)
-    style = {'transform': 'translate('+str(x)+'rem, '+str(-y)+'rem)'}
-    return style
+    sun_style = {'transform': 'translate('+str(x)+'rem, '+str(-y)+'rem)'}
+    return sun_style, container_style
 
 
 @app.callback(
@@ -1278,6 +1303,7 @@ bottomView = html.Div(
 ###################### Style app layout ########################################
 app.layout = dbc.Container(
     fluid=True,
+    id= 'container',
     children=[
         dcc.Interval(
             id='interval-component',
@@ -1291,8 +1317,18 @@ app.layout = dbc.Container(
                 dbc.Col([graphs, graphs_pow])
                 ], style={'padding-top': '2rem'}),
         bottomView,
-    ]
-)
+    ], style={
+        'verticalAlign':'middle',
+        'textAlign': 'center',
+        'background-color':'rgb(189, 213, 233)',
+        'position':'fixed',
+        'width':'100%',
+        'height':'100%',
+        'top':'0px',
+        'left':'0px',
+        'z-index':'1000'
+        },
+) 
 
 if __name__ == "__main__":
     app.run_server(debug=True, use_reloader=True)
