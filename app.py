@@ -20,8 +20,8 @@ app = dash.Dash(
 )
 server = app.server
 app.title = "Vattenfall Smart Charging"
-width_data_points = 50
-speed = 5000
+width_data_points = 1
+speed = 500
 yellow = "rgb(255, 218, 0)"
 # yellow ="rgb(32, 113, 181)"
 
@@ -69,6 +69,124 @@ def fig_update_layout(fig, myTitle):
         ),
     )
     return fig
+
+
+@app.callback(
+    [
+        Output("sun", 'style'),
+        Output('container', 'style'),
+        Output("Info-Textbox2", "style"),
+        Output("Info-Textbox", "style"),
+    ],
+
+    [
+        Input("Main-Graph", "relayoutData"),
+        Input("date-picker", "start_date"),
+        Input("date-picker", "end_date"),
+        Input('interval-component', 'n_intervals'),
+    ],
+
+)
+def move_sun(selection, start_date, end_date, index):
+    ctx = dash.callback_context
+    trigger = ctx.triggered[0]['prop_id'].split('.')[0]
+    end_point = 0
+    if trigger == 'interval-component':
+        end_point = (index*width_data_points) % 1000
+    elif trigger == 'date-picker':
+        end_point = df.loc[(df['Interval'] <= end_date)].index[-1]
+    elif trigger == 'Main-Graph':
+        if "xaxis.range[0]" in selection:
+            start_date = str(selection["xaxis.range[0]"])
+            end_date = str(selection["xaxis.range[1]"])
+            start_date_object = datetime.strptime(
+                start_date, "%Y-%m-%d %H:%M:%S.%f")
+            end_date_object = datetime.strptime(
+                end_date, "%Y-%m-%d %H:%M:%S.%f")
+            mask = (df['Interval'] > start_date_object) & (
+                df['Interval'] <= end_date_object)
+            df_within_dates = df.loc[mask]
+            end_point = df_within_dates.index[-1]
+        else:
+            end_point = df.index[-1]
+    else:
+        end_point = df.index[-1]
+    now = df["Interval"].iloc[end_point]
+    print(now)
+    seconds = now.hour*60*60 + now.minute*60 + \
+        now.second  # total seconds in 24h = 86400
+    print(seconds)
+    night = False
+    if seconds >= 21600 and seconds < 64800:  # day
+        seconds -= 21600
+        container_style = {
+            'verticalAlign': 'middle',
+            'textAlign': 'center',
+            'background-color': 'rgb(189, 213, 233)',
+            'position': 'fixed',
+            'width': '100%',
+            'height': '100%',
+            'top': '0px',
+            'left': '0px',
+            'z-index': '1000',
+            'background-color': 'rgb(189, 213, 233)'
+        }
+        text_style = {
+            'background-color': 'rgb(233, 241, 248)',
+            "top": "2rem",
+            "width": "100%",
+            "height": "32rem",
+            "resize": "none"
+        }
+    else:  # night
+        night = True
+        container_style = {
+            'verticalAlign': 'middle',
+            'textAlign': 'center',
+            'background-color': 'rgb(189, 213, 233)',
+            'position': 'fixed',
+            'width': '100%',
+            'height': '100%',
+            'top': '0px',
+            'left': '0px',
+            'z-index': '1000', 'background-color': '#1E324F'
+        }
+        text_style = {
+            'background-color': '#1E324F',
+            "top": "2rem",
+            "width": "100%",
+            "height": "32rem",
+            "resize": "none"
+        }
+        if seconds >= 64800:
+            seconds -= 64800
+        else:
+            seconds += 21600
+    seconds = ((seconds/43200)*100)
+    a = -0.0076
+    h = -2
+    x = (seconds)
+    x0 = 50
+    y = (a*(x-x0)**2+h)
+    if night:
+        sun_style = {
+            'background-image': 'url(../assets/moon.svg)',
+            'transform': 'translate('+str(x)+'rem, '+str(-y)+'rem) scale(1)'
+        }
+    else:
+        sun_style = {
+            'background-image': 'url(../assets/sun.svg)',
+            'transform': 'translate('+str(x)+'rem, '+str(-y)+'rem) scale(2)'
+        }
+    return sun_style, container_style, text_style, text_style
+
+
+@app.callback(
+    Output("Main-Graph", "relayoutData"),
+    Input("Pow-Graph", "relayoutData"),
+)
+def graph_call_connection(selection):
+    return selection
 
 
 @app.callback(
@@ -190,12 +308,6 @@ def update_flow_cars(selection, start_date, end_date, index):
             ret.append(carFlow1)
         else:
             ret.append(html.H6(", ", style={"color": "rgb(32, 113, 181)"}))
-            # ret.append(
-            #     html.H6("Free", style={
-            #         'transform': 'scale(-1,1)',
-            #         'top': '-0.3rem',
-            #         'left': '-1rem',
-            #         'position': 'relative'}))
     return ret
 
 
@@ -348,7 +460,7 @@ def get_info(df_within_dates):
     # msg += "Number of cars connected: " + \
     #     str(int(
     #         df_within_dates['numberOfConnectedVehicles/numConnVehicles.numConnVehicles'].iloc[-1])) + "\n"
-    msg += "Total delivered power: " + \
+    msg += "Total Delivered Power: " + \
         str(int(df_within_dates['Total_W'].sum()/1000)) + 'kW\n'
     for i in range(0, tot):
         current_val = df_within_dates['ams-a-bat-ew/AvgValue.avg'].iloc[i]
@@ -362,10 +474,32 @@ def get_info(df_within_dates):
     discharging_rate = int((discharging/tot)*100)
     idle_rate = int((idle/tot)*100)
     in_use_rate = int(((charging+discharging)/tot)*100)
-    msg += "Charging rate: " + str(charging_rate) + "%\n"
-    msg += "Discharging rate: " + str(discharging_rate) + "%\n"
-    msg += "Idle rate: " + str(idle_rate) + "%\n"
-    msg += "Usage of battery: " + str(in_use_rate) + "%\n"
+    msg += "Charging Rate: " + str(charging_rate) + "%\n"
+    msg += "Discharging Rate: " + str(discharging_rate) + "%\n"
+    # msg += "Idle rate: " + str(idle_rate) + "%\n"
+    msg += "Usage of Battery: " + str(in_use_rate) + "%\n"
+    return msg
+
+
+@app.callback(
+    Output("Info-Textbox", "placeholder"),
+    Input('interval-component', 'n_intervals'),
+)
+def rolling_info(index):
+    now = datetime.now()
+    seconds = now.second
+    interval = 5
+    number_messages = 3
+    sel_msg = int(seconds/interval) % number_messages
+    msg = ""
+    if sel_msg == 0:
+        msg += "I save energy you do not need and give it back when you do"
+    elif sel_msg == 1:
+        msg += "Before I was here you could only charge 6 vehicles. Now you can charge 16 "
+    elif sel_msg == 2:
+        msg += "Charge your vehicle here, help save the environment\n "
+    elif sel_msg == 3:
+        msg += "That I think Amsterdam is a wonderful city! Fijne dag"
     return msg
 
 
@@ -396,7 +530,6 @@ def update_graph_timer(selection, start_date, end_date, index):
         mask = (df['Interval'] > start_date) & (df['Interval'] <= end_date)
         df_within_dates = df.loc[mask]
         tmp_data = df_within_dates.iloc[:, 3]
-        information_update = get_info(df_within_dates)
         fig = go.Figure(
             data=[
                 go.Scatter(
@@ -431,7 +564,6 @@ def update_graph_timer(selection, start_date, end_date, index):
         mask = (df['Interval'] > start_date_object) & (
             df['Interval'] <= end_date_object)
         df_within_dates = df.loc[mask]
-        information_update = get_info(df_within_dates)
         fig = go.Figure(
             data=[
                 go.Scatter(
@@ -461,7 +593,6 @@ def update_graph_timer(selection, start_date, end_date, index):
             mask = (df['Interval'] > start_date_object) & (
                 df['Interval'] <= end_date_object)
             df_within_dates = df.loc[mask]
-            information_update = get_info(df_within_dates)
             fig = go.Figure(
                 data=[
                     go.Scatter(
@@ -487,7 +618,6 @@ def update_graph_timer(selection, start_date, end_date, index):
                 start_date = end_date - timedelta(days=3)
             mask = (df['Interval'] > start_date) & (df['Interval'] <= end_date)
             df_within_dates = df.loc[mask]
-            information_update = get_info(df_within_dates)
             fig = go.Figure(
                 data=[
                     go.Scatter(
@@ -512,7 +642,6 @@ def update_graph_timer(selection, start_date, end_date, index):
         start_date = end_date - timedelta(days=3)
         mask = (df['Interval'] > start_date) & (df['Interval'] <= end_date)
         df_within_dates = df.loc[mask]
-        information_update = get_info(df_within_dates)
         fig = go.Figure(
             data=[
                 go.Scatter(
@@ -531,8 +660,9 @@ def update_graph_timer(selection, start_date, end_date, index):
                 )
             ]
         )
+    information_update = get_info(df_within_dates)
     fig = fig_update_layout(fig, "Battery Level")
-    fig1 = fig_update_layout(fig1, "Power kW/h")
+    fig1 = fig_update_layout(fig1, "Power W")
     return fig, fig1, information_update
 
 
@@ -585,7 +715,7 @@ def logo(app):
     )
 
     logo_image_amst = html.Img(src=app.get_asset_url(
-        "amsterdam_logo.png"), style={"marginTop": 5, "height": 60, "left": "3%", "float": "left", "display": "inline-block", })
+        "amsterdam-logo-black.png"), style={"marginTop": 5, "height": 60, "left": "3%", "float": "left", "display": "inline-block", })
     logo_image = html.Img(src=app.get_asset_url(
         "VF_logo.png"), style={"marginTop": -20, "height": 100, "right": "3%", "float": "right", "display": "inline-block", })
 
@@ -596,7 +726,9 @@ def logo(app):
             dbc.Row([info_about_app])],
             width={'size': 4}, className='text-center'),
         dbc.Col([logo_image], width={'size': 4}),
-    ]
+    ], style={
+        "backgroundColor": "rgb(233, 241, 248)",
+    }
     )
 
 
@@ -716,13 +848,14 @@ graphs_pow = dbc.Card(
 
 info_box = dcc.Textarea(
     id="Info-Textbox",
-    placeholder="Did you know... \n Like a piggy bank, I save energy when we have some over\nand give it back when you need it",
+    placeholder="Did you know... \n\n Like a piggy bank, I save energy when we have some over\nand give it back when you need it",
     rows=6,
     style={
+        "top": "2rem",
         "width": "100%",
         "height": "32rem",
         "resize": "none",
-        "background-color": "rgb(189,213,233)",
+        "background-color": "rgb(233, 241, 248)",
         "color": "#00000",
         "placeholder": "#00000",
         "fontFamily": "Vattenfall",
@@ -738,10 +871,11 @@ info_box2 = dcc.Textarea(
     "on the graph.",
     rows=8,
     style={
+        "top": "2rem",
         "width": "100%",
         "height": "32rem",
         "resize": "none",
-        "background-color": "rgb(189,213,233)",
+        "background-color": "rgb(233, 241, 248)",
         "color": "#00000",
         "placeholder": "#00000",
         "fontFamily": "Vattenfall",
@@ -877,7 +1011,6 @@ flowView = html.Div(
     ]
 )
 
-
 carFlow1 = html.Div(
     className="carFlow1",
     children=[
@@ -1010,6 +1143,29 @@ tulip = html.Div(className='stem',
                  )
 
 
+tulip = html.Div(className='stem',
+                 children=[
+                     html.Div(className='tulipHead',
+                              children=[
+                                  html.Div(
+                                      className="tulipHair lightTulip lightTulip-1"),
+                                  html.Div(
+                                      className="tulipHair darkTulip darkTulip-1"),
+                                  html.Div(
+                                      className="tulipHair lightTulip lightTulip-2"),
+                                  html.Div(
+                                      className="tulipHair darkTulip darkTulip-2"),
+                                  html.Div(
+                                      className="tulipHair lightTulip lightTulip-3"),
+                              ]),
+                     html.Div(className="rightTulipLeaf tulipLeaf leaf"),
+                     html.Div(className="leftTulipLeaf tulipLeaf leaf"),
+                     html.Div(className="rightStemLeaf stemLeaf leaf"),
+                     html.Div(className="leftStemLeaf stemLeaf leaf")
+                 ]
+                 )
+
+
 leftTulip1 = html.Div(
     className='tulip1',
     children=[tulip]
@@ -1075,95 +1231,53 @@ chargeView = html.Div(
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_1_0', children=[]),
-                     html.Div(id='car_1_1', children=[])
+                     html.Div(id='car_1_0', children=[carFlow1]),
+                     html.Div(id='car_1_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot3',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_2_0', children=[]),
-                     html.Div(id='car_2_1', children=[])
+                     html.Div(id='car_2_0', children=[carFlow1]),
+                     html.Div(id='car_2_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot4',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_3_0', children=[]),
-                     html.Div(id='car_3_1', children=[])
+                     html.Div(id='car_3_0', children=[carFlow1]),
+                     html.Div(id='car_3_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot5',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_4_0', children=[]),
-                     html.Div(id='car_4_1', children=[])
+                     html.Div(id='car_4_0', children=[carFlow1]),
+                     html.Div(id='car_4_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot6',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_5_0', children=[]),
-                     html.Div(id='car_5_1', children=[])
+                     html.Div(id='car_5_0', children=[carFlow1]),
+                     html.Div(id='car_5_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot7',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_6_0', children=[]),
-                     html.Div(id='car_6_1', children=[])
+                     html.Div(id='car_6_0', children=[carFlow1]),
+                     html.Div(id='car_6_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot8',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_7_0', children=[]),
-                     html.Div(id='car_7_1', children=[])
+                     html.Div(id='car_7_0', children=[carFlow1]),
+                     html.Div(id='car_7_1', children=[carFlow1])
                  ]),
     ]
 )
-
-# chargeView = html.Div(
-#     className="chargeArea",
-#     children=[
-#         dbc.Row([
-#                 dbc.Col([html.Div(id='car_0_0', children=[html.H6('0_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_0_1', children=[html.H6('0_1', style={'color': '#000000'})])]), dbc.Col(
-#                     [html.Div(id='car_1_0', children=[html.H6('1_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_1_1', children=[html.H6('1_1', style={'color': '#000000'})])])
-#                 ]),
-#         dbc.Row([
-#                 dbc.Col([html.Div(id='car_2_0', children=[html.H6('2_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_2_1', children=[html.H6('2_1', style={'color': '#000000'})])]), dbc.Col(
-#                     [html.Div(id='car_3_0', children=[html.H6('3_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_3_1', children=[html.H6('3_1', style={'color': '#000000'})])])
-#                 ]),
-#         dbc.Row([
-#                 dbc.Col([html.Div(id='car_4_0', children=[html.H6('4_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_4_1', children=[html.H6('4_1', style={'color': '#000000'})])]), dbc.Col(
-#                     [html.Div(id='car_5_0', children=[html.H6('5_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_5_1', children=[html.H6('5_1', style={'color': '#000000'})])])
-#                 ]),
-#         dbc.Row([
-#                 dbc.Col([html.Div(id='car_6_0', children=[html.H6('6_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_6_1', children=[html.H6('6_1', style={'color': '#000000'})])]), dbc.Col(
-#                     [html.Div(id='car_7_0', children=[html.H6('7_0', style={'color': '#000000'})])]), dbc.Col([html.Div(id='car_7_1', children=[html.H6('7_1', style={'color': '#000000'})])])
-#                 ])
-
-# gives more flexibility of where to place "cars"
-# children=[
-#     html.Div(id='car_0_0'),
-#     html.Div(id='car_0_1'),
-#     html.Div(id='car_1_0'),
-#     html.Div(id='car_1_1'),
-#     html.Div(id='car_2_0'),
-#     html.Div(id='car_2_1'),
-#     html.Div(id='car_3_0'),
-#     html.Div(id='car_3_1'),
-#     html.Div(id='car_4_0'),
-#     html.Div(id='car_4_1'),
-#     html.Div(id='car_5_0'),
-#     html.Div(id='car_5_1'),
-#     html.Div(id='car_6_0'),
-#     html.Div(id='car_6_1'),
-#     html.Div(id='car_7_0'),
-#     html.Div(id='car_7_1'),
-# ]
-#     ]
-# )
 
 hills = html.Div(
     children=[
@@ -1174,6 +1288,7 @@ hills = html.Div(
         html.Div(className="hills5"),
         html.Div(className="hills6"),
         html.Div(className="hills7"),
+        html.Div(id="sun")
     ]
 )
 
@@ -1182,10 +1297,7 @@ windmillView = html.Div(
     children=[
         html.Div(
             id="battery",
-            children=[
-                html.Div(id="battery-fill"),
-                html.H2("80%", id="battery-percentage")
-            ],
+            children=[html.Div(id="battery-fill")],
         ),
         html.Div(className="house"),
         html.Div(className="mill"),
@@ -1211,13 +1323,15 @@ bottomView = html.Div(
         windmillView,
         flowView,
         chargeView,
-        tulipsView
+        tulipsView,
+        # html.Div(id="sun")
     ]
 )
 
 ###################### Style app layout ########################################
 app.layout = dbc.Container(
     fluid=True,
+    id='container',
     children=[
         dcc.Interval(
             id='interval-component',
@@ -1229,9 +1343,19 @@ app.layout = dbc.Container(
                 dbc.Col([info_box], width=4),
                 dbc.Col([info_box2], width=4),
                 dbc.Col([graphs, graphs_pow])
-                ]),
+                ], style={'padding-top': '2rem'}),
         bottomView,
-    ]
+    ], style={
+        'verticalAlign': 'middle',
+        'textAlign': 'center',
+        'background-color': 'rgb(189, 213, 233)',
+        'position': 'fixed',
+        'width': '100%',
+        'height': '100%',
+        'top': '0px',
+        'left': '0px',
+        'z-index': '1000'
+    },
 )
 
 if __name__ == "__main__":

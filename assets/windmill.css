@@ -1083,8 +1083,21 @@ body {
 #sun{
   z-index: -3;
   position: absolute;
-  background-color: #f1ee18;
-  border-radius: 100%;
+  background-image: url(../assets/sun.svg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  display:block;
+  transition: all 1s;
+  width: 4rem;
+  height: 4rem;
+}
+
+#moon{
+  z-index: -3;
+  position: absolute;
+  background-image: url(../assets/moon.svg);
+  background-repeat: no-repeat;
+  background-size: cover;
   display:block;
   transition: all 1s;
   width: 4rem;
