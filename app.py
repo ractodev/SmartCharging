@@ -156,7 +156,8 @@ def move_sun(selection, start_date, end_date, index):
             "top": "2rem",
             "width": "100%",
             "height": "32rem",
-            "resize": "none"
+            "resize": "none",
+            "boader": "5px solid #e9f1f8"
         }
         if seconds >= 64800:
             seconds -= 64800
@@ -489,17 +490,17 @@ def rolling_info(index):
     now = datetime.now()
     seconds = now.second
     interval = 5
-    number_messages = 3
+    number_messages = 4
     sel_msg = int(seconds/interval) % number_messages
     msg = ""
     if sel_msg == 0:
-        msg += "I save energy you do not need and give it back when you do"
+        msg += "I save energy you don't need and give it back when you do"
     elif sel_msg == 1:
         msg += "Before I was here you could only charge 6 vehicles. Now you can charge 16 "
     elif sel_msg == 2:
         msg += "Charge your vehicle here, help save the environment\n "
     elif sel_msg == 3:
-        msg += "That I think Amsterdam is a wonderful city! Fijne dag"
+        msg += "I think Amsterdam is a wonderful city! \nFijne dag!"
     return msg
 
 
