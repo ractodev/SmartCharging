@@ -414,6 +414,7 @@ def normalize_data(data, min, max):
 @app.callback(
 
     Output("battery-fill", "style"),
+    Output("battery-percentage", "placeholder"),
 
     [
         Input("Main-Graph", "relayoutData"),
@@ -448,7 +449,7 @@ def update_battery_level(selection, start_date, end_date, index):
         end_point = df.index[-1]
 
     level = df.iloc[end_point, 3]
-    return {'height': str(level*20)+'rem'}
+    return {'height': str(level*20)+'rem'}, str(round(level*100))+'%'
 
 
 def get_info(df_within_dates):
@@ -1293,12 +1294,21 @@ hills = html.Div(
     ]
 )
 
+
 windmillView = html.Div(
     className="windmill",
     children=[
         html.Div(
             id="battery",
-            children=[html.Div(id="battery-fill")],
+            children=[
+                html.Div(id="battery-fill"),
+                dbc.Row(dcc.Textarea(
+                    id="battery-percentage",
+                    placeholder="60%",
+                    rows=1,
+                    style={'color': '#e9f1f8'}
+                ), style={'color': '#e9f1f8'})
+            ],
         ),
         html.Div(className="house"),
         html.Div(className="mill"),
@@ -1316,6 +1326,7 @@ windmillView = html.Div(
         )
     ],
 )
+
 
 bottomView = html.Div(
     className="bottom-view",
