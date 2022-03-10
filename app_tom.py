@@ -22,7 +22,7 @@ app = dash.Dash(
 server = app.server
 app.title = "Vattenfall Smart Charging"
 width_data_points = 10
-speed = 500
+speed = 9000
 yellow = "rgb(255, 218, 0)"
 # yellow ="rgb(32, 113, 181)"
 
@@ -85,7 +85,8 @@ def move_sun(index):
     y = (a*(x-10)**2+h)
     print(x)
     print(y)
-    style = {'left': str(x)+'rem', 'top': str(-y)+'rem'}
+    style = {'left': str(x)+'rem', 'top': str(-y)+'rem',
+             'transform': 'scale(2,2)'}
     return style
 
 
@@ -408,7 +409,7 @@ def rolling_info(index):
     sel_msg = int(seconds/interval) % number_messages
     msg = ""
     if sel_msg == 0:
-        msg += "I save energy we do not need and give it back when you do"
+        msg += "I save energy you do not need and give it back when you do"
     elif sel_msg == 1:
         msg += "Before I was here you could only charge 6 vehicles. Now you can charge 16 "
     elif sel_msg == 2:
@@ -777,7 +778,7 @@ info_box = dcc.Textarea(
         "height": "32rem",
         "resize": "none",
         "background-color": "rgb(233, 241, 248)",
-        "background-color": "#1E324F",
+        "background-color": "#000000",
         "color": "#00000",
         "placeholder": "#00000",
         "fontFamily": "Vattenfall",
@@ -798,7 +799,7 @@ info_box2 = dcc.Textarea(
         "height": "32rem",
         "resize": "none",
         "background-color": "rgb(233, 241, 248)",
-        "background-color": "#1E324F",
+        "background-color": "#000000",
         "color": "#00000",
         "placeholder": "#00000",
         "fontFamily": "Vattenfall",
