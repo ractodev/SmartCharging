@@ -1,4 +1,4 @@
-from matplotlib.pyplot import margins
+# from matplotlib.pyplot import margins
 import pandas as pd
 import numpy as np
 import dash
@@ -110,9 +110,7 @@ def move_sun(selection, start_date, end_date, index):
     else:
         end_point = df.index[-1]
     now = df["Interval"].iloc[end_point]
-    print(now)
     seconds = now.hour*60*60 + now.minute*60 + now.second # total seconds in 24h = 86400
-    print(seconds)
     if seconds >= 21600 and seconds < 64800: # day
         seconds-=21600
         container_style = {
