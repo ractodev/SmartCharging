@@ -1,4 +1,3 @@
-from multiprocessing import connection
 from matplotlib.pyplot import margins
 import pandas as pd
 import numpy as np
@@ -21,8 +20,8 @@ app = dash.Dash(
 )
 server = app.server
 app.title = "Vattenfall Smart Charging"
-width_data_points = 10
-speed = 9000
+width_data_points = 1
+speed = 500
 yellow = "rgb(255, 218, 0)"
 # yellow ="rgb(32, 113, 181)"
 
@@ -73,21 +72,114 @@ def fig_update_layout(fig, myTitle):
 
 
 @app.callback(
-    Output("sun", 'style'),
-    Input('interval-component', 'n_intervals'),
+    [
+        Output("sun", 'style'),
+        Output('container', 'style'),
+        Output("Info-Textbox2", "style"),
+        Output("Info-Textbox", "style"),
+    ],
+
+    [
+        Input("Main-Graph", "relayoutData"),
+        Input("date-picker", "start_date"),
+        Input("date-picker", "end_date"),
+        Input('interval-component', 'n_intervals'),
+    ],
+
 )
-def move_sun(index):
-    now = datetime.now()
-    seconds = now.second
-    a = -0.01
-    h = 0.3
-    x = (index*2) % 90
-    y = (a*(x-10)**2+h)
-    print(x)
-    print(y)
-    style = {'left': str(x)+'rem', 'top': str(-y)+'rem',
-             'transform': 'scale(2,2)'}
-    return style
+def move_sun(selection, start_date, end_date, index):
+    ctx = dash.callback_context
+    trigger = ctx.triggered[0]['prop_id'].split('.')[0]
+    end_point = 0
+    if trigger == 'interval-component':
+        end_point = (index*width_data_points) % 1000
+    elif trigger == 'date-picker':
+        end_point = df.loc[(df['Interval'] <= end_date)].index[-1]
+    elif trigger == 'Main-Graph':
+        if "xaxis.range[0]" in selection:
+            start_date = str(selection["xaxis.range[0]"])
+            end_date = str(selection["xaxis.range[1]"])
+            start_date_object = datetime.strptime(
+                start_date, "%Y-%m-%d %H:%M:%S.%f")
+            end_date_object = datetime.strptime(
+                end_date, "%Y-%m-%d %H:%M:%S.%f")
+            mask = (df['Interval'] > start_date_object) & (
+                df['Interval'] <= end_date_object)
+            df_within_dates = df.loc[mask]
+            end_point = df_within_dates.index[-1]
+        else:
+            end_point = df.index[-1]
+    else:
+        end_point = df.index[-1]
+    now = df["Interval"].iloc[end_point]
+    print(now)
+    seconds = now.hour*60*60 + now.minute*60 + \
+        now.second  # total seconds in 24h = 86400
+    print(seconds)
+    night = False
+    if seconds >= 21600 and seconds < 64800:  # day
+        seconds -= 21600
+        container_style = {
+            'verticalAlign': 'middle',
+            'textAlign': 'center',
+            'background-color': 'rgb(189, 213, 233)',
+            'position': 'fixed',
+            'width': '100%',
+            'height': '100%',
+            'top': '0px',
+            'left': '0px',
+            'z-index': '1000',
+            'background-color': 'rgb(189, 213, 233)'
+        }
+        text_style = {
+            'background-color': 'rgb(233, 241, 248)',
+            "top": "2rem",
+            "width": "100%",
+            "height": "32rem",
+            "resize": "none"
+        }
+    else:  # night
+        night = True
+        container_style = {
+            'verticalAlign': 'middle',
+            'textAlign': 'center',
+            'background-color': 'rgb(189, 213, 233)',
+            'position': 'fixed',
+            'width': '100%',
+            'height': '100%',
+            'top': '0px',
+            'left': '0px',
+            'z-index': '1000', 'background-color': '#1E324F'
+        }
+        text_style = {
+            'background-color': '#1E324F',
+            "top": "2rem",
+            "width": "100%",
+            "height": "32rem",
+            "resize": "none",
+            "boader": "5px solid #e9f1f8"
+        }
+        if seconds >= 64800:
+            seconds -= 64800
+        else:
+            seconds += 21600
+    seconds = ((seconds/43200)*100)
+    a = -0.0076
+    h = -2
+    x = (seconds)
+    x0 = 50
+    y = (a*(x-x0)**2+h)
+    if night:
+        sun_style = {
+            'background-image': 'url(../assets/moon.svg)',
+            'transform': 'translate('+str(x)+'rem, '+str(-y)+'rem) scale(1)'
+        }
+    else:
+        sun_style = {
+            'background-image': 'url(../assets/sun.svg)',
+            'transform': 'translate('+str(x)+'rem, '+str(-y)+'rem) scale(2)'
+        }
+    return sun_style, container_style, text_style, text_style
 
 
 @app.callback(
@@ -217,12 +309,6 @@ def update_flow_cars(selection, start_date, end_date, index):
             ret.append(carFlow1)
         else:
             ret.append(html.H6(", ", style={"color": "rgb(32, 113, 181)"}))
-            # ret.append(
-            #     html.H6("Free", style={
-            #         'transform': 'scale(-1,1)',
-            #         'top': '-0.3rem',
-            #         'left': '-1rem',
-            #         'position': 'relative'}))
     return ret
 
 
@@ -405,17 +491,17 @@ def rolling_info(index):
     now = datetime.now()
     seconds = now.second
     interval = 5
-    number_messages = 3
+    number_messages = 4
     sel_msg = int(seconds/interval) % number_messages
     msg = ""
     if sel_msg == 0:
-        msg += "I save energy you do not need and give it back when you do"
+        msg += "I save energy you don't need and give it back when you do"
     elif sel_msg == 1:
         msg += "Before I was here you could only charge 6 vehicles. Now you can charge 16 "
     elif sel_msg == 2:
         msg += "Charge your vehicle here, help save the environment\n "
     elif sel_msg == 3:
-        msg += "That I think Amsterdam is a wonderful city! Fijne dag"
+        msg += "I think Amsterdam is a wonderful city! \nFijne dag!"
     return msg
 
 
@@ -578,7 +664,7 @@ def update_graph_timer(selection, start_date, end_date, index):
         )
     information_update = get_info(df_within_dates)
     fig = fig_update_layout(fig, "Battery Level")
-    fig1 = fig_update_layout(fig1, "Power kW/h")
+    fig1 = fig_update_layout(fig1, "Power W")
     return fig, fig1, information_update
 
 
@@ -618,10 +704,10 @@ def process_df():
 
 
 def logo(app):
-    title = html.H4(
+    title = html.H5(
         "BPCH AMSTERDAM",
-        style={"marginTop": 8, "marginLeft": "10px",
-               "fontSize": "40", "color": "rgb(78,75,72)"},
+        style={"marginTop": 5, "marginLeft": "10px",
+               "fontSize": "35", "color": "rgb(78,75,72)"},
     )
 
     info_about_app = html.H6(
@@ -631,9 +717,9 @@ def logo(app):
     )
 
     logo_image_amst = html.Img(src=app.get_asset_url(
-        "amsterdam-logo-black.png"), style={"marginTop": 8, "height": 60, "marginLeft": "3%", "float": "left", "display": "inline-block", })
+        "amsterdam-logo-black.png"), style={"marginTop": 5, "height": 60, "left": "3%", "float": "left", "display": "inline-block", })
     logo_image = html.Img(src=app.get_asset_url(
-        "VF_logo.png"), style={"marginTop": -15, "height": 100, "right": "3%", "float": "right", "display": "inline-block", })
+        "VF_logo.png"), style={"marginTop": -20, "height": 100, "right": "3%", "float": "right", "display": "inline-block", })
 
     return dbc.Row([
         dbc.Col([logo_image_amst], width={'size': 4}),
@@ -662,7 +748,6 @@ graphs = dbc.Card(
                     [
                         dcc.Graph(
                             id="Main-Graph",
-                            style={'border': 'none'},
                             figure={
                                 "layout": {
                                     "margin": {"t": 0, "r": 0, "b": 0, "l": 0},
@@ -683,8 +768,7 @@ graphs = dbc.Card(
                         ),
                         html.Pre(id="update-on-click-data"),
                     ],
-                    style={"width": "98%",
-                           "display": "inline-block", 'border': 'none'},
+                    style={"width": "98%", "display": "inline-block"},
                 ),
             ],
             style={
@@ -692,7 +776,6 @@ graphs = dbc.Card(
                 "border-radius": "1px",
                 "border-width": "1px",
                 "border-top": "1px solid rgb(216, 216, 216)",
-                'border': 'none'
             },
         )
     ]
@@ -726,8 +809,7 @@ graphs_pow = dbc.Card(
                         ),
                         html.Pre(id="update-on-click-data-2"),
                     ],
-                    style={"width": "98%", "display": "inline-block",
-                           'border': 'none', 'border': 'none'},
+                    style={"width": "98%", "display": "inline-block"},
                 ),
                 html.Div(
                     [
@@ -753,7 +835,6 @@ graphs_pow = dbc.Card(
                         "float": "right",
                         "display": "inline-block",
                         "color": "black",
-                        'border': 'none'
                     },
                 ),
             ],
@@ -762,7 +843,6 @@ graphs_pow = dbc.Card(
                 "border-radius": "1px",
                 "border-width": "1px",
                 "border-top": "1px solid black",
-                'border': 'none'
             },
         )
     ]
@@ -770,7 +850,7 @@ graphs_pow = dbc.Card(
 
 info_box = dcc.Textarea(
     id="Info-Textbox",
-    placeholder="Like a piggy bank, I save energy when we have some over\nand give it back when you need it",
+    placeholder="Did you know... \n\n Like a piggy bank, I save energy when we have some over\nand give it back when you need it",
     rows=6,
     style={
         "top": "2rem",
@@ -778,7 +858,6 @@ info_box = dcc.Textarea(
         "height": "32rem",
         "resize": "none",
         "background-color": "rgb(233, 241, 248)",
-        "background-color": "#000000",
         "color": "#00000",
         "placeholder": "#00000",
         "fontFamily": "Vattenfall",
@@ -799,7 +878,6 @@ info_box2 = dcc.Textarea(
         "height": "32rem",
         "resize": "none",
         "background-color": "rgb(233, 241, 248)",
-        "background-color": "#000000",
         "color": "#00000",
         "placeholder": "#00000",
         "fontFamily": "Vattenfall",
@@ -935,7 +1013,6 @@ flowView = html.Div(
     ]
 )
 
-
 carFlow1 = html.Div(
     className="carFlow1",
     children=[
@@ -1068,6 +1145,29 @@ tulip = html.Div(className='stem',
                  )
 
 
+tulip = html.Div(className='stem',
+                 children=[
+                     html.Div(className='tulipHead',
+                              children=[
+                                  html.Div(
+                                      className="tulipHair lightTulip lightTulip-1"),
+                                  html.Div(
+                                      className="tulipHair darkTulip darkTulip-1"),
+                                  html.Div(
+                                      className="tulipHair lightTulip lightTulip-2"),
+                                  html.Div(
+                                      className="tulipHair darkTulip darkTulip-2"),
+                                  html.Div(
+                                      className="tulipHair lightTulip lightTulip-3"),
+                              ]),
+                     html.Div(className="rightTulipLeaf tulipLeaf leaf"),
+                     html.Div(className="leftTulipLeaf tulipLeaf leaf"),
+                     html.Div(className="rightStemLeaf stemLeaf leaf"),
+                     html.Div(className="leftStemLeaf stemLeaf leaf")
+                 ]
+                 )
+
+
 leftTulip1 = html.Div(
     className='tulip1',
     children=[tulip]
@@ -1133,50 +1233,50 @@ chargeView = html.Div(
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_1_0', children=[]),
-                     html.Div(id='car_1_1', children=[])
+                     html.Div(id='car_1_0', children=[carFlow1]),
+                     html.Div(id='car_1_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot3',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_2_0', children=[]),
-                     html.Div(id='car_2_1', children=[])
+                     html.Div(id='car_2_0', children=[carFlow1]),
+                     html.Div(id='car_2_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot4',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_3_0', children=[]),
-                     html.Div(id='car_3_1', children=[])
+                     html.Div(id='car_3_0', children=[carFlow1]),
+                     html.Div(id='car_3_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot5',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_4_0', children=[]),
-                     html.Div(id='car_4_1', children=[])
+                     html.Div(id='car_4_0', children=[carFlow1]),
+                     html.Div(id='car_4_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot6',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_5_0', children=[]),
-                     html.Div(id='car_5_1', children=[])
+                     html.Div(id='car_5_0', children=[carFlow1]),
+                     html.Div(id='car_5_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot7',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_6_0', children=[]),
-                     html.Div(id='car_6_1', children=[])
+                     html.Div(id='car_6_0', children=[carFlow1]),
+                     html.Div(id='car_6_1', children=[carFlow1])
                  ]),
         html.Div(id='chargeSpot8',
                  children=[
                      html.Div(className='pole'),
                      html.Div(className='poleHead'),
-                     html.Div(id='car_7_0', children=[]),
-                     html.Div(id='car_7_1', children=[])
+                     html.Div(id='car_7_0', children=[carFlow1]),
+                     html.Div(id='car_7_1', children=[carFlow1])
                  ]),
     ]
 )
@@ -1190,8 +1290,10 @@ hills = html.Div(
         html.Div(className="hills5"),
         html.Div(className="hills6"),
         html.Div(className="hills7"),
+        html.Div(id="sun")
     ]
 )
+
 
 windmillView = html.Div(
     className="windmill",
@@ -1225,6 +1327,7 @@ windmillView = html.Div(
     ],
 )
 
+
 bottomView = html.Div(
     className="bottom-view",
     children=[
@@ -1232,13 +1335,15 @@ bottomView = html.Div(
         windmillView,
         flowView,
         chargeView,
-        tulipsView
+        tulipsView,
+        # html.Div(id="sun")
     ]
 )
 
 ###################### Style app layout ########################################
 app.layout = dbc.Container(
     fluid=True,
+    id='container',
     children=[
         dcc.Interval(
             id='interval-component',
@@ -1252,7 +1357,17 @@ app.layout = dbc.Container(
                 dbc.Col([graphs, graphs_pow])
                 ], style={'padding-top': '2rem'}),
         bottomView,
-    ]
+    ], style={
+        'verticalAlign': 'middle',
+        'textAlign': 'center',
+        'background-color': 'rgb(189, 213, 233)',
+        'position': 'fixed',
+        'width': '100%',
+        'height': '100%',
+        'top': '0px',
+        'left': '0px',
+        'z-index': '1000'
+    },
 )
 
 if __name__ == "__main__":

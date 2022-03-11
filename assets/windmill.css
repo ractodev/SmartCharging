@@ -495,7 +495,7 @@ body {
 	 margin: 0 1rem;
 }
 #battery-percentage{
-  color: #e9f1f8;
+  /* color: #e9f1f8; */
   position: relative;
   top: 6rem;
   left: 18rem;
@@ -1341,5 +1341,10 @@ body {
   border: 2px solid #e9f1f8;
 }
 .card-body{
+  border-radius: 1%;
+  border: 2px solid #e9f1f8;
+}
+.card{
+  background: none !important;
   border: none !important;
 }

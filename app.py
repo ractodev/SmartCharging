@@ -120,7 +120,6 @@ def move_sun(selection, start_date, end_date, index):
         container_style = {
             'verticalAlign': 'middle',
             'textAlign': 'center',
-            'background-color': 'rgb(189, 213, 233)',
             'position': 'fixed',
             'width': '100%',
             'height': '100%',
@@ -521,7 +520,7 @@ def rolling_info(index):
     elif sel_msg == 2:
         msg += "Charge your vehicle here, help save the environment\n "
     elif sel_msg == 3:
-        msg += "I think Amsterdam is a wonderful city! \nFijne dag!"
+        msg += "I think Amsterdam is a wonderful city \nFijne dag!"
     return msg
 
 
@@ -878,8 +877,6 @@ info_box = dcc.Textarea(
         "height": "32rem",
         "resize": "none",
         "background-color": "rgb(233, 241, 248)",
-        "color": "#00000",
-        "placeholder": "#00000",
         "fontFamily": "Vattenfall",
         "fontSize": "30",
         "display": "inline-block",
@@ -898,7 +895,6 @@ info_box2 = dcc.Textarea(
         "height": "32rem",
         "resize": "none",
         "background-color": "rgb(233, 241, 248)",
-        "color": "#00000",
         "placeholder": "#00000",
         "fontFamily": "Vattenfall",
         "fontSize": "30",
