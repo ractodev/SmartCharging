@@ -21,7 +21,7 @@ app = dash.Dash(
 server = app.server
 app.title = "Vattenfall Smart Charging"
 width_data_points = 1
-speed = 50000
+speed = 1000
 yellow = "rgb(255, 218, 0)"
 # yellow ="rgb(32, 113, 181)"
 
