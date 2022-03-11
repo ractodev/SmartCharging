@@ -21,7 +21,7 @@ app = dash.Dash(
 server = app.server
 app.title = "Vattenfall Smart Charging"
 width_data_points = 1
-speed = 500
+speed = 50000
 yellow = "rgb(255, 218, 0)"
 # yellow ="rgb(32, 113, 181)"
 
@@ -112,10 +112,8 @@ def move_sun(selection, start_date, end_date, index):
     else:
         end_point = df.index[-1]
     now = df["Interval"].iloc[end_point]
-    print(now)
     seconds = now.hour*60*60 + now.minute*60 + \
         now.second  # total seconds in 24h = 86400
-    print(seconds)
     night = False
     if seconds >= 21600 and seconds < 64800:  # day
         seconds -= 21600
@@ -462,8 +460,9 @@ def get_info(df_within_dates):
     # msg += "Number of cars connected: " + \
     #     str(int(
     #         df_within_dates['numberOfConnectedVehicles/numConnVehicles.numConnVehicles'].iloc[-1])) + "\n"
+    total_kwh = int(df_within_dates['Total_W'].sum()/6000)
     msg += "Total Delivered Power: " + \
-        str(int(df_within_dates['Total_W'].sum()/1000)) + 'kW\n'
+        str(total_kwh) + 'kWh\n'
     for i in range(0, tot):
         current_val = df_within_dates['ams-a-bat-ew/AvgValue.avg'].iloc[i]
         if current_val == 0:
@@ -472,13 +471,26 @@ def get_info(df_within_dates):
             charging += 1
         else:
             discharging += 1
+    # average cost Amsterdam 30 cents per kwh. 10 km per 1-3kwh 
+    # oil 1 eur per 10 km 
+    tot_price_el = total_kwh*.3 # 30 cents per kwh
+    tot_km_el = (total_kwh/2)*10 # ~2 kwh per 10 km 
+    tot_price_gas = (tot_km_el/10)*1 # ~1euro per 10km 
+    # print(tot_price_el)
+    # print(tot_km_el)
+    # print(tot_price_gas)
+    tot_savings = int(tot_price_gas-tot_price_el)
+    # print(tot_savings)
     charging_rate = int((charging/tot)*100)
     discharging_rate = int((discharging/tot)*100)
     idle_rate = int((idle/tot)*100)
     in_use_rate = int(((charging+discharging)/tot)*100)
-    msg += "Charging Rate: " + str(charging_rate) + "%\n"
-    msg += "Discharging Rate: " + str(discharging_rate) + "%\n"
+    # msg += "Charging Rate: " + str(charging_rate) + "%\n"
+    # msg += "Discharging Rate: " + str(discharging_rate) + "%\n"
     # msg += "Idle rate: " + str(idle_rate) + "%\n"
+    # msg += "Total price el: " + str(tot_price_el) + " €%\n"
+    # msg += "Total price gas: " + str(tot_price_gas) + " €%\n"
+    msg += "Total savings: " + str(tot_savings) + "€\n"
     msg += "Usage of Battery: " + str(in_use_rate) + "%\n"
     return msg
 
@@ -1306,7 +1318,7 @@ windmillView = html.Div(
                     id="battery-percentage",
                     placeholder="60%",
                     rows=1,
-                    style={'color': '#e9f1f8'}
+                    style={'color': '#e9f1f8', 'resize': 'none'}
                 ), style={'color': '#e9f1f8'})
             ],
         ),
