@@ -463,14 +463,21 @@ def get_info(df_within_dates):
     total_kwh = int(df_within_dates['Total_W'].sum()/6000)
     msg += "Total Delivered Power: " + \
         str(total_kwh) + 'kWh\n'
-    for i in range(0, tot):
-        current_val = df_within_dates['ams-a-bat-ew/AvgValue.avg'].iloc[i]
-        if current_val == 0:
-            idle += 1
-        elif current_val > 0:
-            charging += 1
-        else:
-            discharging += 1
+    # for i in range(0, tot):
+    #     current_val = df_within_dates['ams-a-bat-ew/AvgValue.avg'].iloc[i]
+    #     if current_val == 0:
+    #         idle += 1
+    #     elif current_val > 0:
+    #         charging += 1
+    #     else:
+    #         discharging += 1
+    current_val = df_within_dates['ams-a-bat-ew/AvgValue.avg'].iloc[tot-1]
+    if current_val == 0:
+        batt_status = "Battery is: Idle\n"
+    elif current_val > 0:
+        batt_status = "Battery is: Charging\n"
+    else:
+        batt_status = "Battery is: Discharging\n"
     # average cost Amsterdam 30 cents per kwh. 10 km per 1-3kwh 
     # oil 1 eur per 10 km 
     tot_price_el = total_kwh*.3 # 30 cents per kwh
@@ -490,7 +497,8 @@ def get_info(df_within_dates):
     # msg += "Idle rate: " + str(idle_rate) + "%\n"
     # msg += "Total price el: " + str(tot_price_el) + " €%\n"
     # msg += "Total price gas: " + str(tot_price_gas) + " €%\n"
-    msg += "Total savings: " + str(tot_savings) + "€\n"
+    msg += "Total savings: " + str(tot_savings) + "€ *\n"
+    msg += batt_status
     msg += "Usage of Battery: " + str(in_use_rate) + "%\n"
     return msg
 
